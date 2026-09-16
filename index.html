@@ -171,6 +171,17 @@
   .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:32ch}
   .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em;margin-left:6px}
   .col-acc{width:1%;white-space:nowrap;text-align:right}
+  th.orden-col{cursor:pointer;user-select:none;white-space:nowrap}
+  th.orden-col:hover{color:var(--ink-2);background:var(--surface-2)}
+  th.orden-col .flecha{margin-left:5px;font-size:9px;color:var(--accent)}
+  th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:var(--accent-ink)}
+  .ing-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;min-height:26px}
+  .ing-chip{display:inline-flex;align-items:center;gap:5px;padding-right:3px}
+  .ing-chip .quita{appearance:none;border:0;background:none;cursor:pointer;color:var(--ink-3);
+    font-size:14px;line-height:1;padding:0 3px;border-radius:50%}
+  .ing-chip .quita:hover{color:var(--pimenton);background:var(--surface-2)}
+  .ing-alta{display:flex;gap:8px;margin-top:9px}
+  .editor-body .ing-alta input{flex:1 1 auto;width:auto}
   .menus{display:flex;flex-direction:column;gap:4px}
   .menu-chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3);cursor:pointer;
     border:1px solid var(--line);border-radius:20px;padding:1px 9px 1px 7px;white-space:nowrap}
@@ -317,6 +328,8 @@
   .guardado .det{font-size:13px;color:var(--ink-2);margin-top:2px}
   .guardado.sucio .tit,.guardado.sucio .det{color:var(--pimenton)}
   .guardado .acc{display:flex;gap:8px;flex-wrap:wrap}
+  .guardado .ultimo-guardado{font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--line);
+    padding-top:9px;margin-top:3px}
   .token-body{padding:16px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
   .token-body ol{margin:0;padding-left:20px;font-size:13.5px;color:var(--ink-2);line-height:1.7}
   .token-body code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface-2);
@@ -446,6 +459,8 @@
     <div class="secs" id="secs"></div>
   </section>
 
+  <section id="panel-ingredientes" role="tabpanel" aria-labelledby="tab-ingredientes" hidden></section>
+
   <section id="panel-historico" role="tabpanel" aria-labelledby="tab-historico" hidden>
     <div class="section-head">
       <div>
@@ -459,7 +474,8 @@
       <table class="estrecha">
         <thead><tr>
           <th scope="col">Semana</th><th scope="col">Fechas</th>
-          <th scope="col">Adultos</th><th scope="col">Niño</th><th scope="col" class="col-acc"></th>
+          <th scope="col">Adultos</th><th scope="col">Niño</th>
+          <th scope="col">Compra</th><th scope="col" class="col-acc"></th>
         </tr></thead>
         <tbody id="tbody-hist"></tbody>
       </table>
@@ -482,11 +498,11 @@ nombre;adultos;nino;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupo
 Ensaladilla rusa casera;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo|Verdura|Pescado azul|Huevo;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
 Paella de marisco y carne;si;no;Arroz con gambas, calamares, pimiento y pollo.;Arroz|Marisco|Carne blanca;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
 Garbanzos fritos;si;no;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
-Lentejas con verduras y pollo;si;no;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Lentejas con verduras y pollo;si;si;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
 Judías blancas con verduras y gambas;si;no;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
-Arroz con huevo y carne;si;no;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Arroz con huevo y carne;si;si;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
 Ensalada de garbanzos;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;si;no;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Gulas salteadas con gambas y ajo;si;si;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
 Pimientos rellenos de bacalao y gambas;si;no;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
 Sepia a la plancha con ajo y perejil;si;no;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
 Tostas de tacos de salmón;si;no;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
@@ -505,7 +521,7 @@ Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con h
 Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
 Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;arroz|blanca;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
-Crema de verduras;no;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré o crema de verduras;no;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
 Puré de verduras con pescado;no;si;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
 Puré de verduras con carne;no;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
 Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
@@ -513,15 +529,15 @@ Croquetas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado
 Sopa de pollo;no;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
 Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
 Guisantes con jamón;no;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
-Revuelto de gulas;no;si;Huevo revuelto con gulas, sin picante.;Huevo|Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
 Calamares;no;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
 Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
 Macarrones con salchichas;no;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
 Rollitos de la Yaya;no;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
 Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
 Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
-Lomo con queso;no;si;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;
+Lomo con queso;no;si;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;lomo de cerdo|queso en lonchas
 Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco
+Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;ambos;medio;media;no;arroz;arroz|huevos
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -626,46 +642,9 @@ fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Arroz con huevo y carne
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Hamburguesas caseras de pollo con queso
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Garbanzos fritos
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;2;Ensaladilla rusa casera
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Salmón con verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Fajitas de pollo y pimientos
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Gambas al ajillo tradicionales
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Tomate con mozzarella y aceite de oliva
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Gulas salteadas con gambas y ajo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;2;Parrillada de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Fajitas de pavo, queso, lechuga y tomate
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Lentejas con verduras y pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Tomate con mozzarella y aceite de oliva
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Tostas de tacos de salmón
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Tiras de lomo salteadas con verduras al wok
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Revuelto de gulas, gambas y huevo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;2;Tortilla de patata y calabacín
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Judías blancas con verduras y gambas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Pechugas de pollo a la plancha
 </script>
 <script type="text/csv" id="csv-semanas-nino">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Sopa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Rollitos de la Yaya
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Guisantes con jamón
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Lomo con queso
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Arroz con pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Croquetas congeladas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Rollitos de la Yaya
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Crema de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;2;Tortilla
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Hamburguesa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Restaurante
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Hamburguesa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Queso fresco
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Macarrones con salchichas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Revuelto de gulas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Macarrones con salchichas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Restaurante
 </script>
 <script type="text/csv" id="csv-despensa">
 ingrediente;en_casa
@@ -680,64 +659,6 @@ salsa de soja;si
 </script>
 <script type="text/csv" id="csv-compras">
 semana_id;etiqueta;ingrediente;en_casa
-2026-09-21;4ª semana de septiembre (21-27);aceite de oliva;si
-2026-09-21;4ª semana de septiembre (21-27);ajo;si
-2026-09-21;4ª semana de septiembre (21-27);albahaca;no
-2026-09-21;4ª semana de septiembre (21-27);arroz;no
-2026-09-21;4ª semana de septiembre (21-27);atún en conserva;no
-2026-09-21;4ª semana de septiembre (21-27);berenjena;no
-2026-09-21;4ª semana de septiembre (21-27);calabacín;no
-2026-09-21;4ª semana de septiembre (21-27);caldo de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);carne picada de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);cebolla;no
-2026-09-21;4ª semana de septiembre (21-27);croquetas congeladas;no
-2026-09-21;4ª semana de septiembre (21-27);eneldo;no
-2026-09-21;4ª semana de septiembre (21-27);espárragos trigueros;no
-2026-09-21;4ª semana de septiembre (21-27);especias para fajitas;no
-2026-09-21;4ª semana de septiembre (21-27);fideos;no
-2026-09-21;4ª semana de septiembre (21-27);filetes de ternera;no
-2026-09-21;4ª semana de septiembre (21-27);gambas;no
-2026-09-21;4ª semana de septiembre (21-27);garbanzos cocidos;no
-2026-09-21;4ª semana de septiembre (21-27);guindilla;si
-2026-09-21;4ª semana de septiembre (21-27);guisantes;no
-2026-09-21;4ª semana de septiembre (21-27);gulas;no
-2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);huevos;no
-2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
-2026-09-21;4ª semana de septiembre (21-27);judías blancas cocidas;no
-2026-09-21;4ª semana de septiembre (21-27);lechuga;no
-2026-09-21;4ª semana de septiembre (21-27);lentejas;no
-2026-09-21;4ª semana de septiembre (21-27);limón;no
-2026-09-21;4ª semana de septiembre (21-27);lomo de cerdo;no
-2026-09-21;4ª semana de septiembre (21-27);lomo de salmón;no
-2026-09-21;4ª semana de septiembre (21-27);macarrones;no
-2026-09-21;4ª semana de septiembre (21-27);mayonesa;si
-2026-09-21;4ª semana de septiembre (21-27);mozzarella;no
-2026-09-21;4ª semana de septiembre (21-27);pan;no
-2026-09-21;4ª semana de septiembre (21-27);pan de hamburguesa;no
-2026-09-21;4ª semana de septiembre (21-27);pan para tostas;no
-2026-09-21;4ª semana de septiembre (21-27);patata;no
-2026-09-21;4ª semana de septiembre (21-27);patatas paja;no
-2026-09-21;4ª semana de septiembre (21-27);pechuga de pavo en lonchas;no
-2026-09-21;4ª semana de septiembre (21-27);pechuga de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);perejil;no
-2026-09-21;4ª semana de septiembre (21-27);pimentón;si
-2026-09-21;4ª semana de septiembre (21-27);pimiento rojo;no
-2026-09-21;4ª semana de septiembre (21-27);pimiento verde;no
-2026-09-21;4ª semana de septiembre (21-27);puerro;no
-2026-09-21;4ª semana de septiembre (21-27);queso crema;no
-2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
-2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
-2026-09-21;4ª semana de septiembre (21-27);queso rallado;no
-2026-09-21;4ª semana de septiembre (21-27);salchichas;no
-2026-09-21;4ª semana de septiembre (21-27);salmón ahumado;no
-2026-09-21;4ª semana de septiembre (21-27);salsa de soja;si
-2026-09-21;4ª semana de septiembre (21-27);tomate;no
-2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
-2026-09-21;4ª semana de septiembre (21-27);tomate triturado;no
-2026-09-21;4ª semana de septiembre (21-27);tortilla de patata y calabacín;no
-2026-09-21;4ª semana de septiembre (21-27);tortillas de trigo;no
-2026-09-21;4ª semana de septiembre (21-27);zanahoria;no
 </script>
 <script type="text/csv" id="csv-tipos">
 tipo
@@ -901,6 +822,7 @@ Fuera de casa
   let estado = { tab:"semana-adultos", semana:null, despensa:{}, secciones:{},
                  compras:{}, semanasBorradas:[],
                  platos:{ediciones:{}, borrados:[], extra:[]},
+                 ing:{ediciones:{}, borrados:[], extra:[]},
                  adultos:perfilVacio(), nino:perfilVacio() };
 
   function fusionaPerfil(dest, p){
@@ -954,6 +876,18 @@ Fuera de casa
     estado.semanasBorradas = Array.isArray(p.semanasBorradas) ? p.semanasBorradas : [];
     fusionaPerfil(estado.adultos, p.adultos);
     fusionaPerfil(estado.nino, p.nino);
+    if(p.ing && typeof p.ing === "object"){
+      estado.ing.ediciones = p.ing.ediciones && typeof p.ing.ediciones === "object" ? p.ing.ediciones : {};
+      estado.ing.borrados  = Array.isArray(p.ing.borrados) ? p.ing.borrados : [];
+      estado.ing.extra     = Array.isArray(p.ing.extra) ? p.ing.extra : [];
+    }
+    // Lo que antes eran secciones sueltas de ingredientes nuevos pasa al catálogo.
+    Object.keys(estado.secciones).forEach(function(n){
+      const yaEsta = (datos.ingredientes || []).some(function(r){ return r.ingrediente === n; }) ||
+                     estado.ing.extra.some(function(x){ return x.n === n; });
+      if(!yaEsta) estado.ing.extra.push({n:n, seccion:estado.secciones[n]});
+    });
+    estado.secciones = {};
     if(p.platos && typeof p.platos === "object"){
       estado.platos.ediciones = p.platos.ediciones && typeof p.platos.ediciones === "object" ? p.platos.ediciones : {};
       estado.platos.borrados  = Array.isArray(p.platos.borrados) ? p.platos.borrados : [];
@@ -1055,9 +989,39 @@ Fuera de casa
   // El tipo es una lista; los platos guardados antes del catálogo traían texto suelto.
   function tiposDe(p){ return p ? (Array.isArray(p.t) ? p.t.slice() : lista(p.t)) : []; }
   function tipoTexto(p){ return tiposDe(p).join(" · "); }
-  function seccionDe(ing){ return estado.secciones[ing] || SECCION[ing] || "Otros"; }
+  // Catálogo vigente: el del CSV con los cambios encima, más los añadidos.
+  function ingredientes(){
+    const st = estado.ing, salida = [];
+    (datos.ingredientes || []).forEach(function(r){
+      if(!r.ingrediente) return;
+      if(st.borrados.indexOf(r.ingrediente) !== -1) return;
+      const e = st.ediciones[r.ingrediente];
+      salida.push(e ? {orig:r.ingrediente, n:e.n, seccion:e.seccion, editado:true}
+                    : {orig:r.ingrediente, n:r.ingrediente, seccion:r.seccion || "Otros"});
+    });
+    st.extra.forEach(function(x){ salida.push({n:x.n, seccion:x.seccion, custom:true}); });
+    return salida;
+  }
+  function nombresIngredientes(){
+    return ingredientes().map(function(x){ return x.n; });
+  }
+  function seccionDe(ing){
+    const f = ingredientes().filter(function(x){ return x.n === ing; })[0];
+    return f ? f.seccion : (SECCION[ing] || "Otros");
+  }
+  // Cuántos platos usan cada ingrediente.
+  function usosDe(ing){
+    return repertorio().filter(function(p){ return p.i.indexOf(ing) !== -1; }).map(function(p){ return p.n; });
+  }
   // Los bloques desconocidos se cuelan antes del último del CSV, para que el
   // último bloque (la panadería) siga cerrando la lista.
+  function todasSecciones(){
+    const vistas = SECCIONES.slice();
+    ingredientes().forEach(function(x){
+      if(vistas.indexOf(x.seccion) === -1) vistas.push(x.seccion);
+    });
+    return vistas;
+  }
   function ordenSecciones(presentes){
     const extras = presentes.filter(function(s){ return SECCIONES.indexOf(s) === -1; }).sort();
     if(!SECCIONES.length) return extras;
@@ -1070,7 +1034,15 @@ Fuera de casa
     if(REP[pid].REPO[id]) return REP[pid].REPO[id];
     return {};
   }
-  function fijarHuecos(pid, id, h){ estado[pid].semanas[id] = h; guardar(); }
+  function fijarHuecos(pid, id, h){
+    estado[pid].semanas[id] = h;
+    // Volver a poner platos en una semana borrada la resucita: si no, quedaba
+    // invisible en el histórico y no llegaba nunca al repositorio.
+    if(Object.keys(h).some(function(k){ return !!h[k]; })){
+      estado.semanasBorradas = estado.semanasBorradas.filter(function(x){ return x !== id; });
+    }
+    guardar();
+  }
   // Guardada = lo que se ve es exactamente lo que hay en datos/semanas*.csv.
   function semanaGuardada(pid, id){
     const local = huecos(pid, id), repo = REP[pid].REPO[id] || {}, claves = {};
@@ -1246,6 +1218,7 @@ Fuera de casa
     {id:"semana-adultos", lbl:"Semana", quien:"adultos"},
     {id:"semana-nino",    lbl:"Semana", quien:"niño"},
     {id:"compra",         lbl:"Compra"},
+    {id:"ingredientes",   lbl:"Ingredientes"},
     {id:"historico",      lbl:"Histórico"}
   ];
   function montarPestanas(){
@@ -1320,8 +1293,25 @@ Fuera de casa
       el("div", {class:"field"}, [el("label", {for:"f-grupo", text:"Grupo"}), fGrupo])
     ]));
 
-    const cabecera = ["Plato","Menús","Tipo de alimento","Momento","Preparación","Repetición","Plato único","Ingredientes"]
-      .map(function(t){ return el("th", {scope:"col", text:t}); });
+    const COLS = [
+      {t:"Plato",            k:function(p){ return p.n.toLowerCase(); }},
+      {t:"Menús",            k:function(p){ return (p.menus && p.menus.adultos ? "1" : "0") + (p.menus && p.menus.nino ? "1" : "0"); }},
+      {t:"Tipo de alimento", k:function(p){ return tipoTexto(p).toLowerCase(); }},
+      {t:"Momento",          k:function(p){ return ["comida","cena","ambos"].indexOf(p.m); }},
+      {t:"Preparación",      k:function(p){ return ["bajo","medio","alto"].indexOf(p.tiempo); }},
+      {t:"Repetición",       k:function(p){ return ["siempre","alta","media","baja","ocasional","nunca"].indexOf(p.rep); }},
+      {t:"Plato único",      k:function(p){ return p.unico ? 1 : 0; }},
+      {t:"Ingredientes",     k:function(p){ return p.i.length; }}
+    ];
+    const cabecera = COLS.map(function(c, i){
+      return el("th", {scope:"col", class:"orden-col", "data-col":String(i),
+                       "aria-sort":"none", tabindex:"0",
+                       onclick:function(){ ordenarPor(i); },
+                       onkeydown:function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ordenarPor(i); } }}, [
+        el("span", {text:c.t}), el("span", {class:"flecha"})
+      ]);
+    });
+    ORDEN.cols = COLS;
     cabecera.push(el("th", {scope:"col", class:"col-acc"}));
     p.appendChild(el("div", {class:"table-wrap"}, [
       el("table", null, [
@@ -1369,6 +1359,14 @@ Fuera de casa
              g:p.g.slice(), i:p.i.slice() };
   }
 
+  // Orden de la tabla de platos, al estilo de una hoja de cálculo.
+  const ORDEN = {col:0, asc:true, cols:[]};
+  function ordenarPor(i){
+    if(ORDEN.col === i) ORDEN.asc = !ORDEN.asc;
+    else { ORDEN.col = i; ORDEN.asc = true; }
+    pintarPlatos();
+  }
+
   function celdaTipos(p){
     const caja = el("div", {class:"tipos"});
     tiposDe(p).forEach(function(t){ caja.appendChild(el("span", {class:"chip chip-tipo", text:t})); });
@@ -1396,6 +1394,21 @@ Fuera de casa
       if(q && (p.n + " " + p.d + " " + tipoTexto(p) + " " + p.i.join(" ")).toLowerCase().indexOf(q) === -1) return false;
       return true;
     });
+
+    const col = ORDEN.cols[ORDEN.col];
+    if(col){
+      filas.sort(function(a, b){
+        const x = col.k(a), y = col.k(b);
+        const c = x < y ? -1 : (x > y ? 1 : a.n.localeCompare(b.n, "es"));
+        return ORDEN.asc ? c : -c;
+      });
+      const ths = document.querySelectorAll("#panel-platos th.orden-col");
+      for(let i = 0; i < ths.length; i++){
+        const activa = i === ORDEN.col;
+        ths[i].setAttribute("aria-sort", activa ? (ORDEN.asc ? "ascending" : "descending") : "none");
+        ths[i].querySelector(".flecha").textContent = activa ? (ORDEN.asc ? "▲" : "▼") : "";
+      }
+    }
 
     cuerpo.textContent = "";
     if(!filas.length){
@@ -1428,6 +1441,203 @@ Fuera de casa
       ]));
     });
     $("n-platos").textContent = String(repertorio().length);
+  }
+
+  /* ============ Panel: ingredientes ============ */
+  function montarPanelIngredientes(){
+    const p = $("panel-ingredientes");
+    p.textContent = "";
+    p.appendChild(el("div", {class:"section-head"}, [
+      el("div", null, [
+        el("div", {class:"eyebrow", text:"datos/ingredientes.csv"}),
+        el("h2", {text:"Catálogo de ingredientes"})
+      ]),
+      el("button", {class:"btn btn-primary", text:"Nuevo ingrediente",
+                    onclick:function(){ abrirIngrediente(null); }})
+    ]));
+    p.appendChild(el("p", {class:"lead", text:
+      "La única lista de la que salen los ingredientes de los platos: al escribir un plato solo se puede " +
+      "elegir de aquí, para que no acaben conviviendo «pimiento», «pimientos» y «piniento». La sección " +
+      "manda en el orden de la lista de la compra."}));
+
+    const buscar = el("input", {type:"search", id:"fi-buscar", placeholder:"Ingrediente…",
+                                oninput:pintarIngredientes});
+    const fSec = el("select", {id:"fi-seccion", oninput:pintarIngredientes}, [
+      el("option", {value:"", text:"Todas"})
+    ]);
+    const fUso = el("select", {id:"fi-uso", oninput:pintarIngredientes}, [
+      el("option", {value:"", text:"Todos"}),
+      el("option", {value:"usados", text:"En uso"}),
+      el("option", {value:"sueltos", text:"Sin usar"})
+    ]);
+    todasSecciones().forEach(function(x){ fSec.appendChild(el("option", {value:x, text:x})); });
+
+    p.appendChild(el("div", {class:"filters"}, [
+      el("div", {class:"field grow"}, [el("label", {for:"fi-buscar", text:"Buscar"}), buscar]),
+      el("div", {class:"field"}, [el("label", {for:"fi-seccion", text:"Sección"}), fSec]),
+      el("div", {class:"field"}, [el("label", {for:"fi-uso", text:"Uso"}), fUso])
+    ]));
+
+    p.appendChild(el("div", {class:"table-wrap"}, [
+      el("table", {class:"estrecha"}, [
+        el("thead", null, [el("tr", null, [
+          el("th", {scope:"col", text:"Ingrediente"}),
+          el("th", {scope:"col", text:"Sección del súper"}),
+          el("th", {scope:"col", text:"Platos que lo usan"}),
+          el("th", {scope:"col", class:"col-acc"})
+        ])]),
+        el("tbody", {id:"tbody-ing"})
+      ])
+    ]));
+  }
+
+  function pintarIngredientes(){
+    const cuerpo = $("tbody-ing");
+    if(!cuerpo) return;
+    const q = $("fi-buscar").value.trim().toLowerCase();
+    const sc = $("fi-seccion").value, uso = $("fi-uso").value;
+    const filas = ingredientes().filter(function(x){
+      if(sc && x.seccion !== sc) return false;
+      if(q && x.n.toLowerCase().indexOf(q) === -1) return false;
+      const n = usosDe(x.n).length;
+      if(uso === "usados" && !n) return false;
+      if(uso === "sueltos" && n) return false;
+      return true;
+    }).sort(function(a, b){
+      const s = todasSecciones();
+      return (s.indexOf(a.seccion) - s.indexOf(b.seccion)) || a.n.localeCompare(b.n, "es");
+    });
+
+    cuerpo.textContent = "";
+    if(!filas.length){
+      cuerpo.appendChild(el("tr", null, [
+        el("td", {colspan:"4", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún ingrediente coincide."})
+      ]));
+    }
+    filas.forEach(function(x){
+      const platos = usosDe(x.n);
+      const nombre = el("div", {style:"font-weight:600", text:x.n});
+      if(x.custom || x.editado){
+        nombre.appendChild(el("span", {class:"custom-flag", text:x.custom ? "añadido" : "modificado"}));
+      }
+      cuerpo.appendChild(el("tr", null, [
+        el("td", null, [nombre]),
+        el("td", null, [el("span", {class:"chip", text:x.seccion})]),
+        el("td", null, [ platos.length
+          ? el("div", {class:"hint", style:"max-width:46ch", text: platos.length + " · " + platos.join(", ")})
+          : el("span", {class:"chip chip-doble", text:"sin usar"}) ]),
+        el("td", {class:"col-acc"}, [
+          el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + x.n,
+                        onclick:function(){ abrirIngrediente(x); }})
+        ])
+      ]));
+    });
+    $("n-ingredientes").textContent = String(ingredientes().length);
+  }
+
+  let capaIng = null;
+  function cerrarIngrediente(){ if(capaIng){ capaIng.remove(); capaIng = null; } }
+
+  function abrirIngrediente(x){
+    cerrarIngrediente();
+    const nuevo = !x, nombreAntes = x ? x.n : "";
+    const eNom = el("input", {type:"text", id:"i-nombre", value: x ? x.n : "", placeholder:"berenjena"});
+    const eSec = el("select", {id:"i-seccion"});
+    todasSecciones().forEach(function(sc){
+      eSec.appendChild(el("option", {value:sc, text:sc, selected: x && x.seccion === sc ? "selected" : null}));
+    });
+
+    const platos = x ? usosDe(x.n) : [];
+    const pie = [];
+    if(!nuevo){
+      pie.push(el("button", {class:"btn btn-ghost", style:"color:var(--pimenton)", text:"Eliminar",
+        onclick:function(){
+          if(platos.length){
+            aviso("Lo usan " + platos.length + " platos: quítalo de ellos primero");
+            return;
+          }
+          if(!window.confirm("¿Eliminar «" + x.n + "» del catálogo?")) return;
+          if(x.custom) estado.ing.extra = estado.ing.extra.filter(function(y){ return y.n !== x.n; });
+          else{
+            if(estado.ing.borrados.indexOf(x.orig) === -1) estado.ing.borrados.push(x.orig);
+            delete estado.ing.ediciones[x.orig];
+          }
+          guardar(); cerrarIngrediente(); pintarTodo(); aviso("Ingrediente eliminado");
+        }}));
+      if(x.editado){
+        pie.push(el("button", {class:"btn btn-ghost", text:"Deshacer cambios", onclick:function(){
+          const orig = (datos.ingredientes || []).filter(function(r){ return r.ingrediente === x.orig; })[0];
+          delete estado.ing.ediciones[x.orig];
+          if(orig) renombrarIngrediente(x.n, orig.ingrediente);
+          guardar(); cerrarIngrediente(); pintarTodo(); aviso("Ingrediente devuelto al CSV");
+        }}));
+      }
+    }
+    pie.push(el("div", {class:"der"}, [
+      el("button", {class:"btn", text:"Cancelar", onclick:cerrarIngrediente}),
+      el("button", {class:"btn btn-primary", text: nuevo ? "Añadir" : "Guardar cambios", onclick:function(){
+        const n = eNom.value.trim().toLowerCase();
+        if(!n){ aviso("Ponle nombre"); eNom.focus(); return; }
+        const choque = ingredientes().filter(function(y){ return y.n === n; })[0];
+        if(choque && n !== nombreAntes){ aviso("«" + n + "» ya está en el catálogo"); eNom.focus(); return; }
+        if(nuevo){
+          estado.ing.extra.push({n:n, seccion:eSec.value});
+        }else if(x.custom){
+          const obj = estado.ing.extra.filter(function(y){ return y.n === x.n; })[0];
+          if(obj){ obj.n = n; obj.seccion = eSec.value; }
+          renombrarIngrediente(nombreAntes, n);
+        }else{
+          estado.ing.ediciones[x.orig] = {n:n, seccion:eSec.value};
+          renombrarIngrediente(nombreAntes, n);
+        }
+        guardar(); cerrarIngrediente(); pintarTodo();
+        aviso(nuevo ? "«" + n + "» añadido al catálogo" : "Ingrediente actualizado");
+      }})
+    ]));
+
+    const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true",
+                            "aria-label": nuevo ? "Nuevo ingrediente" : "Editar ingrediente"}, [
+      el("header", null, [el("h3", {text: nuevo ? "Nuevo ingrediente" : "Editar ingrediente"})]),
+      el("div", {class:"editor-body"}, [
+        campo("Nombre", eNom, true),
+        campo("Sección del súper", eSec, true),
+        platos.length ? el("p", {class:"hint full",
+          text:"Lo usan " + platos.length + " platos: " + platos.join(", ") + ". Al renombrarlo se actualizan solos."}) : null
+      ]),
+      el("footer", null, pie)
+    ]);
+    capaIng = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaIng) cerrarIngrediente(); }}, [caja]);
+    document.body.appendChild(capaIng);
+    eNom.focus();
+  }
+
+  // Renombrar un ingrediente arrastra a todos los platos que lo usan.
+  function renombrarIngrediente(viejo, nuevo){
+    if(!viejo || viejo === nuevo) return;
+    function arregla(lista){
+      const i = lista.indexOf(viejo);
+      if(i === -1) return false;
+      if(lista.indexOf(nuevo) === -1) lista[i] = nuevo; else lista.splice(i, 1);
+      return true;
+    }
+    estado.platos.extra.forEach(function(p){ arregla(p.i); });
+    Object.keys(estado.platos.ediciones).forEach(function(k){ arregla(estado.platos.ediciones[k].i); });
+    PLATOS.forEach(function(p){
+      if(p.i.indexOf(viejo) === -1) return;
+      if(estado.platos.ediciones[p.orig]) return;   // ya cubierto arriba
+      const copia = camposDe(p);
+      arregla(copia.i);
+      estado.platos.ediciones[p.orig] = copia;
+    });
+    // y la despensa
+    if(Object.prototype.hasOwnProperty.call(estado.despensa, viejo)){
+      estado.despensa[nuevo] = estado.despensa[viejo];
+      delete estado.despensa[viejo];
+    }
+    Object.keys(estado.compras).forEach(function(id){
+      const c = estado.compras[id];
+      if(Object.prototype.hasOwnProperty.call(c, viejo)){ c[nuevo] = c[viejo]; delete c[viejo]; }
+    });
   }
 
   /* ============ Panel: semana ============ */
@@ -1755,39 +1965,57 @@ Fuera de casa
       ]));
     });
 
-    const eIngs = el("textarea", {id:"e-ings", placeholder:"merluza, patata, cebolla, aceite de oliva"});
-    eIngs.value = p ? p.i.join(", ") : "";
-    const nuevos = el("div", {class:"full"});
+    // Los ingredientes salen del catálogo: aquí no se escribe nada nuevo.
+    let elegidos = p ? p.i.slice() : [];
+    const chips = el("div", {class:"ing-chips"});
+    const lista = el("datalist", {id:"lista-ingredientes"});
+    const eIngs = el("input", {type:"text", id:"e-ings", list:"lista-ingredientes", autocomplete:"off",
+                               placeholder:"Escribe y elige del catálogo…"});
+    const avisoIng = el("div", {class:"hint"});
 
-    function leerIngredientes(){
-      return eIngs.value.split(/[,\n]/)
-        .map(function(x){ return x.trim().toLowerCase(); })
-        .filter(Boolean)
-        .filter(function(v, i, a){ return a.indexOf(v) === i; });
+    function refrescaLista(){
+      lista.textContent = "";
+      ingredientes()
+        .filter(function(x){ return elegidos.indexOf(x.n) === -1; })
+        .sort(function(a, b){ return a.n.localeCompare(b.n, "es"); })
+        .forEach(function(x){ lista.appendChild(el("option", {value:x.n, label:x.seccion})); });
     }
-    const asignadas = {};
-    function pintarNuevos(){
-      const sin = leerIngredientes().filter(function(ing){ return !SECCION[ing] && !estado.secciones[ing]; });
-      nuevos.textContent = "";
-      if(!sin.length) return;
-      const caja2 = el("div", {class:"nuevos"}, [
-        el("h5", {text:"Ingredientes nuevos"}),
-        el("p", {style:"margin:0;font-size:12.5px;color:var(--warn)",
-                 text:"Dales una sección del súper para que caigan en su sitio en la lista de la compra."})
-      ]);
-      sin.forEach(function(ing){
-        const sel = el("select", {id:"e-sec-" + ing.replace(/[^a-z0-9]+/gi, "-"), "aria-label":"Sección de " + ing});
-        SECCIONES.concat(["Otros"]).forEach(function(x){
-          sel.appendChild(el("option", {value:x, text:x, selected: asignadas[ing] === x ? "selected" : null}));
-        });
-        if(!asignadas[ing]) asignadas[ing] = sel.value;
-        sel.addEventListener("change", function(){ asignadas[ing] = sel.value; });
-        caja2.appendChild(el("div", {class:"nuevo-row"}, [el("span", {class:"nm", text:ing}), sel]));
+    function pintaChips(){
+      chips.textContent = "";
+      if(!elegidos.length){
+        chips.appendChild(el("span", {class:"hint", text:"Todavía sin ingredientes."}));
+      }
+      elegidos.forEach(function(ing){
+        chips.appendChild(el("span", {class:"chip chip-ing ing-chip"}, [
+          el("span", {text:ing}),
+          el("button", {type:"button", class:"quita", "aria-label":"Quitar " + ing, text:"×",
+                        onclick:function(){
+                          elegidos = elegidos.filter(function(x){ return x !== ing; });
+                          pintaChips(); refrescaLista();
+                        }})
+        ]));
       });
-      nuevos.appendChild(caja2);
+      refrescaLista();
     }
-    eIngs.addEventListener("input", pintarNuevos);
-    pintarNuevos();
+    function añadeIng(){
+      const v = eIngs.value.trim().toLowerCase();
+      if(!v) return;
+      const existe = nombresIngredientes().filter(function(x){ return x.toLowerCase() === v; })[0];
+      if(!existe){
+        avisoIng.textContent = "«" + v + "» no está en el catálogo. Créalo en la pestaña Ingredientes.";
+        avisoIng.style.color = "var(--pimenton)";
+        return;
+      }
+      if(elegidos.indexOf(existe) === -1) elegidos.push(existe);
+      eIngs.value = "";
+      avisoIng.textContent = "";
+      pintaChips();
+    }
+    eIngs.addEventListener("change", añadeIng);
+    eIngs.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){ e.preventDefault(); añadeIng(); }
+    });
+    pintaChips();
 
     const pie = [];
     if(!nuevo){
@@ -1816,7 +2044,7 @@ Fuera de casa
     pie.push(el("div", {class:"der"}, [
       el("button", {class:"btn", text:"Cancelar", onclick:cerrarEditor}),
       el("button", {class:"btn btn-primary", text: nuevo ? "Añadir al repertorio" : "Guardar cambios", onclick:function(){
-        const n = eNombre.value.trim(), ings = leerIngredientes();
+        const n = eNombre.value.trim(), ings = elegidos.slice();
         if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
         const choque = platoPorNombre(n);
         if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
@@ -1831,10 +2059,6 @@ Fuera de casa
         if(!marcados.length){ aviso("Marca al menos un grupo"); return; }
         const radio = document.querySelector('input[name="e-base"]:checked');
         const baseSel = radio && marcados.indexOf(radio.value) !== -1 ? radio.value : marcados[0];
-
-        ings.forEach(function(ing){
-          if(!SECCION[ing] && !estado.secciones[ing] && asignadas[ing]) estado.secciones[ing] = asignadas[ing];
-        });
 
         const campos = {
           n:n, d: eDesc.value.trim() || "Sin descripción.", t: tiposMarcados,
@@ -1890,8 +2114,15 @@ Fuera de casa
           ]),
           gGrid
         ]),
-        campo("Ingredientes, separados por comas o saltos de línea", eIngs, true),
-        nuevos
+        el("div", {class:"full"}, [
+          el("label", {class:"bloque-lbl", text:"Ingredientes"}),
+          chips,
+          el("div", {class:"ing-alta"}, [
+            eIngs, lista,
+            el("button", {type:"button", class:"btn btn-sm", text:"Añadir", onclick:añadeIng})
+          ]),
+          avisoIng
+        ])
       ]),
       el("footer", null, pie)
     ]);
@@ -2018,7 +2249,8 @@ Fuera de casa
 
     if(!ids.length){
       cuerpo.appendChild(el("tr", null, [
-        el("td", {colspan:"5", style:"padding:26px 14px;color:var(--ink-3)", text:"Todavía no hay ninguna semana planificada."})
+        el("td", {colspan:"6", style:"padding:26px 14px;color:var(--ink-3)",
+                  text:"Todavía no hay ninguna semana planificada. Genera un reparto en Semana adultos o Semana niño."})
       ]));
     }
     ids.forEach(function(id){
@@ -2035,11 +2267,19 @@ Fuera de casa
       const primera = el("td", null, [el("div", {class:"wk", text:etiquetaSemana(lunes)})]);
       if(id === hoyId) primera.appendChild(el("span", {class:"badge actual", text:"en curso"}));
 
+      const mapa = ingredientesDeSemana(id);
+      const total = Object.keys(mapa).length;
+      const faltan = Object.keys(mapa).filter(function(i){ return !enCasa(i, id); }).length;
+
       cuerpo.appendChild(el("tr", {class:"hist-row"}, [
         primera,
         el("td", null, [el("div", {class:"rg", text:subtituloSemana(lunes)})]),
         celdaPerfil("adultos"),
         celdaPerfil("nino"),
+        el("td", null, [ total
+          ? el("div", {style:"font-variant-numeric:tabular-nums", text: total + " ingredientes"})
+          : el("span", {class:"chip chip-doble", text:"sin lista"}),
+          total ? el("div", {class:"hint", text: faltan + " por comprar"}) : null ]),
         el("td", {class:"col-acc"}, [
           el("button", {class:"btn btn-sm", text: id === actual ? "Abierta" : "Abrir",
             disabled: id === actual ? "disabled" : null,
@@ -2095,22 +2335,19 @@ Fuera de casa
       }));
   }
   function csvIngredientes(){
-    const usados = {};
-    repertorio().forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
-    const nombres = Object.keys(usados);
-    const presentes = nombres.map(seccionDe).filter(function(v, i, a){ return a.indexOf(v) === i; });
-    const filas = [];
-    ordenSecciones(presentes).forEach(function(sec){
-      nombres.filter(function(i){ return seccionDe(i) === sec; })
-        .sort(function(a, b){ return a.localeCompare(b, "es"); })
-        .forEach(function(i){ filas.push({ingrediente:i, seccion:sec}); });
+    // El catálogo entero, agrupado por sección en el orden de la compra.
+    const cat = ingredientes(), filas = [];
+    ordenSecciones(cat.map(function(x){ return x.seccion; })
+                      .filter(function(v, i, a){ return a.indexOf(v) === i; })).forEach(function(sec){
+      cat.filter(function(x){ return x.seccion === sec; })
+         .sort(function(a, b){ return a.n.localeCompare(b.n, "es"); })
+         .forEach(function(x){ filas.push({ingrediente:x.n, seccion:x.seccion}); });
     });
     return escribirCSV(["ingrediente","seccion"], filas);
   }
   function csvDespensa(){
     const nombres = {};
-    Object.keys(SECCION).forEach(function(k){ nombres[k] = 1; });
-    Object.keys(estado.secciones).forEach(function(k){ nombres[k] = 1; });
+    nombresIngredientes().forEach(function(k){ nombres[k] = 1; });
     Object.keys(estado.despensa).forEach(function(k){ nombres[k] = 1; });
     return escribirCSV(["ingrediente","en_casa"],
       Object.keys(nombres).filter(enDespensaFija)
@@ -2190,10 +2427,7 @@ Fuera de casa
                        "Se van sus dos menús y su compra. Tendrás que guardar para que desaparezca del repositorio."))
       return;
     if(estado.semanasBorradas.indexOf(id) === -1) estado.semanasBorradas.push(id);
-    PERFILES.forEach(function(pf){
-      delete estado[pf.id].semanas[id];
-      delete estado[pf.id].comidas[id];
-    });
+    PERFILES.forEach(function(pf){ delete estado[pf.id].semanas[id]; });
     delete estado.compras[id];
     guardar(); pintarTodo();
     aviso("Semana borrada del histórico");
@@ -2232,7 +2466,7 @@ Fuera de casa
     return r && r.cuerpo && r.cuerpo.message ? r.cuerpo.message : "error " + (r ? r.estado : "?");
   }
 
-  let guardando = false;
+  let guardando = false, ultimoGuardado = null;
   async function guardarEnGitHub(){
     if(guardando) return;
     const pendientes = sucios();
@@ -2274,6 +2508,7 @@ Fuera de casa
 
     guardando = false;
     if(hechos.length) construir();   // lo recién guardado pasa a ser la referencia
+    ultimoGuardado = {cuando:new Date(), hechos:hechos, fallos:fallos};
     pintarTodo();
     if(!hechos.length) aviso("No se ha podido guardar — " + (fallos[0] || "sin cambios"));
     else if(fallos.length) aviso("Guardados " + hechos.length + ", falló " + fallos[0]);
@@ -2363,6 +2598,17 @@ Fuera de casa
       }}));
     }
     cont.appendChild(acc);
+
+    if(ultimoGuardado){
+      const h = ultimoGuardado.hechos, f = ultimoGuardado.fallos;
+      const hora = ultimoGuardado.cuando.toLocaleTimeString("es-ES", {hour:"2-digit", minute:"2-digit"});
+      const det = el("div", {class:"ultimo-guardado", style:"flex-basis:100%"}, [
+        el("div", {text: "Último guardado a las " + hora + ": " +
+          (h.length ? h.join(", ") : "ningún fichero") + (f.length ? " · falló " + f.join("; ") : "")})
+      ]);
+      if(f.length) det.style.color = "var(--pimenton)";
+      cont.appendChild(det);
+    }
   }
 
   /* ============ Avisos ============ */
@@ -2391,6 +2637,7 @@ Fuera de casa
   /* ============ Pintado global ============ */
   function pintarTodo(){
     pintarPlatos();
+    pintarIngredientes();
     PERFILES.forEach(function(pf){ pintarSemana(pf); });
     pintarCompra(); pintarHistorico();
   }
@@ -2401,6 +2648,7 @@ Fuera de casa
     cargarEstado();
     montarPestanas();
     montarPanelPlatos();
+    montarPanelIngredientes();
     PERFILES.forEach(function(pf){
       montarPanelSemana(pf);
       pintarObjetivos(pf);
