@@ -4,11 +4,10 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);albahaca;no
 2026-09-14;3ª semana de septiembre (14-20);arroz;no
 2026-09-14;3ª semana de septiembre (14-20);atún en conserva;no
-2026-09-14;3ª semana de septiembre (14-20);azafrán;si
 2026-09-14;3ª semana de septiembre (14-20);calabacín;no
 2026-09-14;3ª semana de septiembre (14-20);calamares;no
-2026-09-14;3ª semana de septiembre (14-20);caldo de pescado;no
 2026-09-14;3ª semana de septiembre (14-20);caldo de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);carne picada de pollo;no
 2026-09-14;3ª semana de septiembre (14-20);cebolla;no
 2026-09-14;3ª semana de septiembre (14-20);champiñones;no
 2026-09-14;3ª semana de septiembre (14-20);croquetas congeladas;no
@@ -18,7 +17,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);fideos;no
 2026-09-14;3ª semana de septiembre (14-20);filetes de ternera;no
 2026-09-14;3ª semana de septiembre (14-20);gambas;no
-2026-09-14;3ª semana de septiembre (14-20);garbanzos cocidos;no
 2026-09-14;3ª semana de septiembre (14-20);guindilla;si
 2026-09-14;3ª semana de septiembre (14-20);guisantes;no
 2026-09-14;3ª semana de septiembre (14-20);gulas;no
@@ -40,11 +38,11 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);patata;si
 2026-09-14;3ª semana de septiembre (14-20);pechuga de pollo;no
 2026-09-14;3ª semana de septiembre (14-20);perejil;no
-2026-09-14;3ª semana de septiembre (14-20);pimentón;si
 2026-09-14;3ª semana de septiembre (14-20);pimiento rojo;no
 2026-09-14;3ª semana de septiembre (14-20);pimiento verde;no
 2026-09-14;3ª semana de septiembre (14-20);puerro;no
 2026-09-14;3ª semana de septiembre (14-20);queso crema;no
+2026-09-14;3ª semana de septiembre (14-20);queso en lonchas;no
 2026-09-14;3ª semana de septiembre (14-20);salmón ahumado;no
 2026-09-14;3ª semana de septiembre (14-20);solomillo de cerdo;no
 2026-09-14;3ª semana de septiembre (14-20);tomate;no
@@ -58,16 +56,15 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);albahaca;no
 2026-09-21;4ª semana de septiembre (21-27);arroz;no
 2026-09-21;4ª semana de septiembre (21-27);atún en conserva;no
-2026-09-21;4ª semana de septiembre (21-27);berenjena;no
 2026-09-21;4ª semana de septiembre (21-27);calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);calamares;no
 2026-09-21;4ª semana de septiembre (21-27);caldo de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);carne picada de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);cebolla;no
+2026-09-21;4ª semana de septiembre (21-27);champiñones;no
 2026-09-21;4ª semana de septiembre (21-27);croquetas congeladas;no
 2026-09-21;4ª semana de septiembre (21-27);empanadillas congeladas;no
 2026-09-21;4ª semana de septiembre (21-27);eneldo;no
-2026-09-21;4ª semana de septiembre (21-27);espárragos trigueros;no
 2026-09-21;4ª semana de septiembre (21-27);especias para fajitas;no
 2026-09-21;4ª semana de septiembre (21-27);fideos;no
 2026-09-21;4ª semana de septiembre (21-27);filetes de ternera;no
@@ -105,9 +102,62 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
 2026-09-21;4ª semana de septiembre (21-27);salmón ahumado;no
 2026-09-21;4ª semana de septiembre (21-27);salsa de soja;si
+2026-09-21;4ª semana de septiembre (21-27);solomillo de cerdo;no
 2026-09-21;4ª semana de septiembre (21-27);tomate;no
 2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
 2026-09-21;4ª semana de septiembre (21-27);tomate triturado;no
 2026-09-21;4ª semana de septiembre (21-27);tortilla de patata y calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);tortillas de trigo;no
 2026-09-21;4ª semana de septiembre (21-27);zanahoria;no
+2026-10-05;2ª semana de octubre (5-11);aceite de oliva;si
+2026-10-05;2ª semana de octubre (5-11);ajo;si
+2026-10-05;2ª semana de octubre (5-11);arroz;no
+2026-10-05;2ª semana de octubre (5-11);bacalao;no
+2026-10-05;2ª semana de octubre (5-11);calabacín;no
+2026-10-05;2ª semana de octubre (5-11);caldo de pollo;no
+2026-10-05;2ª semana de octubre (5-11);carne picada de pollo;no
+2026-10-05;2ª semana de octubre (5-11);cebolla;no
+2026-10-05;2ª semana de octubre (5-11);croquetas congeladas;no
+2026-10-05;2ª semana de octubre (5-11);eneldo;no
+2026-10-05;2ª semana de octubre (5-11);especias para fajitas;no
+2026-10-05;2ª semana de octubre (5-11);fideos;no
+2026-10-05;2ª semana de octubre (5-11);filetes de ternera;no
+2026-10-05;2ª semana de octubre (5-11);gambas;no
+2026-10-05;2ª semana de octubre (5-11);garbanzos cocidos;no
+2026-10-05;2ª semana de octubre (5-11);guisantes;no
+2026-10-05;2ª semana de octubre (5-11);gulas;no
+2026-10-05;2ª semana de octubre (5-11);hamburguesa de pollo;no
+2026-10-05;2ª semana de octubre (5-11);harina;si
+2026-10-05;2ª semana de octubre (5-11);huevos;no
+2026-10-05;2ª semana de octubre (5-11);jamón cocido;no
+2026-10-05;2ª semana de octubre (5-11);judías blancas cocidas;no
+2026-10-05;2ª semana de octubre (5-11);lechuga;no
+2026-10-05;2ª semana de octubre (5-11);lentejas;no
+2026-10-05;2ª semana de octubre (5-11);limón;no
+2026-10-05;2ª semana de octubre (5-11);lomo de cerdo;no
+2026-10-05;2ª semana de octubre (5-11);lomo de salmón;no
+2026-10-05;2ª semana de octubre (5-11);merluza;no
+2026-10-05;2ª semana de octubre (5-11);mozzarella;no
+2026-10-05;2ª semana de octubre (5-11);nata para cocinar;no
+2026-10-05;2ª semana de octubre (5-11);pan;no
+2026-10-05;2ª semana de octubre (5-11);pan de hamburguesa;no
+2026-10-05;2ª semana de octubre (5-11);pan para tostas;no
+2026-10-05;2ª semana de octubre (5-11);patata;si
+2026-10-05;2ª semana de octubre (5-11);pechuga de pollo;no
+2026-10-05;2ª semana de octubre (5-11);perejil;no
+2026-10-05;2ª semana de octubre (5-11);pimentón;si
+2026-10-05;2ª semana de octubre (5-11);pimiento rojo;no
+2026-10-05;2ª semana de octubre (5-11);pimiento verde;no
+2026-10-05;2ª semana de octubre (5-11);pimientos del piquillo;no
+2026-10-05;2ª semana de octubre (5-11);puerro;no
+2026-10-05;2ª semana de octubre (5-11);queso crema;no
+2026-10-05;2ª semana de octubre (5-11);queso en lonchas;no
+2026-10-05;2ª semana de octubre (5-11);salmón ahumado;no
+2026-10-05;2ª semana de octubre (5-11);salsa de soja;si
+2026-10-05;2ª semana de octubre (5-11);sepia;no
+2026-10-05;2ª semana de octubre (5-11);tomate;no
+2026-10-05;2ª semana de octubre (5-11);tomate frito;no
+2026-10-05;2ª semana de octubre (5-11);tomate triturado;no
+2026-10-05;2ª semana de octubre (5-11);tortilla de patata y calabacín;no
+2026-10-05;2ª semana de octubre (5-11);tortillas de trigo;no
+2026-10-05;2ª semana de octubre (5-11);zanahoria;no
