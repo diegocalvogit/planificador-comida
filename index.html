@@ -171,7 +171,17 @@
   .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:32ch}
   .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em;margin-left:6px}
   .col-acc{width:1%;white-space:nowrap;text-align:right}
-  .col-acc .copiar-otro{margin-left:6px}
+  .menus{display:flex;flex-direction:column;gap:4px}
+  .menu-chk{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-3);cursor:pointer;
+    border:1px solid var(--line);border-radius:20px;padding:1px 9px 1px 7px;white-space:nowrap}
+  .menu-chk:hover{background:var(--surface-2)}
+  .menu-chk.on{border-color:color-mix(in srgb, var(--accent) 45%, var(--line));
+    background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+  .menu-chk input{width:13px;height:13px;margin:0;flex:none;cursor:pointer;accent-color:var(--accent)}
+  .menus-grid{display:flex;gap:8px;margin-top:6px}
+  .menus-grid .tipo-row{flex:1 1 auto;border:1px solid var(--line);border-radius:8px;
+    padding:6px 10px;background:var(--ground)}
+  .editor-body .menus-grid input{width:auto;flex:none;margin:0}
 
   /* Navegación de semana */
   .weeknav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
@@ -397,8 +407,7 @@
 </div>
 
 <main>
-  <section id="panel-platos-adultos" role="tabpanel" aria-labelledby="tab-platos-adultos" hidden></section>
-  <section id="panel-platos-nino" role="tabpanel" aria-labelledby="tab-platos-nino" hidden></section>
+  <section id="panel-platos" role="tabpanel" aria-labelledby="tab-platos" hidden></section>
   <section id="panel-semana-adultos" role="tabpanel" aria-labelledby="tab-semana-adultos"></section>
   <section id="panel-semana-nino" role="tabpanel" aria-labelledby="tab-semana-nino" hidden></section>
 
@@ -469,54 +478,50 @@
 <!-- Copia de los CSV incrustada, para poder abrir index.html directamente desde disco.
      Se regenera con: python scripts/actualizar-respaldo.py -->
 <script type="text/csv" id="csv-platos">
-nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
-Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo|Verdura|Pescado azul|Huevo;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
-Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Arroz|Marisco|Carne blanca;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
-Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
-Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
-Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
-Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
-Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
-Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
-Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
-Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
-Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Marisco;cena;bajo;baja;no;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
-Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;ambos;medio;alta;si;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
-Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
-Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;verdura;tomate|mozzarella|aceite de oliva|albahaca
-Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
-Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;ambos;medio;media;si;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
-Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;ambos;medio;media;si;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
-Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
-Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
-Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
-Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
-Parrillada de verduras;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
-Macarrones con queso y pollo;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;arroz|blanca;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
-</script>
-<script type="text/csv" id="csv-platos-nino">
-nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
-Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
-Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
-Puré de verduras con carne;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
-Empanadillas congeladas;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
-Croquetas congeladas;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;croquetas congeladas
-Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
-Tortilla;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
-Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
-Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo|Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
-Calamares;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
-Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
-Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
-Macarrones con salchichas;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
-Rollitos de la Yaya;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
-Arroz con pollo;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
-Menú guarde;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
-Lomo con queso;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;
-Queso fresco;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco
+nombre;adultos;nino;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
+Ensaladilla rusa casera;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo|Verdura|Pescado azul|Huevo;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
+Paella de marisco y carne;si;no;Arroz con gambas, calamares, pimiento y pollo.;Arroz|Marisco|Carne blanca;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
+Garbanzos fritos;si;no;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
+Lentejas con verduras y pollo;si;no;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Judías blancas con verduras y gambas;si;no;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
+Arroz con huevo y carne;si;no;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Ensalada de garbanzos;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
+Gulas salteadas con gambas y ajo;si;no;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;si;no;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Sepia a la plancha con ajo y perejil;si;no;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
+Tostas de tacos de salmón;si;no;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
+Gambas al ajillo tradicionales;si;no;Gambas salteadas con ajo y guindilla.;Marisco;cena;bajo;baja;no;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
+Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;ambos;medio;alta;si;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas marineras;si;no;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
+Tomate con mozzarella y aceite de oliva;si;no;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;verdura;tomate|mozzarella|aceite de oliva|albahaca
+Fajitas de pavo, queso, lechuga y tomate;si;no;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
+Pechugas de pollo a la plancha;si;no;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;ambos;medio;media;si;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;ambos;medio;media;si;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Revuelto de gulas, gambas y huevo;si;no;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
+Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
+Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
+Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
+Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;arroz|blanca;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
+Crema de verduras;no;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;no;si;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;no;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
+Croquetas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;croquetas congeladas
+Sopa de pollo;no;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
+Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
+Guisantes con jamón;no;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
+Revuelto de gulas;no;si;Huevo revuelto con gulas, sin picante.;Huevo|Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
+Calamares;no;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
+Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+Macarrones con salchichas;no;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
+Rollitos de la Yaya;no;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
+Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
+Lomo con queso;no;si;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;
+Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -780,9 +785,9 @@ Fuera de casa
   // El niño come entre semana en la guardería, y eso se dice con un plato más.
   const PERFILES = [
     {id:"adultos", lbl:"Adultos", quien:"de los adultos",
-     platos:"platos", semanas:"semanas", equilibrio:"equilibrio"},
+     semanas:"semanas", equilibrio:"equilibrio"},
     {id:"nino", lbl:"Niño", quien:"del niño",
-     platos:"platos_nino", semanas:"semanas_nino", equilibrio:"equilibrio_nino",
+     semanas:"semanas_nino", equilibrio:"equilibrio_nino",
      relleno:{plato:"Menú guarde", momento:"comida",
               dias:["lunes","martes","miércoles","jueves","viernes"]}}
   ];
@@ -860,7 +865,6 @@ Fuera de casa
   /* ============ Carga ============ */
   const FUENTES = [
     ["platos",           "datos/platos.csv",           "csv-platos"],
-    ["platos_nino",      "datos/platos-nino.csv",      "csv-platos-nino"],
     ["ingredientes",     "datos/ingredientes.csv",     "csv-ingredientes"],
     ["equilibrio",       "datos/equilibrio.csv",       "csv-equilibrio"],
     ["equilibrio_nino",  "datos/equilibrio-nino.csv",  "csv-equilibrio-nino"],
@@ -893,19 +897,16 @@ Fuera de casa
 
   /* ============ Estado ============ */
   const CLAVE = "mesa-semanal:v5";
-  function perfilVacio(){ return {semanas:{}, ediciones:{}, borrados:[], extra:[], objetivos:{}, comidas:{}}; }
+  function perfilVacio(){ return {semanas:{}, objetivos:{}}; }
   let estado = { tab:"semana-adultos", semana:null, despensa:{}, secciones:{},
                  compras:{}, semanasBorradas:[],
+                 platos:{ediciones:{}, borrados:[], extra:[]},
                  adultos:perfilVacio(), nino:perfilVacio() };
 
   function fusionaPerfil(dest, p){
     if(!p || typeof p !== "object") return;
     dest.semanas   = p.semanas   && typeof p.semanas === "object"   ? p.semanas   : {};
-    dest.ediciones = p.ediciones && typeof p.ediciones === "object" ? p.ediciones : {};
-    dest.borrados  = Array.isArray(p.borrados) ? p.borrados : [];
-    dest.extra     = Array.isArray(p.extra) ? p.extra : [];
     dest.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
-    dest.comidas   = p.comidas   && typeof p.comidas === "object"   ? p.comidas   : {};
   }
   // Antes cada comida tenía un solo plato: esas claves pasan a ser el primero.
   function migraOrden(semanas){
@@ -953,25 +954,32 @@ Fuera de casa
     estado.semanasBorradas = Array.isArray(p.semanasBorradas) ? p.semanasBorradas : [];
     fusionaPerfil(estado.adultos, p.adultos);
     fusionaPerfil(estado.nino, p.nino);
+    if(p.platos && typeof p.platos === "object"){
+      estado.platos.ediciones = p.platos.ediciones && typeof p.platos.ediciones === "object" ? p.platos.ediciones : {};
+      estado.platos.borrados  = Array.isArray(p.platos.borrados) ? p.platos.borrados : [];
+      estado.platos.extra     = Array.isArray(p.platos.extra) ? p.platos.extra : [];
+    }
   }
   function guardar(){
     try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){}
   }
 
   let SECCION = {}, SECCIONES = [], REPO_COMPRAS = {}, TIPOS = [];
-  const REP = { adultos:{PLATOS:[], GRUPOS:{}, REPO:{}},
-                nino:   {PLATOS:[], GRUPOS:{}, REPO:{}} };
+  let PLATOS = [];   // el repertorio entero, con su marca de menú
+  const REP = { adultos:{GRUPOS:{}, REPO:{}},
+                nino:   {GRUPOS:{}, REPO:{}} };
 
   function construir(){
+    const si = function(v){ return /^(si|sí|1|true|x)$/i.test(v || ""); };
+    PLATOS = (datos.platos || []).map(function(x){
+      return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:lista(x.tipo), m:x.momento,
+               tiempo:x.tiempo || "medio", rep:x.repeticion || "media",
+               unico: si(x.plato_unico), menus:{adultos: si(x.adultos), nino: si(x.nino)},
+               g:lista(x.grupos), i:lista(x.ingredientes) };
+    }).filter(function(x){ return x.n; });
+
     PERFILES.forEach(function(pf){
       const r = REP[pf.id];
-      r.PLATOS = (datos[pf.platos] || []).map(function(x){
-        return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:lista(x.tipo), m:x.momento,
-                 tiempo:x.tiempo || "medio", rep:x.repeticion || "media",
-                 unico: /^(si|sí|1|true|x)$/i.test(x.plato_unico || ""),
-                 g:lista(x.grupos), i:lista(x.ingredientes) };
-      }).filter(function(x){ return x.n; });
-
       r.GRUPOS = {};
       (datos[pf.equilibrio] || []).forEach(function(x){
         if(!x.grupo) return;
@@ -1015,21 +1023,31 @@ Fuera de casa
   }
   function objetivosTocados(pid){ return Object.keys(estado[pid].objetivos).length > 0; }
 
-  // Repertorio vigente: los del CSV con las ediciones aplicadas, sin los borrados,
+  // Repertorio vigente: el del CSV con las ediciones aplicadas, sin los borrados,
   // más los añadidos a mano. `orig` identifica al plato del CSV aunque se renombre.
-  function platos(pid){
-    const st = estado[pid], salida = [];
-    REP[pid].PLATOS.forEach(function(p){
+  function repertorio(){
+    const st = estado.platos, salida = [];
+    PLATOS.forEach(function(p){
       if(st.borrados.indexOf(p.orig) !== -1) return;
       const e = st.ediciones[p.orig];
       if(!e){ salida.push(p); return; }
       salida.push({ orig:p.orig, n:e.n, d:e.d, t:tiposDe(e), m:e.m, tiempo:e.tiempo, rep:e.rep,
-                    unico:!!e.unico, g:e.g.slice(), i:e.i.slice(), editado:true });
+                    unico:!!e.unico, menus:{adultos:!!(e.menus && e.menus.adultos), nino:!!(e.menus && e.menus.nino)},
+                    g:e.g.slice(), i:e.i.slice(), editado:true });
     });
     return salida.concat(st.extra);
   }
+  // Lo que entra en un menú concreto.
+  function platos(pid){
+    return repertorio().filter(function(p){ return p.menus && p.menus[pid]; });
+  }
   function plato(pid, n){
     const todos = platos(pid);
+    for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
+    return null;
+  }
+  function platoPorNombre(n){
+    const todos = repertorio();
     for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
     return null;
   }
@@ -1224,8 +1242,7 @@ Fuera de casa
 
   /* ============ Pestañas ============ */
   const PESTANAS = [
-    {id:"platos-adultos", lbl:"Platos", quien:"adultos"},
-    {id:"platos-nino",    lbl:"Platos", quien:"niño"},
+    {id:"platos",         lbl:"Platos"},
     {id:"semana-adultos", lbl:"Semana", quien:"adultos"},
     {id:"semana-nino",    lbl:"Semana", quien:"niño"},
     {id:"compra",         lbl:"Compra"},
@@ -1253,64 +1270,103 @@ Fuera de casa
   }
 
   /* ============ Panel: platos ============ */
-  function montarPanelPlatos(pf){
-    const p = $("panel-platos-" + pf.id), s = pf.id;
+  function montarPanelPlatos(){
+    const p = $("panel-platos");
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", null, [
-        el("div", {class:"eyebrow", text:"datos/" + (s === "nino" ? "platos-nino.csv" : "platos.csv")}),
-        el("h2", {text:"Platos " + pf.quien})
+        el("div", {class:"eyebrow", text:"datos/platos.csv"}),
+        el("h2", {text:"Repertorio de platos"})
       ]),
-      el("button", {class:"btn btn-primary", id:"nuevo-" + s, onclick:function(){ abrirEditor(s, null); },
-                    text:"Nuevo plato"})
+      el("button", {class:"btn btn-primary", id:"nuevo-plato",
+                    onclick:function(){ abrirEditor(null); }, text:"Nuevo plato"})
     ]));
     p.appendChild(el("p", {class:"lead", text:
-      s === "nino"
-        ? "Lo que come el niño, con su grupo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar, o se lleva al menú de los adultos con Copiar."
-        : "El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar, o se lleva al menú del niño con Copiar."
-    }));
+      "Todos los platos de casa en una sola lista. Las casillas de cada fila dicen en qué menús entra: " +
+      "márcalas o desmárcalas ahí mismo. El resto se edita entero desde su botón Editar."}));
 
-    function filtro(id, etiqueta, opciones, ancho){
-      const sel = el("select", {id:id + "-" + s, oninput:function(){ pintarPlatos(pf); }});
+    function filtro(id, etiqueta, opciones){
+      const sel = el("select", {id:id, oninput:pintarPlatos});
       opciones.forEach(function(o){ sel.appendChild(el("option", {value:o[0], text:o[1]})); });
-      return el("div", {class:"field" + (ancho ? " " + ancho : "")}, [
-        el("label", {for:id + "-" + s, text:etiqueta}), sel
-      ]);
+      return el("div", {class:"field"}, [el("label", {for:id, text:etiqueta}), sel]);
     }
-    const buscar = el("input", {type:"search", id:"f-buscar-" + s, placeholder:"Plato o ingrediente…",
-                                oninput:function(){ pintarPlatos(pf); }});
-    const fGrupo = el("select", {id:"f-grupo-" + s, oninput:function(){ pintarPlatos(pf); }}, [
+    const buscar = el("input", {type:"search", id:"f-buscar", placeholder:"Plato o ingrediente…",
+                                oninput:pintarPlatos});
+    const fGrupo = el("select", {id:"f-grupo", oninput:pintarPlatos}, [
       el("option", {value:"", text:"Todos"})
     ]);
-    Object.keys(REP[s].GRUPOS).forEach(function(k){
-      fGrupo.appendChild(el("option", {value:k, text:REP[s].GRUPOS[k].lbl}));
+    const vistos = {};
+    PERFILES.forEach(function(pf){
+      Object.keys(REP[pf.id].GRUPOS).forEach(function(k){
+        if(vistos[k]) return;
+        vistos[k] = 1;
+        fGrupo.appendChild(el("option", {value:k, text:REP[pf.id].GRUPOS[k].lbl}));
+      });
     });
-    const fTipo = el("select", {id:"f-tipo-" + s, oninput:function(){ pintarPlatos(pf); }}, [
+    const fTipo = el("select", {id:"f-tipo", oninput:pintarPlatos}, [
       el("option", {value:"", text:"Todos"})
     ]);
     TIPOS.forEach(function(t){ fTipo.appendChild(el("option", {value:t, text:t})); });
 
     p.appendChild(el("div", {class:"filters"}, [
-      el("div", {class:"field grow"}, [el("label", {for:"f-buscar-" + s, text:"Buscar"}), buscar]),
+      el("div", {class:"field grow"}, [el("label", {for:"f-buscar", text:"Buscar"}), buscar]),
+      filtro("f-menu", "Menú", [["","Todos"],["adultos","Adultos"],["nino","Niño"],
+                                ["ambos","En los dos"],["ninguno","En ninguno"]]),
       filtro("f-momento", "Momento", [["","Todos"],["comida","Comida"],["cena","Cena"],["ambos","Ambos"]]),
       filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
       filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"],["nunca","Nunca"]]),
       filtro("f-unico", "Plato único", [["","Todos"],["si","Sí"],["no","No"]]),
-      el("div", {class:"field"}, [el("label", {for:"f-tipo-" + s, text:"Tipo"}), fTipo]),
-      el("div", {class:"field"}, [el("label", {for:"f-grupo-" + s, text:"Grupo"}), fGrupo])
+      el("div", {class:"field"}, [el("label", {for:"f-tipo", text:"Tipo"}), fTipo]),
+      el("div", {class:"field"}, [el("label", {for:"f-grupo", text:"Grupo"}), fGrupo])
     ]));
 
-    const cabecera = ["Plato","Tipo de alimento","Momento","Preparación","Repetición","Plato único","Ingredientes"]
+    const cabecera = ["Plato","Menús","Tipo de alimento","Momento","Preparación","Repetición","Plato único","Ingredientes"]
       .map(function(t){ return el("th", {scope:"col", text:t}); });
     cabecera.push(el("th", {scope:"col", class:"col-acc"}));
     p.appendChild(el("div", {class:"table-wrap"}, [
       el("table", null, [
         el("thead", null, [el("tr", null, cabecera)]),
-        el("tbody", {id:"tbody-platos-" + s})
+        el("tbody", {id:"tbody-platos"})
       ])
     ]));
     p.appendChild(el("p", {class:"hint", style:"margin-top:12px", text:
-      "Los cambios se guardan en este navegador. Para dejarlos fijos, descarga los CSV desde el Histórico y súbelos al repositorio."}));
+      "Los cambios se guardan en este navegador. Para dejarlos fijos, guarda desde el Histórico."}));
+  }
+
+  // Las casillas que dicen en qué menús entra el plato.
+  function celdaMenus(p){
+    const caja = el("div", {class:"menus"});
+    PERFILES.forEach(function(pf){
+      const cb = el("input", {type:"checkbox", id:"m-" + pf.id + "-" + (p.uid || p.orig),
+                              "aria-label":p.n + " en el menú " + pf.quien});
+      cb.checked = !!(p.menus && p.menus[pf.id]);
+      cb.addEventListener("change", function(){ marcarMenu(p, pf.id, cb.checked); });
+      caja.appendChild(el("label", {class:"menu-chk" + (cb.checked ? " on" : "")}, [
+        cb, el("span", {text:pf.lbl})
+      ]));
+    });
+    return caja;
+  }
+
+  function marcarMenu(p, pid, valor){
+    const menus = {adultos:!!(p.menus && p.menus.adultos), nino:!!(p.menus && p.menus.nino)};
+    menus[pid] = valor;
+    if(p.custom){
+      const obj = estado.platos.extra.filter(function(x){ return x.uid === p.uid; })[0];
+      if(obj) obj.menus = menus;
+    }else{
+      const e = estado.platos.ediciones[p.orig] || camposDe(p);
+      e.menus = menus;
+      estado.platos.ediciones[p.orig] = e;
+    }
+    if(!valor) reemplazarEnSemanas(pid, p.n, null);
+    guardar(); pintarTodo();
+    aviso("«" + p.n + "» " + (valor ? "entra en" : "sale de") + " el menú " + perfil(pid).quien);
+  }
+  function camposDe(p){
+    return { n:p.n, d:p.d, t:tiposDe(p), m:p.m, tiempo:p.tiempo, rep:p.rep, unico:!!p.unico,
+             menus:{adultos:!!(p.menus && p.menus.adultos), nino:!!(p.menus && p.menus.nino)},
+             g:p.g.slice(), i:p.i.slice() };
   }
 
   function celdaTipos(p){
@@ -1319,18 +1375,22 @@ Fuera de casa
     return caja;
   }
 
-  function pintarPlatos(pf){
-    const s = pf.id;
-    const q = $("f-buscar-" + s).value.trim().toLowerCase();
-    const m = $("f-momento-" + s).value, g = $("f-grupo-" + s).value;
-    const ti = $("f-tiempo-" + s).value, re = $("f-repeticion-" + s).value;
-    const un = $("f-unico-" + s).value, tp = $("f-tipo-" + s).value;
-    const cuerpo = $("tbody-platos-" + s);
-    const filas = platos(s).filter(function(p){
+  function pintarPlatos(){
+    const q = $("f-buscar").value.trim().toLowerCase();
+    const mm = $("f-menu").value, m = $("f-momento").value, g = $("f-grupo").value;
+    const ti = $("f-tiempo").value, re2 = $("f-repeticion").value;
+    const un = $("f-unico").value, tp = $("f-tipo").value;
+    const cuerpo = $("tbody-platos");
+    const filas = repertorio().filter(function(p){
+      const en = p.menus || {};
+      if(mm === "adultos" && !en.adultos) return false;
+      if(mm === "nino" && !en.nino) return false;
+      if(mm === "ambos" && !(en.adultos && en.nino)) return false;
+      if(mm === "ninguno" && (en.adultos || en.nino)) return false;
       if(m && p.m !== m) return false;
       if(g && p.g.indexOf(g) === -1) return false;
       if(ti && p.tiempo !== ti) return false;
-      if(re && p.rep !== re) return false;
+      if(re2 && p.rep !== re2) return false;
       if(un && (un === "si") !== !!p.unico) return false;
       if(tp && tiposDe(p).indexOf(tp) === -1) return false;
       if(q && (p.n + " " + p.d + " " + tipoTexto(p) + " " + p.i.join(" ")).toLowerCase().indexOf(q) === -1) return false;
@@ -1340,7 +1400,7 @@ Fuera de casa
     cuerpo.textContent = "";
     if(!filas.length){
       cuerpo.appendChild(el("tr", null, [
-        el("td", {colspan:"8", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
+        el("td", {colspan:"9", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
       ]));
     }
     filas.forEach(function(p){
@@ -1353,6 +1413,7 @@ Fuera de casa
 
       cuerpo.appendChild(el("tr", null, [
         el("td", null, [nombre, el("div", {class:"dish-desc", text:p.d})]),
+        el("td", null, [celdaMenus(p)]),
         el("td", null, [celdaTipos(p)]),
         el("td", null, [el("span", {class:"chip chip-" + p.m, text:MOMENTO_LBL[p.m] || p.m})]),
         el("td", null, [el("span", {class:"chip chip-" + p.tiempo, text:mayus(p.tiempo)})]),
@@ -1362,16 +1423,11 @@ Fuera de casa
         el("td", null, [ings]),
         el("td", {class:"col-acc"}, [
           el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + p.n,
-            onclick:function(){ abrirEditor(s, p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }}),
-          el("button", {class:"btn btn-sm copiar-otro",
-            text:"Copiar a " + perfil(otroPerfil(s)).lbl,
-            title:"Llevar «" + p.n + "» al menú " + perfil(otroPerfil(s)).quien,
-            "aria-label":"Copiar " + p.n + " al menú " + perfil(otroPerfil(s)).quien,
-            onclick:function(){ copiarPlato(s, p); }})
+            onclick:function(){ abrirEditor(p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }})
         ])
       ]));
     });
-    $("n-platos-" + s).textContent = String(platos(s).length);
+    $("n-platos").textContent = String(repertorio().length);
   }
 
   /* ============ Panel: semana ============ */
@@ -1618,39 +1674,7 @@ Fuera de casa
     buscar.focus();
   }
 
-  /* ============ Llevar un plato al otro menú ============ */
-  // Los dos menús comparten casi todos los grupos; lo que solo existe en uno
-  // se traduce al equivalente más cercano del otro.
-  const EQUIV_GRUPO = {guarde:"fuera"};
-
-  function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
-
-  function copiarPlato(pid, p){
-    const hacia = otroPerfil(pid), destino = REP[hacia].GRUPOS;
-    if(plato(hacia, p.n)){
-      aviso("«" + p.n + "» ya está en el menú " + perfil(hacia).quien);
-      return;
-    }
-    const grupos = [], perdidos = [];
-    p.g.forEach(function(k){
-      const eq = (k in destino) ? k : EQUIV_GRUPO[k];
-      if(eq && (eq in destino)){ if(grupos.indexOf(eq) === -1) grupos.push(eq); }
-      else if(perdidos.indexOf(k) === -1) perdidos.push(k);
-    });
-    if(!grupos.length) grupos.push(Object.keys(destino)[0]);
-
-    estado[hacia].extra.push({
-      n:p.n, d:p.d, t:tiposDe(p), m:p.m, tiempo:p.tiempo, rep:p.rep, unico:!!p.unico,
-      g:grupos, i:p.i.slice(),
-      uid:"x" + Date.now().toString(36), custom:true
-    });
-    guardar(); pintarTodo();
-    aviso(perdidos.length
-      ? "Copiado a " + perfil(hacia).lbl + ", pero revisa sus grupos"
-      : "«" + p.n + "» copiado al menú " + perfil(hacia).quien);
-  }
-
-  /* ============ Editor de platos ============ */
+  /* ============ Editor de platos  /* ============ Editor de platos ============ */
   let capaEditor = null;
   function cerrarEditor(){
     if(capaEditor){ capaEditor.remove(); capaEditor = null; document.removeEventListener("keydown", escEditor); }
@@ -1671,12 +1695,19 @@ Fuera de casa
   }
 
   // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
-  function abrirEditor(pid, ref){
+  function abrirEditor(ref){
     cerrarEditor();
-    const nuevo = !ref, grupos = REP[pid].GRUPOS;
+    const nuevo = !ref;
+    // Los grupos de los dos menús, para no perder la clasificación al cambiar de casilla.
+    const grupos = {};
+    PERFILES.forEach(function(pf){
+      Object.keys(REP[pf.id].GRUPOS).forEach(function(k){
+        if(!grupos[k]) grupos[k] = REP[pf.id].GRUPOS[k];
+      });
+    });
     let p = null;
-    if(ref && ref.tipo === "base") p = platos(pid).filter(function(x){ return x.orig === ref.orig; })[0];
-    else if(ref && ref.tipo === "extra") p = estado[pid].extra.filter(function(x){ return x.uid === ref.uid; })[0];
+    if(ref && ref.tipo === "base") p = repertorio().filter(function(x){ return x.orig === ref.orig; })[0];
+    else if(ref && ref.tipo === "extra") p = estado.platos.extra.filter(function(x){ return x.uid === ref.uid; })[0];
     if(!nuevo && !p){ aviso("Ese plato ya no existe"); return; }
     const nombreAntes = p ? p.n : "";
 
@@ -1691,7 +1722,15 @@ Fuera de casa
       cb.dataset.tipo = t;
       tGrid.appendChild(el("label", {class:"tipo-row"}, [cb, el("span", {class:"nm", text:t})]));
     });
-    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : (pid === "nino" ? "ambos" : "cena"));
+    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : "ambos");
+    const eMenus = {};
+    const menusGrid = el("div", {class:"menus-grid"});
+    PERFILES.forEach(function(pf){
+      const cb = el("input", {type:"checkbox", id:"e-menu-" + pf.id, "aria-label":"Entra en el menú " + pf.quien});
+      cb.checked = p ? !!(p.menus && p.menus[pf.id]) : true;
+      eMenus[pf.id] = cb;
+      menusGrid.appendChild(el("label", {class:"tipo-row"}, [cb, el("span", {class:"nm", text:pf.lbl})]));
+    });
     const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
     const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional","nunca"], p ? p.rep : "media");
     const eUnico  = el("select", {id:"e-unico"}, [
@@ -1753,20 +1792,22 @@ Fuera de casa
     const pie = [];
     if(!nuevo){
       pie.push(el("button", {class:"btn btn-ghost", style:"color:var(--pimenton)", text:"Eliminar", onclick:function(){
-        if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio? Se quitará de las semanas en las que esté.")) return;
-        reemplazarEnSemanas(pid, p.n, null);
-        if(p.custom) estado[pid].extra = estado[pid].extra.filter(function(x){ return x.uid !== p.uid; });
+        if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio, para los dos menús?\n" +
+                           "Se quitará de las semanas en las que esté. Para sacarlo de un solo menú, " +
+                           "desmarca su casilla.")) return;
+        PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, p.n, null); });
+        if(p.custom) estado.platos.extra = estado.platos.extra.filter(function(x){ return x.uid !== p.uid; });
         else{
-          if(estado[pid].borrados.indexOf(p.orig) === -1) estado[pid].borrados.push(p.orig);
-          delete estado[pid].ediciones[p.orig];
+          if(estado.platos.borrados.indexOf(p.orig) === -1) estado.platos.borrados.push(p.orig);
+          delete estado.platos.ediciones[p.orig];
         }
-        guardar(); cerrarEditor(); pintarTodo(); aviso("Plato eliminado");
+        guardar(); cerrarEditor(); pintarTodo(); aviso("Plato eliminado del repertorio");
       }}));
       if(p.editado){
         pie.push(el("button", {class:"btn btn-ghost", text:"Deshacer cambios", onclick:function(){
-          const original = REP[pid].PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
-          delete estado[pid].ediciones[p.orig];
-          if(original) reemplazarEnSemanas(pid, p.n, original.n);
+          const original = PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
+          delete estado.platos.ediciones[p.orig];
+          if(original) PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, p.n, original.n); });
           guardar(); cerrarEditor(); pintarTodo();
           aviso("Plato devuelto a lo que dice el CSV");
         }}));
@@ -1777,8 +1818,10 @@ Fuera de casa
       el("button", {class:"btn btn-primary", text: nuevo ? "Añadir al repertorio" : "Guardar cambios", onclick:function(){
         const n = eNombre.value.trim(), ings = leerIngredientes();
         if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
-        const choque = plato(pid, n);
+        const choque = platoPorNombre(n);
         if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
+        const menus = {adultos:eMenus.adultos.checked, nino:eMenus.nino.checked};
+        if(!menus.adultos && !menus.nino){ aviso("Marca al menos un menú"); return; }
 
         const tiposMarcados = [];
         tGrid.querySelectorAll("input").forEach(function(cb){ if(cb.checked) tiposMarcados.push(cb.dataset.tipo); });
@@ -1796,26 +1839,27 @@ Fuera de casa
         const campos = {
           n:n, d: eDesc.value.trim() || "Sin descripción.", t: tiposMarcados,
           m: eMom.value, tiempo: eTiempo.value, rep: eRep.value, unico: eUnico.value === "si",
+          menus: menus,
           g: [baseSel].concat(marcados.filter(function(k){ return k !== baseSel; })), i: ings
         };
         if(nuevo){
           campos.uid = "x" + Date.now().toString(36);
           campos.custom = true;
-          estado[pid].extra.push(campos);
+          estado.platos.extra.push(campos);
         }else if(p.custom){
-          const obj = estado[pid].extra.filter(function(x){ return x.uid === p.uid; })[0];
+          const obj = estado.platos.extra.filter(function(x){ return x.uid === p.uid; })[0];
           Object.keys(campos).forEach(function(k){ obj[k] = campos[k]; });
-          reemplazarEnSemanas(pid, nombreAntes, n);
+          PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, nombreAntes, n); });
         }else{
-          estado[pid].ediciones[p.orig] = campos;
-          reemplazarEnSemanas(pid, nombreAntes, n);
+          estado.platos.ediciones[p.orig] = campos;
+          PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, nombreAntes, n); });
         }
         guardar(); cerrarEditor(); pintarTodo();
         aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
       }})
     ]));
 
-    const cabeza = [el("h3", {text: nuevo ? "Nuevo plato · " + perfil(pid).lbl : "Editar plato · " + perfil(pid).lbl})];
+    const cabeza = [el("h3", {text: nuevo ? "Nuevo plato" : "Editar plato"})];
     if(!nuevo){
       cabeza.push(el("span", {
         class:"badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo")),
@@ -1829,6 +1873,10 @@ Fuera de casa
       el("div", {class:"editor-body"}, [
         campo("Nombre del plato", eNombre, true),
         campo("Descripción", eDesc, true),
+        el("div", {class:"full"}, [
+          el("label", {class:"bloque-lbl", text:"Menús en los que entra"}),
+          menusGrid
+        ]),
         el("div", {class:"full"}, [
           el("label", {class:"bloque-lbl", text:"Tipo de alimento"}),
           tGrid
@@ -2010,10 +2058,13 @@ Fuera de casa
   }
 
   /* ============ Exportar ============ */
-  function csvPlatos(pid){
-    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","plato_unico","grupos","ingredientes"],
-      platos(pid).map(function(p){
-        return { nombre:p.n, descripcion:p.d, tipo:tiposDe(p).join("|"), momento:p.m, tiempo:p.tiempo,
+  function csvPlatos(){
+    return escribirCSV(["nombre","adultos","nino","descripcion","tipo","momento","tiempo","repeticion","plato_unico","grupos","ingredientes"],
+      repertorio().map(function(p){
+        return { nombre:p.n,
+                 adultos: p.menus && p.menus.adultos ? "si" : "no",
+                 nino: p.menus && p.menus.nino ? "si" : "no",
+                 descripcion:p.d, tipo:tiposDe(p).join("|"), momento:p.m, tiempo:p.tiempo,
                  repeticion:p.rep, plato_unico: p.unico ? "si" : "no",
                  grupos:p.g.join("|"), ingredientes:p.i.join("|") };
       }));
@@ -2045,9 +2096,7 @@ Fuera de casa
   }
   function csvIngredientes(){
     const usados = {};
-    PERFILES.forEach(function(pf){
-      platos(pf.id).forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
-    });
+    repertorio().forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
     const nombres = Object.keys(usados);
     const presentes = nombres.map(seccionDe).filter(function(v, i, a){ return a.indexOf(v) === i; });
     const filas = [];
@@ -2081,8 +2130,7 @@ Fuera de casa
   }
 
   const FICHEROS = [
-    {f:"platos.csv",          clave:"platos",          t:"Repertorio de los adultos.",                      gen:function(){ return csvPlatos("adultos"); }},
-    {f:"platos-nino.csv",     clave:"platos_nino",     t:"Repertorio del niño.",                            gen:function(){ return csvPlatos("nino"); }},
+    {f:"platos.csv",          clave:"platos",          t:"El repertorio entero, con su marca de menú.",     gen:csvPlatos},
     {f:"ingredientes.csv",    clave:"ingredientes",    t:"Cada ingrediente con su sección del súper.",      gen:csvIngredientes},
     {f:"semanas.csv",         clave:"semanas",         t:"Semanas de los adultos, una fila por plato.",     gen:function(){ return csvSemanas("adultos"); }},
     {f:"semanas-nino.csv",    clave:"semanas_nino",    t:"Semanas del niño, una fila por plato.",           gen:function(){ return csvSemanas("nino"); }},
@@ -2331,8 +2379,8 @@ Fuera de casa
   function pintarCreditos(){
     const c = $("credits"); c.textContent = "";
     c.appendChild(el("div", {text:
-      "Datos en datos/*.csv · " + REP.adultos.PLATOS.length + " platos de adultos, " +
-      REP.nino.PLATOS.length + " del niño y " + Object.keys(SECCION).length + " ingredientes. " +
+      "Datos en datos/*.csv · " + PLATOS.length + " platos y " +
+      Object.keys(SECCION).length + " ingredientes. " +
       "Lo que marcas se guarda en este navegador; para fijarlo, descarga los CSV desde el Histórico y súbelos al repositorio."}));
     if(desdeRespaldo){
       c.appendChild(el("div", {style:"margin-top:6px",
@@ -2342,7 +2390,8 @@ Fuera de casa
 
   /* ============ Pintado global ============ */
   function pintarTodo(){
-    PERFILES.forEach(function(pf){ pintarPlatos(pf); pintarSemana(pf); });
+    pintarPlatos();
+    PERFILES.forEach(function(pf){ pintarSemana(pf); });
     pintarCompra(); pintarHistorico();
   }
 
@@ -2351,8 +2400,8 @@ Fuera de casa
     construir();
     cargarEstado();
     montarPestanas();
+    montarPanelPlatos();
     PERFILES.forEach(function(pf){
-      montarPanelPlatos(pf);
       montarPanelSemana(pf);
       pintarObjetivos(pf);
     });

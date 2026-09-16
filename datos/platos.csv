@@ -1,27 +1,44 @@
-nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
-Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo|Verdura|Pescado azul|Huevo;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
-Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Arroz|Marisco|Carne blanca;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
-Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
-Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
-Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
-Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
-Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
-Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
-Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
-Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
-Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Marisco;cena;bajo;baja;no;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
-Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;ambos;medio;alta;si;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
-Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
-Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;verdura;tomate|mozzarella|aceite de oliva|albahaca
-Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
-Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;ambos;medio;media;si;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
-Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;ambos;medio;media;si;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
-Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
-Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
-Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
-Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
-Parrillada de verduras;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
-Macarrones con queso y pollo;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;arroz|blanca;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
+nombre;adultos;nino;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
+Ensaladilla rusa casera;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo|Verdura|Pescado azul|Huevo;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
+Paella de marisco y carne;si;no;Arroz con gambas, calamares, pimiento y pollo.;Arroz|Marisco|Carne blanca;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
+Garbanzos fritos;si;no;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
+Lentejas con verduras y pollo;si;no;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre|Verdura|Carne blanca;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Judías blancas con verduras y gambas;si;no;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
+Arroz con huevo y carne;si;no;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Ensalada de garbanzos;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
+Gulas salteadas con gambas y ajo;si;no;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;si;no;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Sepia a la plancha con ajo y perejil;si;no;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
+Tostas de tacos de salmón;si;no;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
+Gambas al ajillo tradicionales;si;no;Gambas salteadas con ajo y guindilla.;Marisco;cena;bajo;baja;no;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
+Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;ambos;medio;alta;si;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas marineras;si;no;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
+Tomate con mozzarella y aceite de oliva;si;no;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;verdura;tomate|mozzarella|aceite de oliva|albahaca
+Fajitas de pavo, queso, lechuga y tomate;si;no;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
+Pechugas de pollo a la plancha;si;no;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;ambos;medio;media;si;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;ambos;medio;media;si;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Revuelto de gulas, gambas y huevo;si;no;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
+Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
+Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
+Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
+Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;arroz|blanca;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
+Crema de verduras;no;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;no;si;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;no;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
+Croquetas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;croquetas congeladas
+Sopa de pollo;no;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
+Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
+Guisantes con jamón;no;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
+Revuelto de gulas;no;si;Huevo revuelto con gulas, sin picante.;Huevo|Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
+Calamares;no;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
+Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+Macarrones con salchichas;no;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
+Rollitos de la Yaya;no;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
+Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
+Lomo con queso;no;si;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;
+Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco

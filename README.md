@@ -8,8 +8,7 @@ Página web de una sola pieza, sin dependencias ni build, para organizar las com
 
 ```
 index.html                     la aplicación entera
-datos/platos.csv               repertorio de los adultos, con sus ingredientes
-datos/platos-nino.csv          repertorio del niño
+datos/platos.csv               el repertorio entero, con una marca por menú
 datos/tipos.csv                catálogo cerrado de tipos de alimento
 datos/ingredientes.csv         a qué sección del súper pertenece cada ingrediente, y en qué orden van
 datos/equilibrio.csv           objetivos semanales de los adultos (editables desde la web)
@@ -21,11 +20,11 @@ datos/despensa.csv             los básicos que siempre hay en casa
 scripts/actualizar-respaldo.py sincroniza la copia de los CSV incrustada en index.html
 ```
 
-Hay **dos repertorios independientes**, adultos y niño, cada uno con sus platos, sus semanas y sus objetivos de equilibrio. Lo que comparten es la despensa, el catálogo de ingredientes y la lista de la compra.
+Hay **un solo repertorio de platos** y dos menús, adultos y niño. Cada plato lleva las columnas `adultos` y `nino` diciendo en cuáles entra: la paella solo en el de adultos, la crema de verduras solo en el del niño, el restaurante en los dos. Cada menú sí tiene sus semanas y sus objetivos de equilibrio propios. La despensa, los ingredientes y la lista de la compra son comunes.
 
 Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` para las listas** dentro de una celda. Ningún valor puede contener `;`.
 
-## Las seis pestañas
+## Las cinco pestañas
 
 **Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…), momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
 
@@ -33,7 +32,7 @@ Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV 
 
 Si escribes un ingrediente que no está en `ingredientes.csv`, el editor te pide su sección del súper ahí mismo, para que no acabe en el cajón de *Otros*.
 
-Cada plato tiene además un botón **Copiar** que lo lleva al otro menú, en los dos sentidos. Llega con todo —descripción, tipos, momento, preparación, repetición, plato único e ingredientes— y entra como plato añadido, así que se puede retocar o borrar sin tocar el original. Si ya hay uno con ese nombre en el destino, avisa y no hace nada. Los dos menús comparten el vocabulario de grupos salvo *Guardería*, que solo tiene sentido en el del niño y se traduce a *Fuera de casa* al copiar.
+La columna **Menús** lleva una casilla por menú, marcable desde la propia tabla: así se pasa un plato de un menú a otro sin duplicarlo. Desmarcar la última casilla no borra el plato, solo lo deja fuera de los dos menús; para eliminarlo del repertorio está el botón del editor. Al sacarlo de un menú, se quita también de las semanas de ese menú.
 
 **Semana adultos** — Reparto de lunes a domingo con comida y cena, 14 huecos. Cada comida y cada cena admiten **dos platos**, el 1º y el 2º, y el segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
