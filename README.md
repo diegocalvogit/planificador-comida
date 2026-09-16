@@ -33,6 +33,8 @@ Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV 
 
 Si escribes un ingrediente que no está en `ingredientes.csv`, el editor te pide su sección del súper ahí mismo, para que no acabe en el cajón de *Otros*.
 
+Cada plato tiene además un botón **Copiar** que lo lleva al otro menú, en los dos sentidos. Llega con todo —descripción, tipos, momento, preparación, repetición, plato único e ingredientes— y entra como plato añadido, así que se puede retocar o borrar sin tocar el original. Si ya hay uno con ese nombre en el destino, avisa y no hace nada. Los dos menús comparten el vocabulario de grupos salvo *Guardería*, que solo tiene sentido en el del niño y se traduce a *Fuera de casa* al copiar.
+
 **Semana adultos** — Reparto de lunes a domingo con comida y cena, 14 huecos. Cada comida y cada cena admiten **dos platos**, el 1º y el 2º, y el segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
 Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**, y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer grupo de su columna `grupos` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
@@ -55,6 +57,7 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 | Carne blanca | 3–4 |
 | Carne roja o magra | 1–2 |
 | Huevo | 2–3 |
+| Congelados | 0–2 |
 | Fuera de casa | 0–2 |
 
 Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
@@ -65,7 +68,7 @@ Cualquier hueco se cambia a mano pulsando sobre él.
 
 Si un día no va a la guardería, se sustituye ese Menú guarde por uno o dos platos normales, igual que en el menú de los adultos. No hay nada que habilitar.
 
-Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2, congelados 1-2 y arroz o pasta 1-2. La guardería lleva su propio contador, 0-5, separado del de comer fuera.
+Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2, congelados 1-2, arroz o pasta 1-2, y pescado azul y carne roja 0-2. La guardería lleva su propio contador, 0-5, separado del de comer fuera.
 
 **Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en `compras.csv` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de `despensa.csv`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 

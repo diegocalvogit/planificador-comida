@@ -171,6 +171,7 @@
   .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:32ch}
   .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em;margin-left:6px}
   .col-acc{width:1%;white-space:nowrap;text-align:right}
+  .col-acc .copiar-otro{margin-left:6px}
 
   /* Navegación de semana */
   .weeknav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
@@ -601,6 +602,7 @@ blanca;Carne blanca;3;4
 roja;Carne roja o magra;1;2
 huevo;Huevo;2;3
 verdura;Verdura de base;5;9
+congelado;Congelados;0;2
 fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-equilibrio-nino">
@@ -612,6 +614,8 @@ huevo;Huevo;1;2
 legumbre;Legumbre;1;2
 congelado;Congelados;1;2
 arroz;Arroz y pasta;1;2
+azul;Pescado azul;0;2
+roja;Carne roja;0;2
 guarde;Guardería;0;5
 fuera;Fuera de casa;0;2
 </script>
@@ -1262,8 +1266,8 @@ Fuera de casa
     ]));
     p.appendChild(el("p", {class:"lead", text:
       s === "nino"
-        ? "Lo que cena el niño, con su grupo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar."
-        : "El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar."
+        ? "Lo que come el niño, con su grupo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar, o se lleva al menú de los adultos con Copiar."
+        : "El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar, o se lleva al menú del niño con Copiar."
     }));
 
     function filtro(id, etiqueta, opciones, ancho){
@@ -1358,7 +1362,12 @@ Fuera de casa
         el("td", null, [ings]),
         el("td", {class:"col-acc"}, [
           el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + p.n,
-            onclick:function(){ abrirEditor(s, p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }})
+            onclick:function(){ abrirEditor(s, p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }}),
+          el("button", {class:"btn btn-sm copiar-otro",
+            text:"Copiar a " + perfil(otroPerfil(s)).lbl,
+            title:"Llevar «" + p.n + "» al menú " + perfil(otroPerfil(s)).quien,
+            "aria-label":"Copiar " + p.n + " al menú " + perfil(otroPerfil(s)).quien,
+            onclick:function(){ copiarPlato(s, p); }})
         ])
       ]));
     });
@@ -1607,6 +1616,38 @@ Fuera de casa
     document.body.appendChild(capa);
     document.addEventListener("keydown", escSelector);
     buscar.focus();
+  }
+
+  /* ============ Llevar un plato al otro menú ============ */
+  // Los dos menús comparten casi todos los grupos; lo que solo existe en uno
+  // se traduce al equivalente más cercano del otro.
+  const EQUIV_GRUPO = {guarde:"fuera"};
+
+  function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
+
+  function copiarPlato(pid, p){
+    const hacia = otroPerfil(pid), destino = REP[hacia].GRUPOS;
+    if(plato(hacia, p.n)){
+      aviso("«" + p.n + "» ya está en el menú " + perfil(hacia).quien);
+      return;
+    }
+    const grupos = [], perdidos = [];
+    p.g.forEach(function(k){
+      const eq = (k in destino) ? k : EQUIV_GRUPO[k];
+      if(eq && (eq in destino)){ if(grupos.indexOf(eq) === -1) grupos.push(eq); }
+      else if(perdidos.indexOf(k) === -1) perdidos.push(k);
+    });
+    if(!grupos.length) grupos.push(Object.keys(destino)[0]);
+
+    estado[hacia].extra.push({
+      n:p.n, d:p.d, t:tiposDe(p), m:p.m, tiempo:p.tiempo, rep:p.rep, unico:!!p.unico,
+      g:grupos, i:p.i.slice(),
+      uid:"x" + Date.now().toString(36), custom:true
+    });
+    guardar(); pintarTodo();
+    aviso(perdidos.length
+      ? "Copiado a " + perfil(hacia).lbl + ", pero revisa sus grupos"
+      : "«" + p.n + "» copiado al menú " + perfil(hacia).quien);
   }
 
   /* ============ Editor de platos ============ */
