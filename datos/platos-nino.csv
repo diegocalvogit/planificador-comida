@@ -1,13 +1,16 @@
 nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
-Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
-Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura + Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
-Puré de verduras con carne;La misma base de verduras con pollo.;Verdura + Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
-Empanadillas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
-Croquetas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;no;congelado;croquetas congeladas
-Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca + Cereal;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
-Tortilla;Tortilla de patata, jugosa.;Huevo + Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
-Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre + Carne;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
-Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo + Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
-Calamares;Anillas a la plancha o rebozadas.;Pescado / Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
-Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
+Croquetas congeladas;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;congelado;croquetas congeladas
+Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
+Tortilla;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
+Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
+Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo|Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
+Calamares;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
+Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
 Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
+Macarrones con salchichas;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
+Rollitos de la Yaya;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
+Arroz con pollo;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva

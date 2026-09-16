@@ -10,6 +10,7 @@ Página web de una sola pieza, sin dependencias ni build, para organizar las com
 index.html                     la aplicación entera
 datos/platos.csv               repertorio de los adultos, con sus ingredientes
 datos/platos-nino.csv          repertorio del niño
+datos/tipos.csv                catálogo cerrado de tipos de alimento
 datos/ingredientes.csv         a qué sección del súper pertenece cada ingrediente, y en qué orden van
 datos/equilibrio.csv           objetivos semanales de los adultos (editables desde la web)
 datos/equilibrio-nino.csv      objetivos semanales del niño
@@ -26,9 +27,9 @@ Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` pa
 
 ## Las seis pestañas
 
-**Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
+**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…), momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
 
-Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV o lo hayas añadido tú: los ocho campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. Un plato editado se marca como *modificado* y tiene un *Deshacer cambios* que lo devuelve a lo que dice el CSV; también se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
+Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV o lo hayas añadido tú: todos los campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. Un plato editado se marca como *modificado* y tiene un *Deshacer cambios* que lo devuelve a lo que dice el CSV; también se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
 
 Si escribes un ingrediente que no está en `ingredientes.csv`, el editor te pide su sección del súper ahí mismo, para que no acabe en el cajón de *Otros*.
 
