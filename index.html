@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mesa Semanal</title>
-<meta name="description" content="Planificador de las comidas de casa: repertorio de platos, reparto semanal equilibrado, lista de la compra e histórico de semanas.">
+<meta name="description" content="Planificador de las comidas de casa: repertorio de platos de adultos y del niño, reparto semanal equilibrado, lista de la compra e histórico de semanas.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,6 +42,7 @@
     --g-blanca:#FAE6D4;
     --g-roja:#F8DCD8;
     --g-huevo:#FCF1C8;
+    --g-congelado:#E3E5F5;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -56,7 +57,7 @@
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
       --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
       --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-      --g-roja:#35211F; --g-huevo:#302B15;
+      --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639;
     }
   }
   :root[data-theme="dark"]{
@@ -71,7 +72,7 @@
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
     --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
     --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-    --g-roja:#35211F; --g-huevo:#302B15;
+    --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639;
   }
 
   *{box-sizing:border-box}
@@ -96,12 +97,14 @@
   .brand .tag{font-family:"IBM Plex Mono", ui-monospace, monospace;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
   .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
   .tabs::-webkit-scrollbar{display:none}
-  .tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:9px 12px 11px;
-    cursor:pointer;color:var(--ink-2);font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:7px}
+  .tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;padding:9px 11px 11px;
+    cursor:pointer;color:var(--ink-2);font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
   .tab:hover{color:var(--ink)}
   .tab[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent)}
   .tab .n{font-family:"IBM Plex Mono", monospace;font-size:11px;background:var(--surface-2);color:var(--ink-2);border-radius:20px;padding:1px 7px}
   .tab[aria-selected="true"] .n{background:var(--accent-soft);color:var(--accent-ink)}
+  .tab .quien{font-weight:400;color:var(--ink-3)}
+  .tab[aria-selected="true"] .quien{color:var(--accent-ink);font-weight:600}
 
   main{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:22px 64px}
   .lead{color:var(--ink-2);max-width:66ch;margin:0 0 18px}
@@ -143,7 +146,7 @@
   /* Tabla de platos */
   .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
   table{border-collapse:collapse;width:100%;min-width:900px}
-  #tbody-hist{min-width:0}
+  table.estrecha{min-width:640px}
   thead th{text-align:left;font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
   tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
@@ -154,6 +157,7 @@
   .tipo{font-size:13px;color:var(--ink-2);max-width:22ch}
   .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:32ch}
   .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em;margin-left:6px}
+  .col-acc{width:1%;white-space:nowrap;text-align:right}
 
   /* Navegación de semana */
   .weeknav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);
@@ -199,10 +203,14 @@
   .week{display:grid;grid-template-columns:repeat(auto-fill, minmax(268px, 1fr));gap:12px}
   .day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
   .day.hoy{border-color:var(--accent)}
-  .day > header{padding:9px 14px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+  .day > header{padding:8px 10px 8px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}
   .day h3{font-size:14px;font-weight:700;text-transform:capitalize}
-  .day .dnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+  .day .dnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;margin-left:auto}
   .day.hoy .dnum{color:var(--accent-ink);font-weight:500}
+  .toggle-comida{appearance:none;border:1px solid var(--line);background:var(--ground);border-radius:20px;
+    padding:2px 9px;font-size:11.5px;font-weight:600;color:var(--ink-3);cursor:pointer;white-space:nowrap}
+  .toggle-comida:hover{background:var(--surface-2);color:var(--ink)}
+  .toggle-comida[aria-pressed="true"]{background:var(--warn-soft);border-color:color-mix(in srgb, var(--warn) 35%, transparent);color:var(--warn)}
   .slot{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);
     background-color:var(--surface);padding:13px 14px;cursor:pointer;min-height:76px}
   .day .slot:first-of-type{border-top:0}
@@ -218,6 +226,7 @@
   .slot.g-blanca{background-color:var(--g-blanca)}
   .slot.g-roja{background-color:var(--g-roja)}
   .slot.g-huevo{background-color:var(--g-huevo)}
+  .slot.g-congelado{background-color:var(--g-congelado)}
 
   .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .legend .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
@@ -258,10 +267,10 @@
     border-radius:20px;padding:2px 8px;background:var(--surface-2);color:var(--ink-2)}
   .badge.local{background:var(--pimenton-soft);color:var(--pimenton)}
   .badge.repo{background:var(--accent-soft);color:var(--accent-ink)}
+  .badge.mod{background:var(--pimenton-soft);color:var(--pimenton)}
   .badge.actual{background:var(--ok-soft);color:var(--ok);margin-left:8px}
 
   .empty-state{background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:28px 20px;text-align:center;color:var(--ink-2)}
-
   .hint{font-size:12.5px;color:var(--ink-3)}
 
   /* Editor de platos */
@@ -293,8 +302,6 @@
   .nuevo-row{display:flex;align-items:center;gap:9px;margin-top:7px}
   .nuevo-row .nm{flex:1 1 auto;font-size:13px;min-width:0}
   .nuevo-row select{flex:0 1 215px;font-size:13px;padding:4px 7px}
-  .badge.mod{background:var(--pimenton-soft);color:var(--pimenton);margin-left:7px}
-  .col-acc{width:1%;white-space:nowrap;text-align:right}
 
   .overlay{position:fixed;inset:0;background:rgba(10,16,24,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center}
   @media (min-width:640px){ .overlay{align-items:center;padding:24px} }
@@ -335,127 +342,16 @@
       <h1>Mesa Semanal</h1>
       <span class="tag">Comidas de casa</span>
     </div>
-    <nav class="tabs" role="tablist" aria-label="Secciones">
-      <button class="tab" id="tab-platos" role="tab" aria-controls="panel-platos" aria-selected="false" data-panel="platos">Platos <span class="n" id="n-platos">–</span></button>
-      <button class="tab" id="tab-semana" role="tab" aria-controls="panel-semana" aria-selected="true" data-panel="semana">Semana <span class="n" id="n-semana">–</span></button>
-      <button class="tab" id="tab-compra" role="tab" aria-controls="panel-compra" aria-selected="false" data-panel="compra">Compra <span class="n" id="n-compra">–</span></button>
-      <button class="tab" id="tab-historico" role="tab" aria-controls="panel-historico" aria-selected="false" data-panel="historico">Histórico <span class="n" id="n-historico">–</span></button>
-    </nav>
+    <nav class="tabs" role="tablist" aria-label="Secciones" id="tabs"></nav>
   </div>
 </div>
 
 <main>
-  <!-- ============ PLATOS ============ -->
-  <section id="panel-platos" role="tabpanel" aria-labelledby="tab-platos" hidden>
-    <div class="section-head">
-      <div>
-        <div class="eyebrow">datos/platos.csv</div>
-        <h2>Todos los platos disponibles</h2>
-      </div>
-      <button class="btn btn-primary" id="btn-nuevo-plato">Nuevo plato</button>
-    </div>
-    <p class="lead">El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón <em>Editar</em>. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
+  <section id="panel-platos-adultos" role="tabpanel" aria-labelledby="tab-platos-adultos" hidden></section>
+  <section id="panel-platos-nino" role="tabpanel" aria-labelledby="tab-platos-nino" hidden></section>
+  <section id="panel-semana-adultos" role="tabpanel" aria-labelledby="tab-semana-adultos"></section>
+  <section id="panel-semana-nino" role="tabpanel" aria-labelledby="tab-semana-nino" hidden></section>
 
-    <div class="filters">
-      <div class="field grow">
-        <label for="f-buscar">Buscar</label>
-        <input type="search" id="f-buscar" placeholder="Plato o ingrediente…">
-      </div>
-      <div class="field">
-        <label for="f-momento">Momento</label>
-        <select id="f-momento">
-          <option value="">Todos</option>
-          <option value="comida">Comida</option>
-          <option value="cena">Cena</option>
-          <option value="ambos">Ambos</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-tiempo">Preparación</label>
-        <select id="f-tiempo">
-          <option value="">Toda</option>
-          <option value="bajo">Bajo</option>
-          <option value="medio">Medio</option>
-          <option value="alto">Alto</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-repeticion">Repetición</label>
-        <select id="f-repeticion">
-          <option value="">Toda</option>
-          <option value="siempre">Siempre</option>
-          <option value="alta">Alta</option>
-          <option value="media">Media</option>
-          <option value="baja">Baja</option>
-          <option value="ocasional">Ocasional</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="f-grupo">Grupo</label>
-        <select id="f-grupo"><option value="">Todos</option></select>
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th scope="col">Plato</th>
-          <th scope="col">Tipo de alimento</th>
-          <th scope="col">Momento</th>
-          <th scope="col">Preparación</th>
-          <th scope="col">Repetición</th>
-          <th scope="col">Ingredientes</th>
-          <th scope="col" class="col-acc"></th>
-        </tr></thead>
-        <tbody id="tbody-platos"></tbody>
-      </table>
-    </div>
-    <p class="hint" style="margin-top:12px">Los cambios se guardan en este navegador. Para dejarlos fijos, descarga <code>platos.csv</code> e <code>ingredientes.csv</code> desde el Histórico y súbelos al repositorio.</p>
-  </section>
-
-  <!-- ============ SEMANA ============ -->
-  <section id="panel-semana" role="tabpanel" aria-labelledby="tab-semana">
-    <div class="section-head">
-      <div>
-        <div class="eyebrow">Lunes a domingo · comida y cena</div>
-        <h2>Reparto de la semana</h2>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn btn-primary" id="btn-generar">Generar semana</button>
-        <button class="btn" id="btn-vaciar">Vaciar</button>
-      </div>
-    </div>
-
-    <div class="weeknav">
-      <button class="arrow" id="wk-prev" aria-label="Semana anterior">◀</button>
-      <div class="wk">
-        <div class="lbl" id="wk-label">—</div>
-        <div class="sub" id="wk-sub">—</div>
-      </div>
-      <button class="arrow" id="wk-next" aria-label="Semana siguiente">▶</button>
-      <button class="btn btn-sm" id="wk-hoy">Semana actual</button>
-    </div>
-
-    <div class="balance">
-      <h3>Equilibrio de la semana</h3>
-      <p>Veces que aparece cada grupo, frente al objetivo semanal.</p>
-      <div class="meters" id="meters"></div>
-
-      <details class="obj">
-        <summary>Ajustar objetivos antes de generar</summary>
-        <div class="obj-grid" id="obj-grid"></div>
-        <div class="obj-foot">
-          <button class="btn btn-sm" id="obj-reset">Volver a los valores del documento</button>
-          <span class="hint">Los objetivos guían el reparto al pulsar «Generar semana».</span>
-        </div>
-      </details>
-    </div>
-
-    <div class="week" id="week"></div>
-    <div class="legend" id="legend"></div>
-  </section>
-
-  <!-- ============ COMPRA ============ -->
   <section id="panel-compra" role="tabpanel" aria-labelledby="tab-compra" hidden>
     <div class="section-head">
       <div>
@@ -467,33 +363,34 @@
         <button class="btn btn-ghost" id="btn-reset-despensa">Vaciar despensa</button>
       </div>
     </div>
-    <p class="lead">Todos los ingredientes de los platos de la semana seleccionada, agrupados por sección del súper. Lo que marques como que ya lo tienes se guarda en la despensa y sigue marcado en las semanas siguientes.</p>
+    <p class="lead">Los ingredientes de las dos semanas, la de los adultos y la del niño, en una sola lista agrupada por sección del súper. Lo que marques como que ya lo tienes se guarda en la despensa y sigue marcado en las semanas siguientes.</p>
 
     <div class="compra-head">
       <div class="counts">
         <div class="count buy"><div class="k">Por comprar</div><div class="v" id="c-buy">0</div></div>
         <div class="count have"><div class="k">Ya en casa</div><div class="v" id="c-have">0</div></div>
-        <div class="count"><div class="k">Platos de la semana</div><div class="v" id="c-dishes">0</div></div>
+        <div class="count"><div class="k">Platos adultos</div><div class="v" id="c-adultos">0</div></div>
+        <div class="count"><div class="k">Platos niño</div><div class="v" id="c-nino">0</div></div>
       </div>
     </div>
 
     <div class="secs" id="secs"></div>
   </section>
 
-  <!-- ============ HISTÓRICO ============ -->
   <section id="panel-historico" role="tabpanel" aria-labelledby="tab-historico" hidden>
     <div class="section-head">
       <div>
-        <div class="eyebrow">datos/semanas.csv</div>
+        <div class="eyebrow">datos/semanas.csv · datos/semanas-nino.csv</div>
         <h2>Histórico de semanas</h2>
       </div>
     </div>
     <p class="lead">Todas las semanas planificadas: las que vienen del repositorio y las que has hecho en este navegador. La despensa es común a todas, así que lo que marcaste como existencias sigue marcado al generar la semana siguiente.</p>
 
     <div class="table-wrap">
-      <table style="min-width:640px">
+      <table class="estrecha">
         <thead><tr>
-          <th scope="col">Semana</th><th scope="col">Fechas</th><th scope="col">Platos</th><th scope="col">Origen</th><th scope="col"></th>
+          <th scope="col">Semana</th><th scope="col">Fechas</th>
+          <th scope="col">Adultos</th><th scope="col">Niño</th><th scope="col" class="col-acc"></th>
         </tr></thead>
         <tbody id="tbody-hist"></tbody>
       </table>
@@ -535,6 +432,20 @@ Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pe
 Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;bajo;alta;huevo|verdura;tortilla de patata y calabacín|pan|tomate
 Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;bajo;alta;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 </script>
+<script type="text/csv" id="csv-platos-nino">
+nombre;descripcion;tipo;momento;tiempo;repeticion;grupos;ingredientes
+Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura;ambos;medio;alta;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura + Pescado blanco;ambos;medio;alta;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;La misma base de verduras con pollo.;Verdura + Carne blanca;ambos;medio;alta;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;congelado;empanadillas congeladas
+Croquetas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;congelado;croquetas congeladas
+Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca + Cereal;ambos;bajo;alta;blanca;caldo de pollo|fideos
+Tortilla;Tortilla de patata, jugosa.;Huevo + Tubérculo;ambos;bajo;siempre;huevo;huevos|patata|aceite de oliva
+Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre + Carne;ambos;bajo;media;legumbre;guisantes|jamón cocido|aceite de oliva
+Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo + Marisco;ambos;bajo;media;huevo|marisco;huevos|gulas|aceite de oliva
+Calamares;Anillas a la plancha o rebozadas.;Pescado / Marisco;ambos;bajo;media;marisco;calamares|harina|aceite de oliva
+Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca;ambos;bajo;media;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+</script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
 aguacate;Frutería y verdulería
@@ -551,6 +462,7 @@ patata;Frutería y verdulería
 perejil;Frutería y verdulería
 pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
+puerro;Frutería y verdulería
 tomate;Frutería y verdulería
 zanahoria;Frutería y verdulería
 bacalao;Carnicería y pescadería
@@ -559,8 +471,11 @@ carne picada de pollo;Carnicería y pescadería
 filetes de ternera;Carnicería y pescadería
 gambas;Carnicería y pescadería
 gulas;Carnicería y pescadería
+hamburguesa de pollo;Carnicería y pescadería
+jamón cocido;Carnicería y pescadería
 lomo de cerdo;Carnicería y pescadería
 lomo de salmón;Carnicería y pescadería
+merluza;Carnicería y pescadería
 pechuga de pavo en lonchas;Carnicería y pescadería
 pechuga de pollo;Carnicería y pescadería
 salmón ahumado;Carnicería y pescadería
@@ -573,12 +488,16 @@ queso crema;Huevos, lácteos y refrigerados
 queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
+croquetas congeladas;Congelados
+empanadillas congeladas;Congelados
 aceite de oliva;Despensa
 arroz;Despensa
 atún en conserva;Despensa
 azafrán;Despensa
 caldo de pescado;Despensa
+caldo de pollo;Despensa
 especias para fajitas;Despensa
+fideos;Despensa
 garbanzos cocidos;Despensa
 guindilla;Despensa
 harina;Despensa
@@ -606,6 +525,15 @@ blanca;Carne blanca;3;4
 roja;Carne roja o magra;1;2
 huevo;Huevo;2;3
 verdura;Verdura de base;5;9
+</script>
+<script type="text/csv" id="csv-equilibrio-nino">
+grupo;etiqueta;minimo;maximo
+verdura;Verdura;3;5
+marisco;Pescado y marisco;2;3
+blanca;Carne blanca;2;3
+huevo;Huevo;1;2
+legumbre;Legumbre;1;2
+congelado;Congelados;1;2
 </script>
 <script type="text/csv" id="csv-semanas">
 semana_id;etiqueta;inicio;fin;dia;momento;plato
@@ -638,6 +566,27 @@ semana_id;etiqueta;inicio;fin;dia;momento;plato
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;Solomillo de cerdo o ternera a la plancha
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;Salmón con verduras
 </script>
+<script type="text/csv" id="csv-semanas-nino">
+semana_id;etiqueta;inicio;fin;dia;momento;plato
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;Puré de verduras con carne
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;Calamares
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;Crema de verduras
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;Revuelto de gulas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;Empanadillas congeladas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;Sopa de pollo
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;Tortilla
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;Puré de verduras con pescado
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;Guisantes con jamón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;Crema de verduras
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;Puré de verduras con pescado
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;Tortilla
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;Sopa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;Croquetas congeladas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;Puré de verduras con carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;Revuelto de gulas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;Hamburguesa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;Guisantes con jamón
+</script>
 <script type="text/csv" id="csv-despensa">
 ingrediente;en_casa
 aceite de oliva;si
@@ -654,7 +603,7 @@ salsa de soja;si
 (function(){
   "use strict";
 
-  /* ============ Fechas ============ */
+  /* ============ Constantes ============ */
   const DIAS = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
   const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   const MESES_CORTOS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
@@ -662,20 +611,27 @@ salsa de soja;si
   const MOMENTO_LBL = {comida:"Comida", cena:"Cena", ambos:"Ambos"};
   const DIA_MS = 86400000;
   const FINDE = {"sábado":1, "domingo":1};
-
-  // Cuánto empuja cada nivel de repetición al elegir plato.
   const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5};
 
+  // Los dos repertorios. El niño come al mediodía en la guardería, así que de
+  // partida solo tiene cenas de lunes a viernes; el fin de semana, las dos.
+  const PERFILES = [
+    {id:"adultos", lbl:"Adultos", quien:"de los adultos",
+     platos:"platos", semanas:"semanas", equilibrio:"equilibrio", comidasFijas:true},
+    {id:"nino", lbl:"Niño", quien:"del niño",
+     platos:"platos_nino", semanas:"semanas_nino", equilibrio:"equilibrio_nino",
+     comidasFijas:false, comidasDefecto:["sábado","domingo"]}
+  ];
+  function perfil(id){ return PERFILES.filter(function(p){ return p.id === id; })[0]; }
+
+  /* ============ Fechas ============ */
   function aDia(f){ return new Date(f.getFullYear(), f.getMonth(), f.getDate()); }
   function sumaDias(f, n){ const d = aDia(f); d.setDate(d.getDate() + n); return d; }
   function lunesDe(f){ const d = aDia(f); return sumaDias(d, -(((d.getDay() + 6) % 7))); }
   function iso(f){
     return f.getFullYear() + "-" + String(f.getMonth()+1).padStart(2,"0") + "-" + String(f.getDate()).padStart(2,"0");
   }
-  function desdeIso(s){
-    const p = String(s).split("-").map(Number);
-    return new Date(p[0], p[1]-1, p[2]);
-  }
+  function desdeIso(s){ const p = String(s).split("-").map(Number); return new Date(p[0], p[1]-1, p[2]); }
   function semanasEntre(a, b){ return Math.round((aDia(b) - aDia(a)) / (7 * DIA_MS)); }
 
   // "3ª semana de septiembre (14-20)". El mes es el del jueves de esa semana
@@ -700,6 +656,23 @@ salsa de soja;si
     return "Del " + a + " al " + domingo.getDate() + " de " + MESES[domingo.getMonth()] + " de " + domingo.getFullYear();
   }
 
+  /* ============ DOM ============ */
+  const $ = function(id){ return document.getElementById(id); };
+  function el(tag, attrs, hijos){
+    const e = document.createElement(tag);
+    if(attrs) Object.keys(attrs).forEach(function(k){
+      if(k === "class") e.className = attrs[k];
+      else if(k === "text") e.textContent = attrs[k];
+      else if(k === "style") e.style.cssText = attrs[k];
+      else if(k.indexOf("on") === 0) e.addEventListener(k.slice(2), attrs[k]);
+      else if(attrs[k] !== null && attrs[k] !== undefined) e.setAttribute(k, attrs[k]);
+    });
+    if(hijos) hijos.forEach(function(c){ if(c) e.appendChild(c); });
+    return e;
+  }
+  function mayus(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
+  function colorDe(g){ return "var(--g-" + g + ", var(--surface-2))"; }
+
   /* ============ CSV ============ */
   function leerCSV(texto){
     const lineas = String(texto).replace(/\r/g, "").split("\n").filter(function(l){ return l.trim() !== ""; });
@@ -722,243 +695,352 @@ salsa de soja;si
 
   /* ============ Carga ============ */
   const FUENTES = [
-    ["platos",       "datos/platos.csv",       "csv-platos"],
-    ["ingredientes", "datos/ingredientes.csv", "csv-ingredientes"],
-    ["equilibrio",   "datos/equilibrio.csv",   "csv-equilibrio"],
-    ["semanas",      "datos/semanas.csv",      "csv-semanas"],
-    ["despensa",     "datos/despensa.csv",     "csv-despensa"]
+    ["platos",           "datos/platos.csv",           "csv-platos"],
+    ["platos_nino",      "datos/platos-nino.csv",      "csv-platos-nino"],
+    ["ingredientes",     "datos/ingredientes.csv",     "csv-ingredientes"],
+    ["equilibrio",       "datos/equilibrio.csv",       "csv-equilibrio"],
+    ["equilibrio_nino",  "datos/equilibrio-nino.csv",  "csv-equilibrio-nino"],
+    ["semanas",          "datos/semanas.csv",          "csv-semanas"],
+    ["semanas_nino",     "datos/semanas-nino.csv",     "csv-semanas-nino"],
+    ["despensa",         "datos/despensa.csv",         "csv-despensa"]
   ];
   const datos = {};
   let desdeRespaldo = false;
 
   function respaldo(id){
-    const el = document.getElementById(id);
-    const t = el ? el.textContent : "";
+    const e = $(id), t = e ? e.textContent : "";
     return t.indexOf("PLACEHOLDER_") === 0 ? "" : t;
   }
   async function cargar(){
-    await Promise.all(FUENTES.map(async function(fuente){
-      const clave = fuente[0], ruta = fuente[1], id = fuente[2];
+    await Promise.all(FUENTES.map(async function(f){
       let texto = null;
       try{
-        const r = await fetch(ruta, {cache:"no-store"});
+        const r = await fetch(f[1], {cache:"no-store"});
         if(r.ok) texto = await r.text();
       }catch(e){ /* file:// o sin red: usamos la copia incrustada */ }
-      if(texto === null){ desdeRespaldo = true; texto = respaldo(id); }
-      datos[clave] = leerCSV(texto);
+      if(texto === null){ desdeRespaldo = true; texto = respaldo(f[2]); }
+      datos[f[0]] = leerCSV(texto);
     }));
   }
 
   /* ============ Estado ============ */
-  const CLAVE = "mesa-semanal:v3";
-  let estado = { tab:"semana", semana:null, semanas:{}, despensa:{}, extra:[],
-                 objetivos:{}, ediciones:{}, borrados:[], secciones:{} };
+  const CLAVE = "mesa-semanal:v4";
+  function perfilVacio(){ return {semanas:{}, ediciones:{}, borrados:[], extra:[], objetivos:{}, comidas:{}}; }
+  let estado = { tab:"semana-adultos", semana:null, despensa:{}, secciones:{},
+                 adultos:perfilVacio(), nino:perfilVacio() };
 
+  function fusionaPerfil(dest, p){
+    if(!p || typeof p !== "object") return;
+    dest.semanas   = p.semanas   && typeof p.semanas === "object"   ? p.semanas   : {};
+    dest.ediciones = p.ediciones && typeof p.ediciones === "object" ? p.ediciones : {};
+    dest.borrados  = Array.isArray(p.borrados) ? p.borrados : [];
+    dest.extra     = Array.isArray(p.extra) ? p.extra : [];
+    dest.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
+    dest.comidas   = p.comidas   && typeof p.comidas === "object"   ? p.comidas   : {};
+  }
   function cargarEstado(){
-    try{
-      const raw = localStorage.getItem(CLAVE);
-      if(!raw) return;
-      const p = JSON.parse(raw);
-      if(p && typeof p === "object"){
-        estado.tab = p.tab || "semana";
-        estado.semana = p.semana || null;
-        estado.semanas = p.semanas && typeof p.semanas === "object" ? p.semanas : {};
-        estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
-        estado.extra = Array.isArray(p.extra) ? p.extra : [];
-        estado.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
-        estado.ediciones = p.ediciones && typeof p.ediciones === "object" ? p.ediciones : {};
-        estado.borrados = Array.isArray(p.borrados) ? p.borrados : [];
-        estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
-      }
-    }catch(e){}
+    let p = null;
+    try{ p = JSON.parse(localStorage.getItem(CLAVE) || "null"); }catch(e){}
+    if(!p){
+      // Lo guardado antes de separar adultos y niño pasa al perfil de adultos.
+      try{
+        const v3 = JSON.parse(localStorage.getItem("mesa-semanal:v3") || "null");
+        if(v3) p = { semana:v3.semana, despensa:v3.despensa, secciones:v3.secciones,
+                     adultos:{semanas:v3.semanas, ediciones:v3.ediciones, borrados:v3.borrados,
+                              extra:v3.extra, objetivos:v3.objetivos} };
+      }catch(e){}
+    }
+    if(!p || typeof p !== "object") return;
+    estado.tab = p.tab || "semana-adultos";
+    estado.semana = p.semana || null;
+    estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
+    estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
+    fusionaPerfil(estado.adultos, p.adultos);
+    fusionaPerfil(estado.nino, p.nino);
   }
   function guardar(){
     try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){}
   }
 
-  let PLATOS = [], SECCION = {}, SECCIONES = [], GRUPOS = {}, REPO_SEMANAS = {};
+  let SECCION = {}, SECCIONES = [];
+  const REP = { adultos:{PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}},
+                nino:   {PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}} };
 
   function construir(){
-    PLATOS = datos.platos.map(function(r){
-      return {
-        orig:r.nombre,
-        n:r.nombre, d:r.descripcion, t:r.tipo, m:r.momento,
-        tiempo:r.tiempo || "medio", rep:r.repeticion || "media",
-        g:lista(r.grupos), i:lista(r.ingredientes)
-      };
-    }).filter(function(p){ return p.n; });
+    PERFILES.forEach(function(pf){
+      const r = REP[pf.id];
+      r.PLATOS = (datos[pf.platos] || []).map(function(x){
+        return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:x.tipo, m:x.momento,
+                 tiempo:x.tiempo || "medio", rep:x.repeticion || "media",
+                 g:lista(x.grupos), i:lista(x.ingredientes) };
+      }).filter(function(x){ return x.n; });
+
+      r.GRUPOS = {};
+      (datos[pf.equilibrio] || []).forEach(function(x){
+        if(!x.grupo) return;
+        r.GRUPOS[x.grupo] = { lbl:x.etiqueta || x.grupo, min:Number(x.minimo) || 0, max:Number(x.maximo) || 99 };
+      });
+
+      r.REPO = {}; r.REPO_COMIDAS = {};
+      (datos[pf.semanas] || []).forEach(function(x){
+        if(!x.semana_id) return;
+        if(!r.REPO[x.semana_id]){ r.REPO[x.semana_id] = {}; r.REPO_COMIDAS[x.semana_id] = {}; }
+        if(x.momento === "comida") r.REPO_COMIDAS[x.semana_id][x.dia] = 1;
+        if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento] = x.plato;
+      });
+    });
 
     // El orden de los bloques de la compra es el orden de aparición en el CSV.
     SECCION = {}; const orden = [];
-    datos.ingredientes.forEach(function(r){
-      if(!r.ingrediente) return;
-      SECCION[r.ingrediente] = r.seccion || "Otros";
-      if(orden.indexOf(SECCION[r.ingrediente]) === -1) orden.push(SECCION[r.ingrediente]);
+    (datos.ingredientes || []).forEach(function(x){
+      if(!x.ingrediente) return;
+      SECCION[x.ingrediente] = x.seccion || "Otros";
+      if(orden.indexOf(SECCION[x.ingrediente]) === -1) orden.push(SECCION[x.ingrediente]);
     });
     SECCIONES = orden;
-
-    GRUPOS = {};
-    datos.equilibrio.forEach(function(r){
-      if(!r.grupo) return;
-      GRUPOS[r.grupo] = { lbl:r.etiqueta || r.grupo, min:Number(r.minimo) || 0, max:Number(r.maximo) || 99 };
-    });
-
-    REPO_SEMANAS = {};
-    datos.semanas.forEach(function(r){
-      if(!r.semana_id) return;
-      if(!REPO_SEMANAS[r.semana_id]) REPO_SEMANAS[r.semana_id] = {};
-      if(r.plato) REPO_SEMANAS[r.semana_id][r.dia + "|" + r.momento] = r.plato;
-    });
   }
 
-  // Objetivo vigente: el del CSV, salvo que se haya ajustado a mano.
-  function objetivo(k){
-    const base = GRUPOS[k] || {lbl:k, min:0, max:14};
-    const aj = estado.objetivos[k];
-    return { lbl:base.lbl, min:aj ? aj.min : base.min, max:aj ? aj.max : base.max };
+  /* ============ Consultas ============ */
+  function objetivo(pid, k){
+    const b = REP[pid].GRUPOS[k] || {lbl:k, min:0, max:14};
+    const a = estado[pid].objetivos[k];
+    return { lbl:b.lbl, min:a ? a.min : b.min, max:a ? a.max : b.max };
   }
-  function objetivosTocados(){ return Object.keys(estado.objetivos).length > 0; }
+  function objetivosTocados(pid){ return Object.keys(estado[pid].objetivos).length > 0; }
 
   // Repertorio vigente: los del CSV con las ediciones aplicadas, sin los borrados,
   // más los añadidos a mano. `orig` identifica al plato del CSV aunque se renombre.
-  function platos(){
-    const base = [];
-    PLATOS.forEach(function(p){
-      if(estado.borrados.indexOf(p.orig) !== -1) return;
-      const e = estado.ediciones[p.orig];
-      if(!e){ base.push(p); return; }
-      base.push({
-        orig:p.orig, n:e.n, d:e.d, t:e.t, m:e.m, tiempo:e.tiempo, rep:e.rep,
-        g:e.g.slice(), i:e.i.slice(), editado:true
-      });
+  function platos(pid){
+    const st = estado[pid], salida = [];
+    REP[pid].PLATOS.forEach(function(p){
+      if(st.borrados.indexOf(p.orig) !== -1) return;
+      const e = st.ediciones[p.orig];
+      if(!e){ salida.push(p); return; }
+      salida.push({ orig:p.orig, n:e.n, d:e.d, t:e.t, m:e.m, tiempo:e.tiempo, rep:e.rep,
+                    g:e.g.slice(), i:e.i.slice(), editado:true });
     });
-    return base.concat(estado.extra);
+    return salida.concat(st.extra);
   }
-  function plato(n){
-    const todos = platos();
+  function plato(pid, n){
+    const todos = platos(pid);
     for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
     return null;
   }
-  // La base del plato, que decide su color: el primer grupo declarado.
   function base(p){ return p && p.g.length ? p.g[0] : ""; }
-  // Sección del súper, con las que hayas asignado tú por encima del CSV.
   function seccionDe(ing){ return estado.secciones[ing] || SECCION[ing] || "Otros"; }
-  // Los bloques desconocidos y "Otros" se cuelan antes del último del CSV,
-  // para que el último bloque del CSV siga cerrando la lista.
+  // Los bloques desconocidos se cuelan antes del último del CSV, para que el
+  // último bloque (la panadería) siga cerrando la lista.
   function ordenSecciones(presentes){
     const extras = presentes.filter(function(s){ return SECCIONES.indexOf(s) === -1; }).sort();
     if(!SECCIONES.length) return extras;
     return SECCIONES.slice(0, -1).concat(extras, SECCIONES.slice(-1));
   }
 
+  function huecos(pid, id){
+    const st = estado[pid];
+    if(st.semanas[id]) return st.semanas[id];
+    if(REP[pid].REPO[id]) return REP[pid].REPO[id];
+    return {};
+  }
+  function fijarHuecos(pid, id, h){ estado[pid].semanas[id] = h; guardar(); }
+
+  // Días con comida habilitada. Los adultos comen siempre; el niño, cuando toca.
+  function comidas(pid, id){
+    const pf = perfil(pid);
+    if(pf.comidasFijas){ const t = {}; DIAS.forEach(function(d){ t[d] = 1; }); return t; }
+    const st = estado[pid];
+    if(st.comidas[id]) return st.comidas[id];
+    if(REP[pid].REPO_COMIDAS[id]) return REP[pid].REPO_COMIDAS[id];
+    const d = {}; (pf.comidasDefecto || []).forEach(function(x){ d[x] = 1; }); return d;
+  }
+  function fijarComidas(pid, id, c){ estado[pid].comidas[id] = c; guardar(); }
+  function momentosDe(pid, id, dia){
+    return comidas(pid, id)[dia] ? MOMENTOS : ["cena"];
+  }
+  function clavesDe(pid, id){
+    const salida = [];
+    DIAS.forEach(function(d){
+      momentosDe(pid, id, d).forEach(function(m){ salida.push(d + "|" + m); });
+    });
+    return salida;
+  }
+  function llenos(pid, id){
+    const h = huecos(pid, id);
+    return clavesDe(pid, id).filter(function(k){ return !!h[k]; }).length;
+  }
+
+  function idsSemanas(pid){
+    const s = {};
+    Object.keys(REP[pid].REPO).forEach(function(k){ s[k] = 1; });
+    Object.keys(estado[pid].semanas).forEach(function(k){ s[k] = 1; });
+    return Object.keys(s).filter(function(id){
+      const h = huecos(pid, id);
+      return Object.keys(h).some(function(k){ return !!h[k]; });
+    }).sort().reverse();
+  }
+  function idsTodas(){
+    const s = {};
+    PERFILES.forEach(function(pf){ idsSemanas(pf.id).forEach(function(id){ s[id] = 1; }); });
+    return Object.keys(s).sort().reverse();
+  }
+
+  function enCasa(ing){
+    if(Object.prototype.hasOwnProperty.call(estado.despensa, ing)) return !!estado.despensa[ing];
+    const f = (datos.despensa || []).filter(function(r){ return r.ingrediente === ing; })[0];
+    return !!(f && /^(si|sí|1|true|x)$/i.test(f.en_casa || ""));
+  }
+
   // Al renombrar o borrar un plato, sus huecos dejan de apuntar a un nombre muerto.
-  function reemplazarEnSemanas(viejo, nuevo){
+  function reemplazarEnSemanas(pid, viejo, nuevo){
     if(!viejo || viejo === nuevo) return;
-    idsSemanas().forEach(function(id){
-      const h = huecos(id), copia = {};
+    idsSemanas(pid).forEach(function(id){
+      const h = huecos(pid, id), copia = {};
       let tocado = false;
       Object.keys(h).forEach(function(k){
         if(h[k] === viejo){ tocado = true; if(nuevo) copia[k] = nuevo; }
         else copia[k] = h[k];
       });
-      if(tocado) estado.semanas[id] = copia;
+      if(tocado) estado[pid].semanas[id] = copia;
     });
     guardar();
   }
 
-  function huecos(id){
-    if(estado.semanas[id]) return estado.semanas[id];
-    if(REPO_SEMANAS[id]) return REPO_SEMANAS[id];
-    return {};
-  }
-  function fijarHuecos(id, h){ estado.semanas[id] = h; guardar(); }
-  function idsSemanas(){
-    const s = {};
-    Object.keys(REPO_SEMANAS).forEach(function(k){ s[k] = 1; });
-    Object.keys(estado.semanas).forEach(function(k){ s[k] = 1; });
-    return Object.keys(s).filter(function(id){
-      const h = huecos(id);
-      return Object.keys(h).some(function(k){ return !!h[k]; });
-    }).sort().reverse();
-  }
-
-  function enCasa(ing){
-    if(Object.prototype.hasOwnProperty.call(estado.despensa, ing)) return !!estado.despensa[ing];
-    const f = datos.despensa.filter(function(r){ return r.ingrediente === ing; })[0];
-    return !!(f && /^(si|sí|1|true|x)$/i.test(f.en_casa || ""));
-  }
-  function marcarEnCasa(ing, v){ estado.despensa[ing] = !!v; guardar(); }
-
   /* ============ Generador ============ */
   function elegible(p, momento){ return p.m === momento || p.m === "ambos"; }
 
-  function generar(id){
-    const todos = platos(), orden = [];
-    DIAS.forEach(function(d){ MOMENTOS.forEach(function(m){ orden.push(d + "|" + m); }); });
-    orden.sort(function(){ return Math.random() - 0.5; });
-
+  function generar(pid, id){
+    const todos = platos(pid), grupos = REP[pid].GRUPOS;
+    const orden = clavesDe(pid, id).slice().sort(function(){ return Math.random() - 0.5; });
     const h = {}, usados = {}, cuenta = {};
-    Object.keys(GRUPOS).forEach(function(k){ cuenta[k] = 0; });
+    Object.keys(grupos).forEach(function(k){ cuenta[k] = 0; });
 
     orden.forEach(function(clave){
       const partes = clave.split("|"), dia = partes[0], momento = partes[1];
-      const cands = todos.filter(function(p){ return elegible(p, momento) && !usados[p.n]; });
+      const aptos = todos.filter(function(p){ return elegible(p, momento); });
+      // Si no quedan platos sin usar, se permite repetir antes que dejar el hueco vacío.
+      let cands = aptos.filter(function(p){ return !usados[p.n]; });
+      if(!cands.length) cands = aptos;
       if(!cands.length) return;
+
       let mejor = null, mejorPunt = -Infinity;
       cands.forEach(function(p){
         let punt = Math.random() * 0.9;
-
-        // 1. Objetivos de equilibrio
         p.g.forEach(function(g){
           if(!(g in cuenta)) return;
-          const meta = objetivo(g);
+          const meta = objetivo(pid, g);
           if(cuenta[g] < meta.min) punt += 4;
           else if(cuenta[g] < meta.max) punt += 1.2;
           else punt -= 5;
         });
-
-        // 2. Cada cuánto apetece repetirlo
         punt += (PESO_REPETICION[p.rep] !== undefined ? PESO_REPETICION[p.rep] : 0);
-
-        // 3. Lo laborioso se reserva al fin de semana; entre semana, cenas rápidas
         if(p.tiempo === "alto") punt += FINDE[dia] ? 1 : (momento === "cena" ? -2 : -0.8);
         else if(p.tiempo === "medio" && !FINDE[dia] && momento === "cena") punt -= 0.4;
-
-        // 4. No repetir base en la comida y la cena del mismo día
         const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida")];
         if(hermano){
-          const otro = plato(hermano);
+          const otro = plato(pid, hermano);
           if(otro && otro.g.some(function(g){ return g !== "verdura" && p.g.indexOf(g) !== -1; })) punt -= 3;
         }
-
         if(punt > mejorPunt){ mejorPunt = punt; mejor = p; }
       });
       h[clave] = mejor.n;
       usados[mejor.n] = 1;
       mejor.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
     });
-    fijarHuecos(id, h);
+    fijarHuecos(pid, id, h);
   }
 
-  /* ============ Platos ============ */
-  const $ = function(id){ return document.getElementById(id); };
-  const tbody = $("tbody-platos");
-  const fBuscar = $("f-buscar"), fMomento = $("f-momento"), fGrupo = $("f-grupo"),
-        fTiempo = $("f-tiempo"), fRepeticion = $("f-repeticion");
-
-  function rellenarSelectsGrupo(){
-    Object.keys(GRUPOS).forEach(function(k){
-      const o = document.createElement("option");
-      o.value = k; o.textContent = GRUPOS[k].lbl;
-      fGrupo.appendChild(o);
+  /* ============ Pestañas ============ */
+  const PESTANAS = [
+    {id:"platos-adultos", lbl:"Platos", quien:"adultos"},
+    {id:"platos-nino",    lbl:"Platos", quien:"niño"},
+    {id:"semana-adultos", lbl:"Semana", quien:"adultos"},
+    {id:"semana-nino",    lbl:"Semana", quien:"niño"},
+    {id:"compra",         lbl:"Compra"},
+    {id:"historico",      lbl:"Histórico"}
+  ];
+  function montarPestanas(){
+    const nav = $("tabs");
+    PESTANAS.forEach(function(t){
+      const hijos = [document.createTextNode(t.lbl + " ")];
+      if(t.quien) hijos.push(el("span", {class:"quien", text:t.quien}));
+      hijos.push(el("span", {class:"n", id:"n-" + t.id, text:"–"}));
+      nav.appendChild(el("button", {
+        class:"tab", id:"tab-" + t.id, role:"tab", "aria-controls":"panel-" + t.id,
+        "aria-selected":"false", "data-panel":t.id,
+        onclick:function(){ verTab(t.id); }
+      }, hijos));
     });
   }
-  function mayus(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
+  function verTab(nombre){
+    estado.tab = nombre; guardar();
+    PESTANAS.forEach(function(t){
+      $("panel-" + t.id).hidden = (t.id !== nombre);
+      $("tab-" + t.id).setAttribute("aria-selected", String(t.id === nombre));
+    });
+  }
 
-  function pintarPlatos(){
-    const q = fBuscar.value.trim().toLowerCase();
-    const m = fMomento.value, g = fGrupo.value, ti = fTiempo.value, re = fRepeticion.value;
-    const filas = platos().filter(function(p){
+  /* ============ Panel: platos ============ */
+  function montarPanelPlatos(pf){
+    const p = $("panel-platos-" + pf.id), s = pf.id;
+    p.textContent = "";
+    p.appendChild(el("div", {class:"section-head"}, [
+      el("div", null, [
+        el("div", {class:"eyebrow", text:"datos/" + (s === "nino" ? "platos-nino.csv" : "platos.csv")}),
+        el("h2", {text:"Platos " + pf.quien})
+      ]),
+      el("button", {class:"btn btn-primary", id:"nuevo-" + s, onclick:function(){ abrirEditor(s, null); },
+                    text:"Nuevo plato"})
+    ]));
+    p.appendChild(el("p", {class:"lead", text:
+      s === "nino"
+        ? "Lo que cena el niño, con su grupo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar."
+        : "El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón Editar."
+    }));
+
+    function filtro(id, etiqueta, opciones, ancho){
+      const sel = el("select", {id:id + "-" + s, oninput:function(){ pintarPlatos(pf); }});
+      opciones.forEach(function(o){ sel.appendChild(el("option", {value:o[0], text:o[1]})); });
+      return el("div", {class:"field" + (ancho ? " " + ancho : "")}, [
+        el("label", {for:id + "-" + s, text:etiqueta}), sel
+      ]);
+    }
+    const buscar = el("input", {type:"search", id:"f-buscar-" + s, placeholder:"Plato o ingrediente…",
+                                oninput:function(){ pintarPlatos(pf); }});
+    const fGrupo = el("select", {id:"f-grupo-" + s, oninput:function(){ pintarPlatos(pf); }}, [
+      el("option", {value:"", text:"Todos"})
+    ]);
+    Object.keys(REP[s].GRUPOS).forEach(function(k){
+      fGrupo.appendChild(el("option", {value:k, text:REP[s].GRUPOS[k].lbl}));
+    });
+
+    p.appendChild(el("div", {class:"filters"}, [
+      el("div", {class:"field grow"}, [el("label", {for:"f-buscar-" + s, text:"Buscar"}), buscar]),
+      filtro("f-momento", "Momento", [["","Todos"],["comida","Comida"],["cena","Cena"],["ambos","Ambos"]]),
+      filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
+      filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"]]),
+      el("div", {class:"field"}, [el("label", {for:"f-grupo-" + s, text:"Grupo"}), fGrupo])
+    ]));
+
+    const cabecera = ["Plato","Tipo de alimento","Momento","Preparación","Repetición","Ingredientes"]
+      .map(function(t){ return el("th", {scope:"col", text:t}); });
+    cabecera.push(el("th", {scope:"col", class:"col-acc"}));
+    p.appendChild(el("div", {class:"table-wrap"}, [
+      el("table", null, [
+        el("thead", null, [el("tr", null, cabecera)]),
+        el("tbody", {id:"tbody-platos-" + s})
+      ])
+    ]));
+    p.appendChild(el("p", {class:"hint", style:"margin-top:12px", text:
+      "Los cambios se guardan en este navegador. Para dejarlos fijos, descarga los CSV desde el Histórico y súbelos al repositorio."}));
+  }
+
+  function pintarPlatos(pf){
+    const s = pf.id;
+    const q = $("f-buscar-" + s).value.trim().toLowerCase();
+    const m = $("f-momento-" + s).value, g = $("f-grupo-" + s).value;
+    const ti = $("f-tiempo-" + s).value, re = $("f-repeticion-" + s).value;
+    const cuerpo = $("tbody-platos-" + s);
+    const filas = platos(s).filter(function(p){
       if(m && p.m !== m) return false;
       if(g && p.g.indexOf(g) === -1) return false;
       if(ti && p.tiempo !== ti) return false;
@@ -967,315 +1049,497 @@ salsa de soja;si
       return true;
     });
 
-    tbody.textContent = "";
+    cuerpo.textContent = "";
     if(!filas.length){
-      const tr = document.createElement("tr"), td = document.createElement("td");
-      td.colSpan = 7; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
-      td.textContent = "Ningún plato coincide con el filtro.";
-      tr.appendChild(td); tbody.appendChild(tr);
+      cuerpo.appendChild(el("tr", null, [
+        el("td", {colspan:"7", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
+      ]));
     }
     filas.forEach(function(p){
-      const tr = document.createElement("tr");
-
-      const td1 = document.createElement("td");
-      const nm = document.createElement("div"); nm.className = "dish-name"; nm.textContent = p.n;
+      const nombre = el("div", {class:"dish-name", text:p.n});
       if(p.custom || p.editado){
-        const fl = document.createElement("span"); fl.className = "custom-flag";
-        fl.textContent = p.custom ? "añadido" : "modificado";
-        nm.appendChild(fl);
+        nombre.appendChild(el("span", {class:"custom-flag", text:p.custom ? "añadido" : "modificado"}));
       }
-      const ds = document.createElement("div"); ds.className = "dish-desc"; ds.textContent = p.d;
-      td1.appendChild(nm); td1.appendChild(ds);
+      const ings = el("div", {class:"ings"});
+      p.i.forEach(function(x){ ings.appendChild(el("span", {class:"chip chip-ing", text:x})); });
 
-      const td2 = document.createElement("td");
-      const tp = document.createElement("div"); tp.className = "tipo"; tp.textContent = p.t; td2.appendChild(tp);
-
-      const td3 = document.createElement("td");
-      const ch = document.createElement("span"); ch.className = "chip chip-" + p.m;
-      ch.textContent = MOMENTO_LBL[p.m] || p.m; td3.appendChild(ch);
-
-      const td4 = document.createElement("td");
-      const cht = document.createElement("span"); cht.className = "chip chip-" + p.tiempo;
-      cht.textContent = mayus(p.tiempo); td4.appendChild(cht);
-
-      const td5 = document.createElement("td");
-      const chr = document.createElement("span"); chr.className = "chip chip-" + p.rep;
-      chr.textContent = mayus(p.rep); td5.appendChild(chr);
-
-      const td6 = document.createElement("td");
-      const box = document.createElement("div"); box.className = "ings";
-      p.i.forEach(function(ing){
-        const c = document.createElement("span"); c.className = "chip chip-ing"; c.textContent = ing; box.appendChild(c);
-      });
-      td6.appendChild(box);
-
-      const td7 = document.createElement("td"); td7.className = "col-acc";
-      const editar = document.createElement("button");
-      editar.className = "btn btn-sm"; editar.textContent = "Editar";
-      editar.setAttribute("aria-label", "Editar " + p.n);
-      editar.addEventListener("click", function(){
-        abrirEditor(p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig});
-      });
-      td7.appendChild(editar);
-
-      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-      tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6); tr.appendChild(td7);
-      tbody.appendChild(tr);
+      cuerpo.appendChild(el("tr", null, [
+        el("td", null, [nombre, el("div", {class:"dish-desc", text:p.d})]),
+        el("td", null, [el("div", {class:"tipo", text:p.t})]),
+        el("td", null, [el("span", {class:"chip chip-" + p.m, text:MOMENTO_LBL[p.m] || p.m})]),
+        el("td", null, [el("span", {class:"chip chip-" + p.tiempo, text:mayus(p.tiempo)})]),
+        el("td", null, [el("span", {class:"chip chip-" + p.rep, text:mayus(p.rep)})]),
+        el("td", null, [ings]),
+        el("td", {class:"col-acc"}, [
+          el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + p.n,
+            onclick:function(){ abrirEditor(s, p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }})
+        ])
+      ]));
     });
-    $("n-platos").textContent = String(platos().length);
+    $("n-platos-" + s).textContent = String(platos(s).length);
   }
 
-  /* ============ Objetivos ajustables ============ */
-  function pintarObjetivos(){
-    const cont = $("obj-grid"); cont.textContent = "";
-    Object.keys(GRUPOS).forEach(function(k){
-      const meta = objetivo(k);
-      const fila = document.createElement("div"); fila.className = "obj-row";
+  /* ============ Panel: semana ============ */
+  function montarPanelSemana(pf){
+    const p = $("panel-semana-" + pf.id), s = pf.id;
+    p.textContent = "";
+    p.appendChild(el("div", {class:"section-head"}, [
+      el("div", null, [
+        el("div", {class:"eyebrow", text: pf.comidasFijas ? "Lunes a domingo · comida y cena"
+                                                          : "Cenas a diario · comidas solo cuando toca"}),
+        el("h2", {text:"Reparto " + pf.quien})
+      ]),
+      el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
+        el("button", {class:"btn btn-primary", text:"Generar semana", onclick:function(){
+          generar(s, semanaActual()); pintarTodo();
+          aviso("Semana generada" + (objetivosTocados(s) ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
+        }}),
+        el("button", {class:"btn", text:"Vaciar", onclick:function(){
+          fijarHuecos(s, semanaActual(), {}); pintarTodo();
+        }})
+      ])
+    ]));
 
-      const sw = document.createElement("span"); sw.className = "swatch";
-      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
-      const nm = document.createElement("span"); nm.className = "name"; nm.textContent = meta.lbl;
+    p.appendChild(el("div", {class:"weeknav"}, [
+      el("button", {class:"arrow", "aria-label":"Semana anterior", text:"◀",
+        onclick:function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); }}),
+      el("div", {class:"wk"}, [
+        el("div", {class:"lbl", id:"wk-label-" + s, text:"—"}),
+        el("div", {class:"sub", id:"wk-sub-" + s, text:"—"})
+      ]),
+      el("button", {class:"arrow", "aria-label":"Semana siguiente", text:"▶",
+        onclick:function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), 7))); }}),
+      el("button", {class:"btn btn-sm", text:"Semana actual",
+        onclick:function(){ irASemana(iso(lunesDe(new Date()))); }})
+    ]));
 
-      const min = document.createElement("input");
-      min.type = "number"; min.min = "0"; min.max = "14"; min.value = String(meta.min);
-      min.id = "obj-min-" + k;
-      min.setAttribute("aria-label", "Mínimo de " + meta.lbl);
+    p.appendChild(el("div", {class:"balance"}, [
+      el("h3", {text:"Equilibrio de la semana"}),
+      el("p", {text:"Veces que aparece cada grupo, frente al objetivo semanal."}),
+      el("div", {class:"meters", id:"meters-" + s}),
+      el("details", {class:"obj"}, [
+        el("summary", {text:"Ajustar objetivos antes de generar"}),
+        el("div", {class:"obj-grid", id:"obj-grid-" + s}),
+        el("div", {class:"obj-foot"}, [
+          el("button", {class:"btn btn-sm", text:"Volver a los valores del documento", onclick:function(){
+            estado[s].objetivos = {}; guardar(); pintarObjetivos(pf); pintarSemana(pf);
+            aviso("Objetivos restablecidos");
+          }}),
+          el("span", {class:"hint", text:"Los objetivos guían el reparto al pulsar «Generar semana»."})
+        ])
+      ])
+    ]));
 
-      const sep = document.createElement("span"); sep.className = "sep"; sep.textContent = "–";
+    p.appendChild(el("div", {class:"week", id:"week-" + s}));
+    p.appendChild(el("div", {class:"legend", id:"legend-" + s}));
+  }
 
-      const max = document.createElement("input");
-      max.type = "number"; max.min = "0"; max.max = "14"; max.value = String(meta.max);
-      max.id = "obj-max-" + k;
-      max.setAttribute("aria-label", "Máximo de " + meta.lbl);
-
+  function pintarObjetivos(pf){
+    const s = pf.id, cont = $("obj-grid-" + s);
+    cont.textContent = "";
+    Object.keys(REP[s].GRUPOS).forEach(function(k){
+      const meta = objetivo(s, k);
+      const min = el("input", {type:"number", min:"0", max:"14", value:String(meta.min),
+                               id:"obj-min-" + s + "-" + k, "aria-label":"Mínimo de " + meta.lbl});
+      const max = el("input", {type:"number", min:"0", max:"14", value:String(meta.max),
+                               id:"obj-max-" + s + "-" + k, "aria-label":"Máximo de " + meta.lbl});
       function cambia(){
         let a = Math.max(0, Math.min(14, Number(min.value) || 0));
         let b = Math.max(0, Math.min(14, Number(max.value) || 0));
         if(b < a) b = a;
         min.value = String(a); max.value = String(b);
-        estado.objetivos[k] = {min:a, max:b};
-        guardar(); pintarSemana();
+        estado[s].objetivos[k] = {min:a, max:b};
+        guardar(); pintarSemana(pf);
       }
       min.addEventListener("change", cambia);
       max.addEventListener("change", cambia);
-
-      fila.appendChild(sw); fila.appendChild(nm); fila.appendChild(min); fila.appendChild(sep); fila.appendChild(max);
-      cont.appendChild(fila);
+      cont.appendChild(el("div", {class:"obj-row"}, [
+        el("span", {class:"swatch", style:"background:" + colorDe(k)}),
+        el("span", {class:"name", text:meta.lbl}),
+        min, el("span", {class:"sep", text:"–"}), max
+      ]));
     });
   }
 
-  $("obj-reset").addEventListener("click", function(){
-    estado.objetivos = {}; guardar();
-    pintarObjetivos(); pintarSemana();
-    aviso("Objetivos restablecidos a datos/equilibrio.csv");
-  });
-
-  /* ============ Semana ============ */
   function semanaActual(){
     if(!estado.semana) estado.semana = iso(lunesDe(new Date()));
     return estado.semana;
   }
-  function irASemana(id){ estado.semana = id; guardar(); pintarSemana(); pintarCompra(); }
+  function irASemana(id){ estado.semana = id; guardar(); pintarTodo(); }
 
-  function pintarSemana(){
-    const id = semanaActual(), lunes = desdeIso(id), h = huecos(id), hoyId = iso(lunesDe(new Date()));
+  function pintarSemana(pf){
+    const s = pf.id, id = semanaActual(), lunes = desdeIso(id);
+    const h = huecos(s, id), hoyId = iso(lunesDe(new Date())), hoy = iso(new Date());
 
-    $("wk-label").textContent = etiquetaSemana(lunes);
-    $("wk-sub").textContent = subtituloSemana(lunes);
-    if(id === hoyId){
-      const b = document.createElement("span"); b.className = "now"; b.textContent = "esta semana";
-      $("wk-label").appendChild(b);
-    }
+    const etiqueta = $("wk-label-" + s);
+    etiqueta.textContent = etiquetaSemana(lunes);
+    $("wk-sub-" + s).textContent = subtituloSemana(lunes);
+    if(id === hoyId) etiqueta.appendChild(el("span", {class:"now", text:"esta semana"}));
 
-    const cuenta = {};
-    Object.keys(GRUPOS).forEach(function(k){ cuenta[k] = 0; });
-    Object.keys(h).forEach(function(k){
-      const p = h[k] && plato(h[k]);
+    const grupos = REP[s].GRUPOS, cuenta = {};
+    Object.keys(grupos).forEach(function(k){ cuenta[k] = 0; });
+    clavesDe(s, id).forEach(function(k){
+      const p = h[k] && plato(s, h[k]);
       if(p) p.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
     });
 
-    const metros = $("meters"); metros.textContent = "";
-    Object.keys(GRUPOS).forEach(function(k){
-      const meta = objetivo(k), c = cuenta[k];
-      const cls = c < meta.min ? "low" : (c > meta.max ? "high" : "ok");
-      const d = document.createElement("div"); d.className = "meter " + cls;
-      const l = document.createElement("span"); l.className = "lbl"; l.textContent = meta.lbl;
-      const v = document.createElement("span"); v.className = "val"; v.textContent = String(c);
-      const r = document.createElement("span"); r.className = "rng"; r.textContent = "/ " + meta.min + "–" + meta.max;
-      d.appendChild(l); d.appendChild(v); d.appendChild(r); metros.appendChild(d);
+    const metros = $("meters-" + s); metros.textContent = "";
+    Object.keys(grupos).forEach(function(k){
+      const meta = objetivo(s, k), c = cuenta[k];
+      metros.appendChild(el("div", {class:"meter " + (c < meta.min ? "low" : (c > meta.max ? "high" : "ok"))}, [
+        el("span", {class:"lbl", text:meta.lbl}),
+        el("span", {class:"val", text:String(c)}),
+        el("span", {class:"rng", text:"/ " + meta.min + "–" + meta.max})
+      ]));
     });
 
-    const cont = $("week"); cont.textContent = "";
-    const hoy = iso(new Date());
+    const cont = $("week-" + s); cont.textContent = "";
     DIAS.forEach(function(dia, idx){
       const fecha = sumaDias(lunes, idx);
-      const card = document.createElement("article");
-      card.className = "day" + (iso(fecha) === hoy ? " hoy" : "");
-      const head = document.createElement("header");
-      const h3 = document.createElement("h3"); h3.textContent = dia;
-      const num = document.createElement("span"); num.className = "dnum";
-      num.textContent = fecha.getDate() + " " + MESES_CORTOS[fecha.getMonth()];
-      head.appendChild(h3); head.appendChild(num); card.appendChild(head);
+      const cab = [el("h3", {text:dia})];
+      if(!pf.comidasFijas){
+        const on = !!comidas(s, id)[dia];
+        cab.push(el("button", {
+          class:"toggle-comida", "aria-pressed":String(on),
+          title: on ? "Quitar la comida de este día" : "Este día también come en casa",
+          text: on ? "− comida" : "+ comida",
+          onclick:function(){ alternarComida(s, dia); }
+        }));
+      }
+      cab.push(el("span", {class:"dnum", text:fecha.getDate() + " " + MESES_CORTOS[fecha.getMonth()]}));
 
-      MOMENTOS.forEach(function(momento){
+      const card = el("article", {class:"day" + (iso(fecha) === hoy ? " hoy" : "")}, [el("header", null, cab)]);
+      momentosDe(s, id, dia).forEach(function(momento){
         const clave = dia + "|" + momento;
-        const p = h[clave] ? plato(h[clave]) : null;
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "slot" + (p ? " g-" + base(p) : " empty");
-        b.setAttribute("aria-label", MOMENTO_LBL[momento] + " del " + dia + ": " +
-          (p ? p.n : "sin asignar") + ". Pulsa para cambiar el plato.");
-        const dish = document.createElement("div"); dish.className = "slot-dish";
-        dish.textContent = p ? p.n : (h[clave] || "Sin asignar");
-        b.appendChild(dish);
-        if(p){
-          const meta = document.createElement("div"); meta.className = "slot-meta"; meta.textContent = p.t;
-          b.appendChild(meta);
-        }
-        b.addEventListener("click", function(){ abrirSelector(dia, momento); });
-        card.appendChild(b);
+        const p = h[clave] ? plato(s, h[clave]) : null;
+        const hijos = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
+        if(p) hijos.push(el("div", {class:"slot-meta", text:p.t}));
+        card.appendChild(el("button", {
+          type:"button", class:"slot" + (p ? " g-" + base(p) : " empty"),
+          "aria-label": MOMENTO_LBL[momento] + " del " + dia + ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiar el plato.",
+          onclick:function(){ abrirSelector(s, dia, momento); }
+        }, hijos));
       });
       cont.appendChild(card);
     });
 
-    pintarLeyenda();
-    $("n-semana").textContent = Object.keys(h).filter(function(k){ return !!h[k]; }).length + "/14";
-    $("compra-semana").textContent = etiquetaSemana(lunes);
-  }
-
-  function pintarLeyenda(){
-    const cont = $("legend"); cont.textContent = "";
-    Object.keys(GRUPOS).forEach(function(k){
-      const lg = document.createElement("span"); lg.className = "lg";
-      const sw = document.createElement("span"); sw.className = "sw";
-      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
-      const tx = document.createElement("span"); tx.textContent = GRUPOS[k].lbl;
-      lg.appendChild(sw); lg.appendChild(tx); cont.appendChild(lg);
+    const ley = $("legend-" + s); ley.textContent = "";
+    Object.keys(grupos).forEach(function(k){
+      ley.appendChild(el("span", {class:"lg"}, [
+        el("span", {class:"sw", style:"background:" + colorDe(k)}),
+        el("span", {text:grupos[k].lbl})
+      ]));
     });
+
+    $("n-semana-" + s).textContent = llenos(s, id) + "/" + clavesDe(s, id).length;
   }
 
-  $("wk-prev").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); pintarHistorico(); });
-  $("wk-next").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), 7))); pintarHistorico(); });
-  $("wk-hoy").addEventListener("click", function(){ irASemana(iso(lunesDe(new Date()))); pintarHistorico(); });
-  $("btn-generar").addEventListener("click", function(){
-    generar(semanaActual()); pintarSemana(); pintarCompra(); pintarHistorico();
-    aviso("Semana generada" + (objetivosTocados() ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
-  });
-  $("btn-vaciar").addEventListener("click", function(){
-    fijarHuecos(semanaActual(), {}); pintarSemana(); pintarCompra(); pintarHistorico();
-  });
+  function alternarComida(pid, dia){
+    const id = semanaActual(), c = {}, actual = comidas(pid, id);
+    Object.keys(actual).forEach(function(k){ if(actual[k]) c[k] = 1; });
+    if(c[dia]){
+      delete c[dia];
+      const h = huecos(pid, id);
+      if(h[dia + "|comida"]){
+        const copia = {};
+        Object.keys(h).forEach(function(k){ if(k !== dia + "|comida") copia[k] = h[k]; });
+        fijarHuecos(pid, id, copia);
+        aviso("Quitada la comida del " + dia + " y su plato");
+      }
+    }else{
+      c[dia] = 1;
+      aviso("El " + dia + " también come en casa");
+    }
+    fijarComidas(pid, id, c);
+    pintarTodo();
+  }
 
   /* ============ Selector de plato ============ */
   let capa = null;
   function cerrarSelector(){
-    if(capa){ capa.remove(); capa = null; document.removeEventListener("keydown", escCierra); }
+    if(capa){ capa.remove(); capa = null; document.removeEventListener("keydown", escSelector); }
   }
-  function escCierra(e){ if(e.key === "Escape") cerrarSelector(); }
+  function escSelector(e){ if(e.key === "Escape") cerrarSelector(); }
 
-  function abrirSelector(dia, momento){
+  function abrirSelector(pid, dia, momento){
     cerrarSelector();
-    const id = semanaActual(), h = {}, origen = huecos(id);
+    const id = semanaActual(), h = {}, origen = huecos(pid, id);
     Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
     const clave = dia + "|" + momento;
 
-    capa = document.createElement("div"); capa.className = "overlay";
-    capa.addEventListener("click", function(e){ if(e.target === capa) cerrarSelector(); });
+    const buscar = el("input", {type:"search", id:"picker-buscar", placeholder:"Buscar plato o ingrediente…"});
+    const lst = el("div", {class:"picker-list"});
 
-    const caja = document.createElement("div");
-    caja.className = "picker"; caja.setAttribute("role","dialog"); caja.setAttribute("aria-modal","true");
-    caja.setAttribute("aria-label", "Elegir plato para " + dia + ", " + MOMENTO_LBL[momento]);
-
-    const head = document.createElement("header");
-    const h3 = document.createElement("h3");
-    h3.textContent = mayus(dia) + " · " + MOMENTO_LBL[momento];
-    const buscar = document.createElement("input");
-    buscar.type = "search"; buscar.id = "picker-buscar"; buscar.placeholder = "Buscar plato o ingrediente…";
-    head.appendChild(h3); head.appendChild(buscar);
-
-    const lst = document.createElement("div"); lst.className = "picker-list";
     function pinta(){
-      const q = buscar.value.trim().toLowerCase();
-      const usados = {};
+      const q = buscar.value.trim().toLowerCase(), usados = {};
       Object.keys(h).forEach(function(k){ if(h[k]) usados[h[k]] = 1; });
-      const items = platos()
+      const items = platos(pid)
         .filter(function(p){ return !q || (p.n + " " + p.i.join(" ")).toLowerCase().indexOf(q) !== -1; })
         .map(function(p){ return {p:p, rec:elegible(p, momento)}; })
         .sort(function(a, b){ return (b.rec - a.rec) || a.p.n.localeCompare(b.p.n, "es"); });
       lst.textContent = "";
       items.forEach(function(it){
         const p = it.p, repetido = usados[p.n] && h[clave] !== p.n;
-        const b = document.createElement("button");
-        b.type = "button";
-        b.className = "opt" + (it.rec ? " rec" : "") + (repetido ? " used" : "");
-        const sw = document.createElement("span"); sw.className = "sw";
-        sw.style.background = "var(--g-" + base(p) + ", var(--surface-2))";
-        const txt = document.createElement("div");
-        const on = document.createElement("div"); on.className = "on"; on.textContent = p.n;
-        const om = document.createElement("div"); om.className = "om";
-        om.textContent = p.t + " · preparación " + p.tiempo + (repetido ? " · ya está esta semana" : "");
-        txt.appendChild(on); txt.appendChild(om);
-        b.appendChild(sw); b.appendChild(txt);
-        b.addEventListener("click", function(){
-          h[clave] = p.n; fijarHuecos(id, h);
-          cerrarSelector(); pintarSemana(); pintarCompra(); pintarHistorico();
-        });
-        lst.appendChild(b);
+        lst.appendChild(el("button", {
+          type:"button", class:"opt" + (it.rec ? " rec" : "") + (repetido ? " used" : ""),
+          onclick:function(){
+            h[clave] = p.n; fijarHuecos(pid, id, h); cerrarSelector(); pintarTodo();
+          }
+        }, [
+          el("span", {class:"sw", style:"background:" + colorDe(base(p))}),
+          el("div", null, [
+            el("div", {class:"on", text:p.n}),
+            el("div", {class:"om", text:p.t + " · preparación " + p.tiempo + (repetido ? " · ya está esta semana" : "")})
+          ])
+        ]));
       });
       if(!items.length){
-        const e = document.createElement("div");
-        e.style.padding = "22px 16px"; e.style.color = "var(--ink-3)";
-        e.textContent = "Ningún plato coincide.";
-        lst.appendChild(e);
+        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)", text:"Ningún plato coincide."}));
       }
     }
     buscar.addEventListener("input", pinta);
     pinta();
 
-    const foot = document.createElement("footer");
-    const quitar = document.createElement("button");
-    quitar.className = "btn btn-ghost"; quitar.textContent = "Dejar el hueco vacío";
-    quitar.addEventListener("click", function(){
-      delete h[clave]; fijarHuecos(id, h);
-      cerrarSelector(); pintarSemana(); pintarCompra(); pintarHistorico();
-    });
-    const cerrar = document.createElement("button");
-    cerrar.className = "btn"; cerrar.textContent = "Cancelar";
-    cerrar.addEventListener("click", cerrarSelector);
-    foot.appendChild(quitar); foot.appendChild(cerrar);
+    const caja = el("div", {class:"picker", role:"dialog", "aria-modal":"true",
+                            "aria-label":"Elegir plato para " + dia + ", " + MOMENTO_LBL[momento]}, [
+      el("header", null, [
+        el("h3", {text:mayus(dia) + " · " + MOMENTO_LBL[momento] + " · " + perfil(pid).lbl}),
+        buscar
+      ]),
+      lst,
+      el("footer", null, [
+        el("button", {class:"btn btn-ghost", text:"Dejar el hueco vacío", onclick:function(){
+          delete h[clave]; fijarHuecos(pid, id, h); cerrarSelector(); pintarTodo();
+        }}),
+        el("button", {class:"btn", text:"Cancelar", onclick:cerrarSelector})
+      ])
+    ]);
 
-    caja.appendChild(head); caja.appendChild(lst); caja.appendChild(foot);
-    capa.appendChild(caja);
+    capa = el("div", {class:"overlay", onclick:function(e){ if(e.target === capa) cerrarSelector(); }}, [caja]);
     document.body.appendChild(capa);
-    document.addEventListener("keydown", escCierra);
+    document.addEventListener("keydown", escSelector);
     buscar.focus();
   }
 
+  /* ============ Editor de platos ============ */
+  let capaEditor = null;
+  function cerrarEditor(){
+    if(capaEditor){ capaEditor.remove(); capaEditor = null; document.removeEventListener("keydown", escEditor); }
+  }
+  function escEditor(e){ if(e.key === "Escape") cerrarEditor(); }
+
+  function campo(etiqueta, control, ancho){
+    return el("div", {class:"field" + (ancho ? " full" : "")}, [
+      el("label", {for:control.id, text:etiqueta}), control
+    ]);
+  }
+  function selectDe(id, opciones, valor){
+    const s = el("select", {id:id});
+    opciones.forEach(function(o){
+      s.appendChild(el("option", {value:o, text:mayus(o), selected: o === valor ? "selected" : null}));
+    });
+    return s;
+  }
+
+  // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
+  function abrirEditor(pid, ref){
+    cerrarEditor();
+    const nuevo = !ref, grupos = REP[pid].GRUPOS;
+    let p = null;
+    if(ref && ref.tipo === "base") p = platos(pid).filter(function(x){ return x.orig === ref.orig; })[0];
+    else if(ref && ref.tipo === "extra") p = estado[pid].extra.filter(function(x){ return x.uid === ref.uid; })[0];
+    if(!nuevo && !p){ aviso("Ese plato ya no existe"); return; }
+    const nombreAntes = p ? p.n : "";
+
+    const eNombre = el("input", {type:"text", id:"e-nombre", value: p ? p.n : "", placeholder:"Merluza al horno con patata"});
+    const eDesc   = el("input", {type:"text", id:"e-desc", value: p ? p.d : "", placeholder:"Lomos de merluza con patata y cebolla."});
+    const eTipo   = el("input", {type:"text", id:"e-tipo", value: p ? p.t : "", placeholder:"Pescado blanco + Tubérculo"});
+    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : (pid === "nino" ? "ambos" : "cena"));
+    const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
+    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional"], p ? p.rep : "media");
+
+    const gGrid = el("div", {class:"grupos"});
+    const gActuales = p ? p.g.slice() : [];
+    Object.keys(grupos).forEach(function(k){
+      const cb = el("input", {type:"checkbox", id:"e-g-" + k, "aria-label":"Pertenece a " + grupos[k].lbl});
+      cb.checked = gActuales.indexOf(k) !== -1;
+      const rd = el("input", {type:"radio", name:"e-base", id:"e-b-" + k, value:k,
+                              "aria-label":grupos[k].lbl + " es la base"});
+      rd.checked = gActuales.length > 0 && gActuales[0] === k;
+      cb.addEventListener("change", function(){ if(!cb.checked && rd.checked) rd.checked = false; });
+      rd.addEventListener("change", function(){ if(rd.checked) cb.checked = true; });
+      gGrid.appendChild(el("div", {class:"grupo-row"}, [
+        cb, rd,
+        el("span", {class:"sw", style:"background:" + colorDe(k)}),
+        el("span", {class:"nm", text:grupos[k].lbl})
+      ]));
+    });
+
+    const eIngs = el("textarea", {id:"e-ings", placeholder:"merluza, patata, cebolla, aceite de oliva"});
+    eIngs.value = p ? p.i.join(", ") : "";
+    const nuevos = el("div", {class:"full"});
+
+    function leerIngredientes(){
+      return eIngs.value.split(/[,\n]/)
+        .map(function(x){ return x.trim().toLowerCase(); })
+        .filter(Boolean)
+        .filter(function(v, i, a){ return a.indexOf(v) === i; });
+    }
+    const asignadas = {};
+    function pintarNuevos(){
+      const sin = leerIngredientes().filter(function(ing){ return !SECCION[ing] && !estado.secciones[ing]; });
+      nuevos.textContent = "";
+      if(!sin.length) return;
+      const caja2 = el("div", {class:"nuevos"}, [
+        el("h5", {text:"Ingredientes nuevos"}),
+        el("p", {style:"margin:0;font-size:12.5px;color:var(--warn)",
+                 text:"Dales una sección del súper para que caigan en su sitio en la lista de la compra."})
+      ]);
+      sin.forEach(function(ing){
+        const sel = el("select", {id:"e-sec-" + ing.replace(/[^a-z0-9]+/gi, "-"), "aria-label":"Sección de " + ing});
+        SECCIONES.concat(["Otros"]).forEach(function(x){
+          sel.appendChild(el("option", {value:x, text:x, selected: asignadas[ing] === x ? "selected" : null}));
+        });
+        if(!asignadas[ing]) asignadas[ing] = sel.value;
+        sel.addEventListener("change", function(){ asignadas[ing] = sel.value; });
+        caja2.appendChild(el("div", {class:"nuevo-row"}, [el("span", {class:"nm", text:ing}), sel]));
+      });
+      nuevos.appendChild(caja2);
+    }
+    eIngs.addEventListener("input", pintarNuevos);
+    pintarNuevos();
+
+    const pie = [];
+    if(!nuevo){
+      pie.push(el("button", {class:"btn btn-ghost", style:"color:var(--pimenton)", text:"Eliminar", onclick:function(){
+        if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio? Se quitará de las semanas en las que esté.")) return;
+        reemplazarEnSemanas(pid, p.n, null);
+        if(p.custom) estado[pid].extra = estado[pid].extra.filter(function(x){ return x.uid !== p.uid; });
+        else{
+          if(estado[pid].borrados.indexOf(p.orig) === -1) estado[pid].borrados.push(p.orig);
+          delete estado[pid].ediciones[p.orig];
+        }
+        guardar(); cerrarEditor(); pintarTodo(); aviso("Plato eliminado");
+      }}));
+      if(p.editado){
+        pie.push(el("button", {class:"btn btn-ghost", text:"Deshacer cambios", onclick:function(){
+          const original = REP[pid].PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
+          delete estado[pid].ediciones[p.orig];
+          if(original) reemplazarEnSemanas(pid, p.n, original.n);
+          guardar(); cerrarEditor(); pintarTodo();
+          aviso("Plato devuelto a lo que dice el CSV");
+        }}));
+      }
+    }
+    pie.push(el("div", {class:"der"}, [
+      el("button", {class:"btn", text:"Cancelar", onclick:cerrarEditor}),
+      el("button", {class:"btn btn-primary", text: nuevo ? "Añadir al repertorio" : "Guardar cambios", onclick:function(){
+        const n = eNombre.value.trim(), ings = leerIngredientes();
+        if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
+        if(!ings.length){ aviso("Añade al menos un ingrediente"); eIngs.focus(); return; }
+        const choque = plato(pid, n);
+        if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
+
+        const marcados = Object.keys(grupos).filter(function(k){ return $("e-g-" + k).checked; });
+        if(!marcados.length){ aviso("Marca al menos un grupo"); return; }
+        const radio = document.querySelector('input[name="e-base"]:checked');
+        const baseSel = radio && marcados.indexOf(radio.value) !== -1 ? radio.value : marcados[0];
+
+        ings.forEach(function(ing){
+          if(!SECCION[ing] && !estado.secciones[ing] && asignadas[ing]) estado.secciones[ing] = asignadas[ing];
+        });
+
+        const campos = {
+          n:n, d: eDesc.value.trim() || "Sin descripción.", t: eTipo.value.trim() || "Sin clasificar",
+          m: eMom.value, tiempo: eTiempo.value, rep: eRep.value,
+          g: [baseSel].concat(marcados.filter(function(k){ return k !== baseSel; })), i: ings
+        };
+        if(nuevo){
+          campos.uid = "x" + Date.now().toString(36);
+          campos.custom = true;
+          estado[pid].extra.push(campos);
+        }else if(p.custom){
+          const obj = estado[pid].extra.filter(function(x){ return x.uid === p.uid; })[0];
+          Object.keys(campos).forEach(function(k){ obj[k] = campos[k]; });
+          reemplazarEnSemanas(pid, nombreAntes, n);
+        }else{
+          estado[pid].ediciones[p.orig] = campos;
+          reemplazarEnSemanas(pid, nombreAntes, n);
+        }
+        guardar(); cerrarEditor(); pintarTodo();
+        aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
+      }})
+    ]));
+
+    const cabeza = [el("h3", {text: nuevo ? "Nuevo plato · " + perfil(pid).lbl : "Editar plato · " + perfil(pid).lbl})];
+    if(!nuevo){
+      cabeza.push(el("span", {
+        class:"badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo")),
+        text: p.custom ? "añadido" : (p.editado ? "modificado" : "del repositorio")
+      }));
+    }
+
+    const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true",
+                            "aria-label": nuevo ? "Nuevo plato" : "Editar " + p.n}, [
+      el("header", null, cabeza),
+      el("div", {class:"editor-body"}, [
+        campo("Nombre del plato", eNombre, true),
+        campo("Descripción", eDesc, true),
+        campo("Tipo de alimento", eTipo, true),
+        campo("Momento", eMom), campo("Preparación", eTiempo), campo("Repetición", eRep),
+        el("div", {class:"full"}, [
+          el("div", {class:"grupo-head"}, [
+            el("label", {style:"font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)", text:"Grupos"}),
+            el("span", {class:"base-lbl", text:"● base = color"})
+          ]),
+          gGrid
+        ]),
+        campo("Ingredientes, separados por comas o saltos de línea", eIngs, true),
+        nuevos
+      ]),
+      el("footer", null, pie)
+    ]);
+
+    capaEditor = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaEditor) cerrarEditor(); }}, [caja]);
+    document.body.appendChild(capaEditor);
+    document.addEventListener("keydown", escEditor);
+    eNombre.focus();
+  }
+
   /* ============ Compra ============ */
+  // Una sola lista: los ingredientes de las dos semanas, sin duplicar.
   function ingredientesDeSemana(id){
-    const h = huecos(id), mapa = {};
-    Object.keys(h).forEach(function(k){
-      const p = h[k] && plato(h[k]);
-      if(!p) return;
-      p.i.forEach(function(ing){
-        if(!mapa[ing]) mapa[ing] = [];
-        if(mapa[ing].indexOf(p.n) === -1) mapa[ing].push(p.n);
+    const mapa = {};
+    PERFILES.forEach(function(pf){
+      const h = huecos(pf.id, id);
+      clavesDe(pf.id, id).forEach(function(k){
+        const p = h[k] && plato(pf.id, h[k]);
+        if(!p) return;
+        p.i.forEach(function(ing){
+          if(!mapa[ing]) mapa[ing] = [];
+          if(mapa[ing].indexOf(p.n) === -1) mapa[ing].push(p.n);
+        });
       });
     });
     return mapa;
   }
+  function distintos(pid, id){
+    const h = huecos(pid, id), s = {};
+    clavesDe(pid, id).forEach(function(k){ if(h[k]) s[h[k]] = 1; });
+    return Object.keys(s).length;
+  }
 
   function pintarCompra(){
-    const id = semanaActual(), mapa = ingredientesDeSemana(id), h = huecos(id);
-    const distintos = {};
-    Object.keys(h).forEach(function(k){ if(h[k]) distintos[h[k]] = 1; });
-    $("c-dishes").textContent = String(Object.keys(distintos).length);
+    const id = semanaActual(), mapa = ingredientesDeSemana(id);
+    $("compra-semana").textContent = etiquetaSemana(desdeIso(id));
+    $("c-adultos").textContent = String(distintos("adultos", id));
+    $("c-nino").textContent = String(distintos("nino", id));
 
     const cont = $("secs"); cont.textContent = "";
     const ingredientes = Object.keys(mapa);
     if(!ingredientes.length){
-      const e = document.createElement("div"); e.className = "empty-state";
-      e.textContent = "Esta semana no tiene platos asignados. Genera un reparto en la pestaña Semana y la lista aparecerá aquí.";
-      cont.appendChild(e);
+      cont.appendChild(el("div", {class:"empty-state",
+        text:"Esta semana no tiene platos asignados. Genera un reparto y la lista aparecerá aquí."}));
       $("c-buy").textContent = "0"; $("c-have").textContent = "0"; $("n-compra").textContent = "0";
       return;
     }
@@ -1292,29 +1556,26 @@ salsa de soja;si
     ordenSecciones(Object.keys(porSeccion)).forEach(function(titulo){
       const items = porSeccion[titulo];
       if(!items || !items.length) return;
-      const sec = document.createElement("section"); sec.className = "sec";
-      const head = document.createElement("header");
-      const h3 = document.createElement("h3"); h3.textContent = titulo;
-      const n = document.createElement("span"); n.className = "sec-n";
-      n.textContent = items.filter(function(i){ return !enCasa(i); }).length + " de " + items.length;
-      head.appendChild(h3); head.appendChild(n); sec.appendChild(head);
-
+      const sec = el("section", {class:"sec"}, [
+        el("header", null, [
+          el("h3", {text:titulo}),
+          el("span", {class:"sec-n", text:items.filter(function(i){ return !enCasa(i); }).length + " de " + items.length})
+        ])
+      ]);
       items.forEach(function(ing){
-        const fila = document.createElement("label");
-        fila.className = "item" + (enCasa(ing) ? " have" : "");
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.id = "ing-" + ing.replace(/[^a-z0-9]+/gi, "-");
+        const cb = el("input", {type:"checkbox", id:"ing-" + ing.replace(/[^a-z0-9]+/gi, "-")});
         cb.checked = enCasa(ing);
-        cb.addEventListener("change", function(){ marcarEnCasa(ing, cb.checked); pintarCompra(); });
-        const txt = document.createElement("div"); txt.className = "txt";
-        const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = ing;
-        const why = document.createElement("div"); why.className = "why";
+        cb.addEventListener("change", function(){
+          estado.despensa[ing] = cb.checked; guardar(); pintarCompra();
+        });
         const usos = mapa[ing];
-        why.textContent = usos.length === 1 ? usos[0] : usos.length + " platos: " + usos.join(", ");
-        txt.appendChild(nm); txt.appendChild(why);
-        fila.appendChild(cb); fila.appendChild(txt);
-        sec.appendChild(fila);
+        sec.appendChild(el("label", {class:"item" + (enCasa(ing) ? " have" : "")}, [
+          cb,
+          el("div", {class:"txt"}, [
+            el("div", {class:"nm", text:ing}),
+            el("div", {class:"why", text: usos.length === 1 ? usos[0] : usos.length + " platos: " + usos.join(", ")})
+          ])
+        ]));
       });
       cont.appendChild(sec);
     });
@@ -1334,7 +1595,7 @@ salsa de soja;si
   $("btn-copiar").addEventListener("click", function(){
     const id = semanaActual(), mapa = ingredientesDeSemana(id);
     const lineas = ["Lista de la compra - " + etiquetaSemana(desdeIso(id)), ""];
-    const presentes = Object.keys(mapa).map(seccionDe).filter(function(v, ix, arr){ return arr.indexOf(v) === ix; });
+    const presentes = Object.keys(mapa).map(seccionDe).filter(function(v, i, a){ return a.indexOf(v) === i; });
     ordenSecciones(presentes).forEach(function(titulo){
       const items = Object.keys(mapa)
         .filter(function(i){ return seccionDe(i) === titulo && !enCasa(i); })
@@ -1350,53 +1611,38 @@ salsa de soja;si
   /* ============ Histórico ============ */
   function pintarHistorico(){
     const cuerpo = $("tbody-hist"); cuerpo.textContent = "";
-    const ids = idsSemanas(), actual = semanaActual(), hoyId = iso(lunesDe(new Date()));
+    const ids = idsTodas(), actual = semanaActual(), hoyId = iso(lunesDe(new Date()));
 
     if(!ids.length){
-      const tr = document.createElement("tr"), td = document.createElement("td");
-      td.colSpan = 5; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
-      td.textContent = "Todavía no hay ninguna semana planificada.";
-      tr.appendChild(td); cuerpo.appendChild(tr);
+      cuerpo.appendChild(el("tr", null, [
+        el("td", {colspan:"5", style:"padding:26px 14px;color:var(--ink-3)", text:"Todavía no hay ninguna semana planificada."})
+      ]));
     }
-
     ids.forEach(function(id){
-      const lunes = desdeIso(id), h = huecos(id);
-      const tr = document.createElement("tr"); tr.className = "hist-row";
-
-      const td1 = document.createElement("td");
-      const wk = document.createElement("div"); wk.className = "wk"; wk.textContent = etiquetaSemana(lunes);
-      td1.appendChild(wk);
-      if(id === hoyId){
-        const b = document.createElement("span"); b.className = "badge actual"; b.textContent = "en curso"; td1.appendChild(b);
+      const lunes = desdeIso(id);
+      function celdaPerfil(pid){
+        const total = clavesDe(pid, id).length, hechos = llenos(pid, id);
+        const local = !!estado[pid].semanas[id];
+        return el("td", null, [
+          el("div", {style:"font-variant-numeric:tabular-nums", text: hechos + " de " + total}),
+          el("span", {class:"badge " + (local ? "local" : "repo"), text: local ? "este navegador" : "repositorio"})
+        ]);
       }
+      const primera = el("td", null, [el("div", {class:"wk", text:etiquetaSemana(lunes)})]);
+      if(id === hoyId) primera.appendChild(el("span", {class:"badge actual", text:"en curso"}));
 
-      const td2 = document.createElement("td");
-      const rg = document.createElement("div"); rg.className = "rg"; rg.textContent = subtituloSemana(lunes);
-      td2.appendChild(rg);
-
-      const td3 = document.createElement("td");
-      td3.style.fontVariantNumeric = "tabular-nums";
-      td3.textContent = Object.keys(h).filter(function(k){ return !!h[k]; }).length + " de 14";
-
-      const td4 = document.createElement("td");
-      const b = document.createElement("span");
-      const local = !!estado.semanas[id];
-      b.className = "badge " + (local ? "local" : "repo");
-      b.textContent = local ? "este navegador" : "repositorio";
-      td4.appendChild(b);
-
-      const td5 = document.createElement("td");
-      td5.style.textAlign = "right";
-      const abrir = document.createElement("button");
-      abrir.className = "btn btn-sm";
-      abrir.textContent = id === actual ? "Abierta" : "Abrir";
-      abrir.disabled = id === actual;
-      if(abrir.disabled) abrir.style.opacity = ".5";
-      abrir.addEventListener("click", function(){ irASemana(id); pintarHistorico(); verTab("semana"); });
-      td5.appendChild(abrir);
-
-      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4); tr.appendChild(td5);
-      cuerpo.appendChild(tr);
+      cuerpo.appendChild(el("tr", {class:"hist-row"}, [
+        primera,
+        el("td", null, [el("div", {class:"rg", text:subtituloSemana(lunes)})]),
+        celdaPerfil("adultos"),
+        celdaPerfil("nino"),
+        el("td", {class:"col-acc"}, [
+          el("button", {class:"btn btn-sm", text: id === actual ? "Abierta" : "Abrir",
+            disabled: id === actual ? "disabled" : null,
+            style: id === actual ? "opacity:.5" : null,
+            onclick:function(){ irASemana(id); verTab("semana-adultos"); }})
+        ])
+      ]));
     });
 
     $("n-historico").textContent = String(ids.length);
@@ -1404,19 +1650,53 @@ salsa de soja;si
   }
 
   /* ============ Exportar ============ */
-  function csvSemanas(){
-    const cab = ["semana_id","etiqueta","inicio","fin","dia","momento","plato"], filas = [];
-    idsSemanas().slice().reverse().forEach(function(id){
-      const lunes = desdeIso(id), h = huecos(id);
+  function csvPlatos(pid){
+    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","grupos","ingredientes"],
+      platos(pid).map(function(p){
+        return { nombre:p.n, descripcion:p.d, tipo:p.t, momento:p.m, tiempo:p.tiempo,
+                 repeticion:p.rep, grupos:p.g.join("|"), ingredientes:p.i.join("|") };
+      }));
+  }
+  function csvSemanas(pid){
+    const pf = perfil(pid), filas = [];
+    idsSemanas(pid).slice().reverse().forEach(function(id){
+      const lunes = desdeIso(id), h = huecos(pid, id);
       const et = etiquetaSemana(lunes), fin = iso(sumaDias(lunes, 6));
       DIAS.forEach(function(dia){
         MOMENTOS.forEach(function(momento){
-          const p = h[dia + "|" + momento];
-          if(p) filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin, dia:dia, momento:momento, plato:p});
+          const habilitado = momento === "cena" || !!comidas(pid, id)[dia];
+          if(!habilitado) return;
+          const p = h[dia + "|" + momento] || "";
+          // En el niño, una comida habilitada se escribe aunque esté vacía: la
+          // presencia de la fila es lo que dice que ese día come en casa.
+          if(!p && (pf.comidasFijas || momento === "cena")) return;
+          filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin, dia:dia, momento:momento, plato:p});
         });
       });
     });
-    return escribirCSV(cab, filas);
+    return escribirCSV(["semana_id","etiqueta","inicio","fin","dia","momento","plato"], filas);
+  }
+  function csvEquilibrio(pid){
+    return escribirCSV(["grupo","etiqueta","minimo","maximo"],
+      Object.keys(REP[pid].GRUPOS).map(function(k){
+        const meta = objetivo(pid, k);
+        return {grupo:k, etiqueta:meta.lbl, minimo:meta.min, maximo:meta.max};
+      }));
+  }
+  function csvIngredientes(){
+    const usados = {};
+    PERFILES.forEach(function(pf){
+      platos(pf.id).forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
+    });
+    const nombres = Object.keys(usados);
+    const presentes = nombres.map(seccionDe).filter(function(v, i, a){ return a.indexOf(v) === i; });
+    const filas = [];
+    ordenSecciones(presentes).forEach(function(sec){
+      nombres.filter(function(i){ return seccionDe(i) === sec; })
+        .sort(function(a, b){ return a.localeCompare(b, "es"); })
+        .forEach(function(i){ filas.push({ingrediente:i, seccion:sec}); });
+    });
+    return escribirCSV(["ingrediente","seccion"], filas);
   }
   function csvDespensa(){
     const nombres = {};
@@ -1428,49 +1708,23 @@ salsa de soja;si
         .sort(function(a, b){ return a.localeCompare(b, "es"); })
         .map(function(i){ return {ingrediente:i, en_casa:"si"}; }));
   }
-  function csvIngredientes(){
-    // Solo los ingredientes que algún plato usa, agrupados por bloque en el orden de la compra.
-    const usados = {};
-    platos().forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
-    const nombres = Object.keys(usados);
-    const presentes = nombres.map(seccionDe).filter(function(v, ix, arr){ return arr.indexOf(v) === ix; });
-    const filas = [];
-    ordenSecciones(presentes).forEach(function(sec){
-      nombres.filter(function(i){ return seccionDe(i) === sec; })
-        .sort(function(a, b){ return a.localeCompare(b, "es"); })
-        .forEach(function(i){ filas.push({ingrediente:i, seccion:sec}); });
-    });
-    return escribirCSV(["ingrediente","seccion"], filas);
-  }
-  function csvPlatos(){
-    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","grupos","ingredientes"],
-      platos().map(function(p){
-        return { nombre:p.n, descripcion:p.d, tipo:p.t, momento:p.m, tiempo:p.tiempo,
-                 repeticion:p.rep, grupos:p.g.join("|"), ingredientes:p.i.join("|") };
-      }));
-  }
-  function csvEquilibrio(){
-    return escribirCSV(["grupo","etiqueta","minimo","maximo"],
-      Object.keys(GRUPOS).map(function(k){
-        const meta = objetivo(k);
-        return {grupo:k, etiqueta:meta.lbl, minimo:meta.min, maximo:meta.max};
-      }));
-  }
 
   const FICHEROS = [
-    {f:"platos.csv",       t:"El repertorio con tus ediciones, altas y bajas.",        gen:csvPlatos},
-    {f:"ingredientes.csv", t:"Cada ingrediente con su sección del súper.",             gen:csvIngredientes},
-    {f:"semanas.csv",      t:"Todas las semanas planificadas, una fila por hueco.",    gen:csvSemanas},
-    {f:"despensa.csv",     t:"Ingredientes marcados como existencias en casa.",        gen:csvDespensa},
-    {f:"equilibrio.csv",   t:"Los objetivos semanales, con tus ajustes.",              gen:csvEquilibrio}
+    {f:"platos.csv",          t:"Repertorio de los adultos.",                       gen:function(){ return csvPlatos("adultos"); }},
+    {f:"platos-nino.csv",     t:"Repertorio del niño.",                             gen:function(){ return csvPlatos("nino"); }},
+    {f:"ingredientes.csv",    t:"Cada ingrediente con su sección del súper.",       gen:csvIngredientes},
+    {f:"semanas.csv",         t:"Semanas de los adultos, una fila por hueco.",      gen:function(){ return csvSemanas("adultos"); }},
+    {f:"semanas-nino.csv",    t:"Semanas del niño, con las comidas habilitadas.",   gen:function(){ return csvSemanas("nino"); }},
+    {f:"despensa.csv",        t:"Ingredientes marcados como existencias en casa.",  gen:csvDespensa},
+    {f:"equilibrio.csv",      t:"Objetivos semanales de los adultos.",              gen:function(){ return csvEquilibrio("adultos"); }},
+    {f:"equilibrio-nino.csv", t:"Objetivos semanales del niño.",                    gen:function(){ return csvEquilibrio("nino"); }}
   ];
 
   function descargar(nombre, texto){
     try{
       const blob = new Blob([texto], {type:"text/csv;charset=utf-8"});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = nombre;
+      const a = el("a", {href:url, download:nombre});
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
       aviso("Descargado " + nombre + " — déjalo en datos/ del repositorio");
@@ -1485,301 +1739,28 @@ salsa de soja;si
       aviso("No se ha podido copiar");
     }
   }
-
   function pintarFicheros(){
     const cont = $("files"); cont.textContent = "";
     FICHEROS.forEach(function(item){
-      const card = document.createElement("div"); card.className = "file";
-      const h4 = document.createElement("h4"); h4.textContent = "datos/" + item.f;
-      const p = document.createElement("p"); p.textContent = item.t;
-      const row = document.createElement("div"); row.className = "row";
-      const bd = document.createElement("button"); bd.className = "btn btn-sm btn-primary"; bd.textContent = "Descargar";
-      bd.addEventListener("click", function(){ descargar(item.f, item.gen()); });
-      const bc = document.createElement("button"); bc.className = "btn btn-sm"; bc.textContent = "Copiar";
-      bc.addEventListener("click", function(){ copiar(item.gen(), item.f + " copiado al portapapeles"); });
-      row.appendChild(bd); row.appendChild(bc);
-      card.appendChild(h4); card.appendChild(p); card.appendChild(row);
-      cont.appendChild(card);
+      cont.appendChild(el("div", {class:"file"}, [
+        el("h4", {text:"datos/" + item.f}),
+        el("p", {text:item.t}),
+        el("div", {class:"row"}, [
+          el("button", {class:"btn btn-sm btn-primary", text:"Descargar",
+                        onclick:function(){ descargar(item.f, item.gen()); }}),
+          el("button", {class:"btn btn-sm", text:"Copiar",
+                        onclick:function(){ copiar(item.gen(), item.f + " copiado al portapapeles"); }})
+        ])
+      ]));
     });
   }
 
-  /* ============ Editor de platos ============ */
-  let capaEditor = null;
-  function cerrarEditor(){
-    if(capaEditor){ capaEditor.remove(); capaEditor = null; document.removeEventListener("keydown", escEditor); }
-  }
-  function escEditor(e){ if(e.key === "Escape") cerrarEditor(); }
-
-  function campo(etiqueta, control, ancho){
-    const d = document.createElement("div");
-    d.className = "field" + (ancho ? " full" : "");
-    const l = document.createElement("label"); l.setAttribute("for", control.id); l.textContent = etiqueta;
-    d.appendChild(l); d.appendChild(control);
-    return d;
-  }
-  function selectDe(id, opciones, valor){
-    const s = document.createElement("select"); s.id = id;
-    opciones.forEach(function(o){
-      const op = document.createElement("option");
-      op.value = o; op.textContent = mayus(o);
-      if(o === valor) op.selected = true;
-      s.appendChild(op);
-    });
-    return s;
-  }
-  function entrada(id, valor, marcador){
-    const i = document.createElement("input");
-    i.type = "text"; i.id = id; i.value = valor || "";
-    if(marcador) i.placeholder = marcador;
-    return i;
-  }
-
-  // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
-  function abrirEditor(ref){
-    cerrarEditor();
-    const nuevo = !ref;
-    let p = null;
-    if(ref && ref.tipo === "base"){
-      p = platos().filter(function(x){ return x.orig === ref.orig; })[0];
-    }else if(ref && ref.tipo === "extra"){
-      p = estado.extra.filter(function(x){ return x.uid === ref.uid; })[0];
-    }
-    if(!nuevo && !p){ aviso("Ese plato ya no existe"); return; }
-    const nombreAntes = p ? p.n : "";
-
-    capaEditor = document.createElement("div");
-    capaEditor.className = "overlay";
-    capaEditor.addEventListener("click", function(e){ if(e.target === capaEditor) cerrarEditor(); });
-
-    const caja = document.createElement("div");
-    caja.className = "editor"; caja.setAttribute("role","dialog"); caja.setAttribute("aria-modal","true");
-    caja.setAttribute("aria-label", nuevo ? "Nuevo plato" : "Editar " + p.n);
-
-    const head = document.createElement("header");
-    const h3 = document.createElement("h3"); h3.textContent = nuevo ? "Nuevo plato" : "Editar plato";
-    head.appendChild(h3);
-    if(!nuevo){
-      const b = document.createElement("span");
-      b.className = "badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo"));
-      b.style.marginLeft = "0";
-      b.textContent = p.custom ? "añadido" : (p.editado ? "modificado" : "del repositorio");
-      head.appendChild(b);
-    }
-
-    const body = document.createElement("div"); body.className = "editor-body";
-
-    const eNombre = entrada("e-nombre", p ? p.n : "", "Merluza al horno con patata");
-    const eDesc   = entrada("e-desc", p ? p.d : "", "Lomos de merluza con patata panadera y cebolla.");
-    const eTipo   = entrada("e-tipo", p ? p.t : "", "Pescado blanco + Tubérculo");
-    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : "cena");
-    const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
-    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional"], p ? p.rep : "media");
-
-    body.appendChild(campo("Nombre del plato", eNombre, true));
-    body.appendChild(campo("Descripción", eDesc, true));
-    body.appendChild(campo("Tipo de alimento", eTipo, true));
-    body.appendChild(campo("Momento", eMom));
-    body.appendChild(campo("Preparación", eTiempo));
-    body.appendChild(campo("Repetición", eRep));
-
-    // Grupos: los que marques, y cuál de ellos es la base que da el color.
-    const gBloque = document.createElement("div"); gBloque.className = "full";
-    const gHead = document.createElement("div"); gHead.className = "grupo-head";
-    const gLbl = document.createElement("label");
-    gLbl.style.cssText = "font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)";
-    gLbl.textContent = "Grupos";
-    const gBase = document.createElement("span"); gBase.className = "base-lbl"; gBase.textContent = "● base = color";
-    gHead.appendChild(gLbl); gHead.appendChild(gBase);
-    const gGrid = document.createElement("div"); gGrid.className = "grupos";
-
-    const gActuales = p ? p.g.slice() : [];
-    Object.keys(GRUPOS).forEach(function(k){
-      const fila = document.createElement("div"); fila.className = "grupo-row";
-      const cb = document.createElement("input");
-      cb.type = "checkbox"; cb.id = "e-g-" + k; cb.checked = gActuales.indexOf(k) !== -1;
-      cb.setAttribute("aria-label", "Pertenece a " + GRUPOS[k].lbl);
-      const rd = document.createElement("input");
-      rd.type = "radio"; rd.name = "e-base"; rd.id = "e-b-" + k; rd.value = k;
-      rd.checked = gActuales.length > 0 && gActuales[0] === k;
-      rd.setAttribute("aria-label", GRUPOS[k].lbl + " es la base");
-      const sw = document.createElement("span"); sw.className = "sw";
-      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
-      const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = GRUPOS[k].lbl;
-      cb.addEventListener("change", function(){ if(!cb.checked && rd.checked) rd.checked = false; });
-      rd.addEventListener("change", function(){ if(rd.checked) cb.checked = true; });
-      fila.appendChild(cb); fila.appendChild(rd); fila.appendChild(sw); fila.appendChild(nm);
-      gGrid.appendChild(fila);
-    });
-    gBloque.appendChild(gHead); gBloque.appendChild(gGrid);
-    body.appendChild(gBloque);
-
-    // Ingredientes y, debajo, los que aún no tienen sección del súper.
-    const eIngs = document.createElement("textarea");
-    eIngs.id = "e-ings";
-    eIngs.value = p ? p.i.join(", ") : "";
-    eIngs.placeholder = "merluza, patata, cebolla, aceite de oliva";
-    body.appendChild(campo("Ingredientes, separados por comas o saltos de línea", eIngs, true));
-
-    const nuevos = document.createElement("div"); nuevos.className = "full";
-    body.appendChild(nuevos);
-
-    function leerIngredientes(){
-      return eIngs.value.split(/[,\n]/)
-        .map(function(s){ return s.trim().toLowerCase(); })
-        .filter(Boolean)
-        .filter(function(v, idx, arr){ return arr.indexOf(v) === idx; });
-    }
-    const asignadas = {};
-    function pintarNuevos(){
-      const sinSeccion = leerIngredientes().filter(function(ing){
-        return !SECCION[ing] && !estado.secciones[ing];
-      });
-      nuevos.textContent = "";
-      if(!sinSeccion.length) return;
-      const caja2 = document.createElement("div"); caja2.className = "nuevos";
-      const h5 = document.createElement("h5"); h5.textContent = "Ingredientes nuevos";
-      const p2 = document.createElement("p");
-      p2.style.cssText = "margin:0;font-size:12.5px;color:var(--warn)";
-      p2.textContent = "Dales una sección del súper para que caigan en su sitio en la lista de la compra.";
-      caja2.appendChild(h5); caja2.appendChild(p2);
-      sinSeccion.forEach(function(ing){
-        const fila = document.createElement("div"); fila.className = "nuevo-row";
-        const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = ing;
-        const sel = document.createElement("select");
-        sel.id = "e-sec-" + ing.replace(/[^a-z0-9]+/gi, "-");
-        sel.setAttribute("aria-label", "Sección de " + ing);
-        SECCIONES.concat(["Otros"]).forEach(function(s){
-          const o = document.createElement("option"); o.value = s; o.textContent = s;
-          if(asignadas[ing] === s) o.selected = true;
-          sel.appendChild(o);
-        });
-        if(!asignadas[ing]) asignadas[ing] = sel.value;
-        sel.addEventListener("change", function(){ asignadas[ing] = sel.value; });
-        fila.appendChild(nm); fila.appendChild(sel);
-        caja2.appendChild(fila);
-      });
-      nuevos.appendChild(caja2);
-    }
-    eIngs.addEventListener("input", pintarNuevos);
-    pintarNuevos();
-
-    // Pie: borrar / deshacer a la izquierda, cancelar y guardar a la derecha.
-    const foot = document.createElement("footer");
-    if(!nuevo){
-      const borrar = document.createElement("button");
-      borrar.className = "btn btn-ghost"; borrar.textContent = "Eliminar";
-      borrar.style.color = "var(--pimenton)";
-      borrar.addEventListener("click", function(){
-        if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio? Se quitará de las semanas en las que esté.")) return;
-        reemplazarEnSemanas(p.n, null);
-        if(p.custom){
-          estado.extra = estado.extra.filter(function(x){ return x.uid !== p.uid; });
-        }else{
-          if(estado.borrados.indexOf(p.orig) === -1) estado.borrados.push(p.orig);
-          delete estado.ediciones[p.orig];
-        }
-        guardar(); cerrarEditor();
-        pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
-        aviso("Plato eliminado");
-      });
-      foot.appendChild(borrar);
-
-      if(p.editado){
-        const deshacer = document.createElement("button");
-        deshacer.className = "btn btn-ghost"; deshacer.textContent = "Deshacer cambios";
-        deshacer.addEventListener("click", function(){
-          const original = PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
-          delete estado.ediciones[p.orig];
-          if(original) reemplazarEnSemanas(p.n, original.n);
-          guardar(); cerrarEditor();
-          pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
-          aviso("Plato devuelto a lo que dice el CSV");
-        });
-        foot.appendChild(deshacer);
-      }
-    }
-    const der = document.createElement("div"); der.className = "der";
-    const cancelar = document.createElement("button");
-    cancelar.className = "btn"; cancelar.textContent = "Cancelar";
-    cancelar.addEventListener("click", cerrarEditor);
-    const guardarBtn = document.createElement("button");
-    guardarBtn.className = "btn btn-primary"; guardarBtn.textContent = nuevo ? "Añadir al repertorio" : "Guardar cambios";
-    guardarBtn.addEventListener("click", function(){
-      const n = eNombre.value.trim();
-      const ings = leerIngredientes();
-      if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
-      if(!ings.length){ aviso("Añade al menos un ingrediente"); eIngs.focus(); return; }
-      const choque = plato(n);
-      if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
-
-      const marcados = Object.keys(GRUPOS).filter(function(k){ return $("e-g-" + k).checked; });
-      if(!marcados.length){ aviso("Marca al menos un grupo"); return; }
-      const radio = document.querySelector('input[name="e-base"]:checked');
-      const baseSel = radio && marcados.indexOf(radio.value) !== -1 ? radio.value : marcados[0];
-      const grupos = [baseSel].concat(marcados.filter(function(k){ return k !== baseSel; }));
-
-      ings.forEach(function(ing){
-        if(!SECCION[ing] && !estado.secciones[ing] && asignadas[ing]) estado.secciones[ing] = asignadas[ing];
-      });
-
-      const campos = {
-        n:n,
-        d: eDesc.value.trim() || "Sin descripción.",
-        t: eTipo.value.trim() || "Sin clasificar",
-        m: eMom.value, tiempo: eTiempo.value, rep: eRep.value,
-        g: grupos, i: ings
-      };
-
-      if(nuevo){
-        campos.uid = "x" + Date.now().toString(36);
-        campos.custom = true;
-        estado.extra.push(campos);
-      }else if(p.custom){
-        const obj = estado.extra.filter(function(x){ return x.uid === p.uid; })[0];
-        Object.keys(campos).forEach(function(k){ obj[k] = campos[k]; });
-        reemplazarEnSemanas(nombreAntes, n);
-      }else{
-        estado.ediciones[p.orig] = campos;
-        reemplazarEnSemanas(nombreAntes, n);
-      }
-      guardar(); cerrarEditor();
-      pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
-      aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
-    });
-    der.appendChild(cancelar); der.appendChild(guardarBtn);
-    foot.appendChild(der);
-
-    caja.appendChild(head); caja.appendChild(body); caja.appendChild(foot);
-    capaEditor.appendChild(caja);
-    document.body.appendChild(capaEditor);
-    document.addEventListener("keydown", escEditor);
-    eNombre.focus();
-  }
-
-  $("btn-nuevo-plato").addEventListener("click", function(){ abrirEditor(null); });
-
-  /* ============ Pestañas y avisos ============ */
-  const paneles = {
-    platos: $("panel-platos"), semana: $("panel-semana"),
-    compra: $("panel-compra"), historico: $("panel-historico")
-  };
-  function verTab(nombre){
-    estado.tab = nombre; guardar();
-    Object.keys(paneles).forEach(function(k){ paneles[k].hidden = (k !== nombre); });
-    const tabs = document.querySelectorAll(".tab");
-    for(let i = 0; i < tabs.length; i++) tabs[i].setAttribute("aria-selected", String(tabs[i].dataset.panel === nombre));
-  }
-  const tabsEl = document.querySelectorAll(".tab");
-  for(let i = 0; i < tabsEl.length; i++){
-    (function(b){ b.addEventListener("click", function(){ verTab(b.dataset.panel); }); })(tabsEl[i]);
-  }
-
+  /* ============ Avisos ============ */
   let avisoTimer = null;
   function aviso(msg){
     const prev = document.querySelector(".toast");
     if(prev) prev.remove();
-    const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status");
-    t.textContent = msg;
+    const t = el("div", {class:"toast", role:"status", text:msg});
     document.body.appendChild(t);
     clearTimeout(avisoTimer);
     avisoTimer = setTimeout(function(){ t.remove(); }, 3000);
@@ -1787,34 +1768,44 @@ salsa de soja;si
 
   function pintarCreditos(){
     const c = $("credits"); c.textContent = "";
-    const l1 = document.createElement("div");
-    l1.textContent = "Datos en datos/*.csv · " + PLATOS.length + " platos base y " +
-      Object.keys(SECCION).length + " ingredientes. Lo que marcas se guarda en este navegador; " +
-      "para fijarlo, descarga los CSV desde el Histórico y súbelos al repositorio.";
-    c.appendChild(l1);
+    c.appendChild(el("div", {text:
+      "Datos en datos/*.csv · " + REP.adultos.PLATOS.length + " platos de adultos, " +
+      REP.nino.PLATOS.length + " del niño y " + Object.keys(SECCION).length + " ingredientes. " +
+      "Lo que marcas se guarda en este navegador; para fijarlo, descarga los CSV desde el Histórico y súbelos al repositorio."}));
     if(desdeRespaldo){
-      const l2 = document.createElement("div");
-      l2.style.marginTop = "6px";
-      l2.textContent = "Abierto sin servidor: se está usando la copia de los CSV incrustada en el propio index.html.";
-      c.appendChild(l2);
+      c.appendChild(el("div", {style:"margin-top:6px",
+        text:"Abierto sin servidor: se está usando la copia de los CSV incrustada en el propio index.html."}));
     }
+  }
+
+  /* ============ Pintado global ============ */
+  function pintarTodo(){
+    PERFILES.forEach(function(pf){ pintarPlatos(pf); pintarSemana(pf); });
+    pintarCompra(); pintarHistorico();
   }
 
   /* ============ Arranque ============ */
   cargar().then(function(){
     construir();
     cargarEstado();
-    rellenarSelectsGrupo();
-    pintarObjetivos();
-
-    const id = semanaActual(), h = huecos(id);
-    if(!Object.keys(h).some(function(k){ return !!h[k]; })) generar(id);
-
-    [fBuscar, fMomento, fGrupo, fTiempo, fRepeticion].forEach(function(el){
-      el.addEventListener("input", pintarPlatos);
+    montarPestanas();
+    PERFILES.forEach(function(pf){
+      montarPanelPlatos(pf);
+      montarPanelSemana(pf);
+      pintarObjetivos(pf);
     });
-    pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico(); pintarCreditos();
-    verTab(estado.tab in paneles ? estado.tab : "semana");
+
+    // Que la semana en curso abra con contenido, no vacía.
+    const id = semanaActual();
+    PERFILES.forEach(function(pf){
+      const h = huecos(pf.id, id);
+      if(!Object.keys(h).some(function(k){ return !!h[k]; })) generar(pf.id, id);
+    });
+
+    pintarTodo();
+    pintarCreditos();
+    const valida = PESTANAS.some(function(t){ return t.id === estado.tab; });
+    verTab(valida ? estado.tab : "semana-adultos");
   });
 })();
 </script>

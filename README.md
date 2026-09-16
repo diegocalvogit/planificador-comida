@@ -8,17 +8,22 @@ Página web de una sola pieza, sin dependencias ni build, para organizar las com
 
 ```
 index.html                     la aplicación entera
-datos/platos.csv               repertorio de platos con sus ingredientes
+datos/platos.csv               repertorio de los adultos, con sus ingredientes
+datos/platos-nino.csv          repertorio del niño
 datos/ingredientes.csv         a qué sección del súper pertenece cada ingrediente, y en qué orden van
-datos/equilibrio.csv           objetivos semanales por grupo nutricional (editables desde la web)
-datos/semanas.csv              histórico de semanas planificadas
+datos/equilibrio.csv           objetivos semanales de los adultos (editables desde la web)
+datos/equilibrio-nino.csv      objetivos semanales del niño
+datos/semanas.csv              histórico de semanas de los adultos
+datos/semanas-nino.csv         histórico de semanas del niño
 datos/despensa.csv             ingredientes que hay en casa
 scripts/actualizar-respaldo.py sincroniza la copia de los CSV incrustada en index.html
 ```
 
+Hay **dos repertorios independientes**, adultos y niño, cada uno con sus platos, sus semanas y sus objetivos de equilibrio. Lo que comparten es la despensa, el catálogo de ingredientes y la lista de la compra.
+
 Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` para las listas** dentro de una celda. Ningún valor puede contener `;`.
 
-## Las cuatro pestañas
+## Las seis pestañas
 
 **Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
 
@@ -26,7 +31,7 @@ Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV 
 
 Si escribes un ingrediente que no está en `ingredientes.csv`, el editor te pide su sección del súper ahí mismo, para que no acabe en el cajón de *Otros*.
 
-**Semana** — Reparto de lunes a domingo con comida y cena, 14 huecos. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
+**Semana adultos** — Reparto de lunes a domingo con comida y cena, 14 huecos. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
 Cada hueco se pinta del color de la **base del plato** — el primer grupo de su columna `grupos` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
 
@@ -52,9 +57,13 @@ Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de g
 
 Cualquier hueco se cambia a mano pulsando sobre él.
 
-**Compra** — Lista derivada de forma determinista de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*: eso es la despensa, es común a todas las semanas y sigue marcado al generar la siguiente.
+**Semana niño** — Igual, pero contando con que come al mediodía en la guardería: de partida solo tiene cena de lunes a viernes, y comida y cena el sábado y el domingo, nueve huecos. El botón **+ comida** de cada día habilita esa comida cuando hay vacaciones o un día suelto en casa, y **− comida** la quita junto con el plato que tuviera. El estado de cada día se guarda por semana, así que unas vacaciones no afectan al resto.
 
-**Histórico** — Todas las semanas planificadas, las del repositorio y las hechas en este navegador, con un botón para abrir cualquiera de ellas.
+Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2 y congelados 1-2.
+
+**Compra** — Una sola lista con los ingredientes de **las dos semanas**, derivada de forma determinista de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*: eso es la despensa, es común a todas las semanas y sigue marcado al generar la siguiente.
+
+**Histórico** — Todas las semanas planificadas, con los huecos cubiertos de adultos y de niño en cada una, y un botón para abrir cualquiera de ellas. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
 
 ## Cómo se guardan los cambios
 

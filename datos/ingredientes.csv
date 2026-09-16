@@ -13,6 +13,7 @@ patata;Frutería y verdulería
 perejil;Frutería y verdulería
 pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
+puerro;Frutería y verdulería
 tomate;Frutería y verdulería
 zanahoria;Frutería y verdulería
 bacalao;Carnicería y pescadería
@@ -21,8 +22,11 @@ carne picada de pollo;Carnicería y pescadería
 filetes de ternera;Carnicería y pescadería
 gambas;Carnicería y pescadería
 gulas;Carnicería y pescadería
+hamburguesa de pollo;Carnicería y pescadería
+jamón cocido;Carnicería y pescadería
 lomo de cerdo;Carnicería y pescadería
 lomo de salmón;Carnicería y pescadería
+merluza;Carnicería y pescadería
 pechuga de pavo en lonchas;Carnicería y pescadería
 pechuga de pollo;Carnicería y pescadería
 salmón ahumado;Carnicería y pescadería
@@ -35,12 +39,16 @@ queso crema;Huevos, lácteos y refrigerados
 queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
+croquetas congeladas;Congelados
+empanadillas congeladas;Congelados
 aceite de oliva;Despensa
 arroz;Despensa
 atún en conserva;Despensa
 azafrán;Despensa
 caldo de pescado;Despensa
+caldo de pollo;Despensa
 especias para fajitas;Despensa
+fideos;Despensa
 garbanzos cocidos;Despensa
 guindilla;Despensa
 harina;Despensa
