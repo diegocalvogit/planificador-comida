@@ -10,7 +10,7 @@ Página web de una sola pieza, sin dependencias ni build, para organizar las com
 index.html                     la aplicación entera
 datos/platos.csv               repertorio de platos con sus ingredientes
 datos/ingredientes.csv         a qué sección del súper pertenece cada ingrediente
-datos/equilibrio.csv           objetivos semanales por grupo nutricional
+datos/equilibrio.csv           objetivos semanales por grupo nutricional (editables desde la web)
 datos/semanas.csv              histórico de semanas planificadas
 datos/despensa.csv             ingredientes que hay en casa
 scripts/actualizar-respaldo.py sincroniza la copia de los CSV incrustada en index.html
@@ -20,11 +20,19 @@ Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` pa
 
 ## Las cuatro pestañas
 
-**Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento recomendado (comida, cena o ambos) e ingredientes. Se busca, se filtra por momento y por grupo, y se pueden añadir platos nuevos.
+**Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y se pueden añadir platos nuevos.
 
 **Semana** — Reparto de lunes a domingo con comida y cena, 14 huecos. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
-*Generar semana* propone un reparto que respeta el momento recomendado de cada plato, no repite plato dentro de la semana, evita que el mismo grupo caiga en la comida y la cena del mismo día, y persigue los objetivos de `datos/equilibrio.csv`:
+Cada hueco se pinta del color de la **base del plato** — el primer grupo de su columna `grupos` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
+
+*Generar semana* propone un reparto que:
+
+- respeta el momento de cada plato y no repite plato dentro de la semana;
+- evita que la misma base caiga en la comida y la cena del mismo día;
+- pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*;
+- reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
+- persigue estos objetivos, que salen de `datos/equilibrio.csv`:
 
 | Grupo | Objetivo semanal |
 | --- | --- |
@@ -35,6 +43,8 @@ Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` pa
 | Carne blanca | 3–4 |
 | Carne roja o magra | 1–2 |
 | Huevo | 2–3 |
+
+Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 Cualquier hueco se cambia a mano pulsando sobre él.
 

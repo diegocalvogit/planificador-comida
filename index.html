@@ -30,8 +30,18 @@
     --ok-soft:#DBEEE5;
     --warn:#9A6A10;
     --warn-soft:#F7EBD2;
+    --veil:rgba(19,30,45,.05);
     --shadow:0 1px 2px rgba(19,30,45,.06), 0 8px 24px -16px rgba(19,30,45,.30);
     --radius:10px;
+    /* Fondo por base del plato */
+    --g-verdura:#DFEFD8;
+    --g-legumbre:#EFE4C4;
+    --g-arroz:#F0EAE0;
+    --g-marisco:#D8EEEC;
+    --g-azul:#D9E6F7;
+    --g-blanca:#FAE6D4;
+    --g-roja:#F8DCD8;
+    --g-huevo:#FCF1C8;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -42,7 +52,11 @@
       --pimenton:#E3855A; --pimenton-soft:#38211A;
       --ok:#63C79A; --ok-soft:#14301F;
       --warn:#D9A64A; --warn-soft:#332714;
+      --veil:rgba(255,255,255,.06);
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
+      --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
+      --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
+      --g-roja:#35211F; --g-huevo:#302B15;
     }
   }
   :root[data-theme="dark"]{
@@ -53,7 +67,11 @@
     --pimenton:#E3855A; --pimenton-soft:#38211A;
     --ok:#63C79A; --ok-soft:#14301F;
     --warn:#D9A64A; --warn-soft:#332714;
+    --veil:rgba(255,255,255,.06);
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
+    --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
+    --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
+    --g-roja:#35211F; --g-huevo:#302B15;
   }
 
   *{box-sizing:border-box}
@@ -107,27 +125,34 @@
   .chip-cena{background:var(--accent-soft);color:var(--accent-ink)}
   .chip-ambos{background:var(--ok-soft);color:var(--ok)}
   .chip-ing{background:transparent;border:1px solid var(--line);color:var(--ink-2);font-weight:400;font-size:12px;padding:1px 8px}
+  .chip-bajo{background:var(--ok-soft);color:var(--ok)}
+  .chip-medio{background:var(--warn-soft);color:var(--warn)}
+  .chip-alto{background:var(--pimenton-soft);color:var(--pimenton)}
+  .chip-siempre,.chip-alta{background:var(--accent-soft);color:var(--accent-ink)}
+  .chip-media{background:var(--surface-2);color:var(--ink-2)}
+  .chip-baja,.chip-ocasional{background:transparent;border:1px solid var(--line);color:var(--ink-3);font-weight:400}
 
   .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
   .field{display:flex;flex-direction:column;gap:4px}
   .field label{font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
-  input[type="text"], input[type="search"], select, textarea{
+  input[type="text"], input[type="search"], input[type="number"], select, textarea{
     background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;min-width:0;max-width:100%}
-  .grow{flex:1 1 220px}
+  .grow{flex:1 1 200px}
   .grow input{width:100%}
 
   /* Tabla de platos */
   .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  table{border-collapse:collapse;width:100%;min-width:720px}
+  table{border-collapse:collapse;width:100%;min-width:900px}
+  #tbody-hist{min-width:0}
   thead th{text-align:left;font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
   tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
   tbody tr:last-child td{border-bottom:0}
   tbody tr:hover{background:var(--surface-2)}
   .dish-name{font-weight:700;font-family:"Bricolage Grotesque", sans-serif;font-size:15px}
-  .dish-desc{color:var(--ink-2);font-size:13.5px;margin-top:2px;max-width:42ch}
-  .tipo{font-size:13px;color:var(--ink-2);max-width:24ch}
-  .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:34ch}
+  .dish-desc{color:var(--ink-2);font-size:13.5px;margin-top:2px;max-width:38ch}
+  .tipo{font-size:13px;color:var(--ink-2);max-width:22ch}
+  .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:32ch}
   .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em;margin-left:6px}
 
   /* Navegación de semana */
@@ -144,7 +169,7 @@
 
   .balance{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow)}
   .balance h3{font-size:14px;font-weight:700;margin-bottom:3px}
-  .balance p{margin:0 0 11px;color:var(--ink-2);font-size:13.5px}
+  .balance > p{margin:0 0 11px;color:var(--ink-2);font-size:13.5px}
   .meters{display:flex;flex-wrap:wrap;gap:8px}
   .meter{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
   .meter .lbl{font-size:13px;color:var(--ink-2)}
@@ -157,6 +182,20 @@
   .meter.high{border-color:color-mix(in srgb, var(--pimenton) 45%, var(--line))}
   .meter.high .val{color:var(--pimenton)}
 
+  details.obj{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  details.obj > summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--accent-ink);list-style:none;display:flex;align-items:center;gap:7px}
+  details.obj > summary::-webkit-details-marker{display:none}
+  details.obj > summary::before{content:"▸";font-size:11px;transition:transform .15s}
+  details.obj[open] > summary::before{transform:rotate(90deg)}
+  .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+  .obj-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
+  .obj-row .swatch{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
+  .obj-row .name{flex:1 1 auto;font-size:13px;min-width:0}
+  .obj-row input{width:48px;padding:3px 6px;text-align:center;font-family:"IBM Plex Mono",monospace;
+    font-size:13px;font-variant-numeric:tabular-nums}
+  .obj-row .sep{color:var(--ink-3);font-size:12px}
+  .obj-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+
   .week{display:grid;grid-template-columns:repeat(auto-fill, minmax(268px, 1fr));gap:12px}
   .day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
   .day.hoy{border-color:var(--accent)}
@@ -164,16 +203,26 @@
   .day h3{font-size:14px;font-weight:700;text-transform:capitalize}
   .day .dnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums}
   .day.hoy .dnum{color:var(--accent-ink);font-weight:500}
-  .slot{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;padding:11px 14px;cursor:pointer}
+  .slot{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);
+    background-color:var(--surface);padding:13px 14px;cursor:pointer;min-height:76px}
   .day .slot:first-of-type{border-top:0}
-  .slot:hover{background:var(--surface-2)}
-  .slot .slot-lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--ink-3);display:flex;align-items:center;gap:6px}
-  .slot .slot-lbl::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--warn)}
-  .slot.cena .slot-lbl::before{background:var(--accent)}
-  .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px;margin-top:3px}
+  .slot:hover{background-image:linear-gradient(var(--veil), var(--veil))}
+  .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px}
   .slot .slot-meta{font-size:12.5px;color:var(--ink-2);margin-top:2px}
   .slot.empty .slot-dish{color:var(--ink-3);font-weight:500;font-style:italic}
+  .slot.g-verdura{background-color:var(--g-verdura)}
+  .slot.g-legumbre{background-color:var(--g-legumbre)}
+  .slot.g-arroz{background-color:var(--g-arroz)}
+  .slot.g-marisco{background-color:var(--g-marisco)}
+  .slot.g-azul{background-color:var(--g-azul)}
+  .slot.g-blanca{background-color:var(--g-blanca)}
+  .slot.g-roja{background-color:var(--g-roja)}
+  .slot.g-huevo{background-color:var(--g-huevo)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .legend .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
+    border:1px solid var(--line);border-radius:20px;padding:3px 10px 3px 6px;background:var(--surface)}
+  .legend .sw{width:13px;height:13px;border-radius:4px;flex:none;border:1px solid var(--veil)}
 
   /* Compra */
   .compra-head{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
@@ -234,6 +283,7 @@
     padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line)}
   .opt:hover{background:var(--surface-2)}
   .opt:last-child{border-bottom:0}
+  .opt .sw{width:11px;height:11px;border-radius:3px;flex:none;margin-top:5px;border:1px solid var(--veil)}
   .opt .on{font-weight:600;font-size:14px}
   .opt .om{font-size:12.5px;color:var(--ink-3);margin-top:1px}
   .opt.rec .on::after{content:"recomendado";font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
@@ -278,7 +328,7 @@
         <h2>Todos los platos disponibles</h2>
       </div>
     </div>
-    <p class="lead">El repertorio completo, con su grupo nutricional, el momento recomendado y los ingredientes de cada plato. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
+    <p class="lead">El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
 
     <div class="filters">
       <div class="field grow">
@@ -295,6 +345,26 @@
         </select>
       </div>
       <div class="field">
+        <label for="f-tiempo">Preparación</label>
+        <select id="f-tiempo">
+          <option value="">Toda</option>
+          <option value="bajo">Bajo</option>
+          <option value="medio">Medio</option>
+          <option value="alto">Alto</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-repeticion">Repetición</label>
+        <select id="f-repeticion">
+          <option value="">Toda</option>
+          <option value="siempre">Siempre</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+          <option value="ocasional">Ocasional</option>
+        </select>
+      </div>
+      <div class="field">
         <label for="f-grupo">Grupo</label>
         <select id="f-grupo"><option value="">Todos</option></select>
       </div>
@@ -303,7 +373,12 @@
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th scope="col">Plato</th><th scope="col">Tipo de alimento</th><th scope="col">Momento</th><th scope="col">Ingredientes</th>
+          <th scope="col">Plato</th>
+          <th scope="col">Tipo de alimento</th>
+          <th scope="col">Momento</th>
+          <th scope="col">Preparación</th>
+          <th scope="col">Repetición</th>
+          <th scope="col">Ingredientes</th>
         </tr></thead>
         <tbody id="tbody-platos"></tbody>
       </table>
@@ -315,10 +390,19 @@
         <div class="field full"><label for="a-nombre">Nombre del plato</label><input type="text" id="a-nombre" placeholder="Merluza al horno con patata"></div>
         <div class="field full"><label for="a-desc">Descripción</label><input type="text" id="a-desc" placeholder="Lomos de merluza con patata panadera y cebolla."></div>
         <div class="field"><label for="a-tipo">Tipo de alimento</label><input type="text" id="a-tipo" placeholder="Pescado blanco + Tubérculo"></div>
-        <div class="field"><label for="a-momento">Momento recomendado</label>
+        <div class="field"><label for="a-momento">Momento</label>
           <select id="a-momento"><option value="comida">Comida</option><option value="cena">Cena</option><option value="ambos">Ambos</option></select>
         </div>
-        <div class="field"><label for="a-grupo">Grupo para el equilibrio</label><select id="a-grupo"></select></div>
+        <div class="field"><label for="a-tiempo">Preparación</label>
+          <select id="a-tiempo"><option value="bajo">Bajo</option><option value="medio" selected>Medio</option><option value="alto">Alto</option></select>
+        </div>
+        <div class="field"><label for="a-repeticion">Repetición</label>
+          <select id="a-repeticion">
+            <option value="siempre">Siempre</option><option value="alta">Alta</option>
+            <option value="media" selected>Media</option><option value="baja">Baja</option><option value="ocasional">Ocasional</option>
+          </select>
+        </div>
+        <div class="field"><label for="a-grupo">Grupo base</label><select id="a-grupo"></select></div>
         <div class="field full"><label for="a-ings">Ingredientes, separados por comas</label><input type="text" id="a-ings" placeholder="merluza, patata, cebolla, aceite de oliva"></div>
         <div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="btn btn-primary" id="a-guardar">Añadir al repertorio</button>
@@ -353,11 +437,21 @@
 
     <div class="balance">
       <h3>Equilibrio de la semana</h3>
-      <p>Veces que aparece cada grupo, frente al objetivo semanal de <code>datos/equilibrio.csv</code>.</p>
+      <p>Veces que aparece cada grupo, frente al objetivo semanal.</p>
       <div class="meters" id="meters"></div>
+
+      <details class="obj">
+        <summary>Ajustar objetivos antes de generar</summary>
+        <div class="obj-grid" id="obj-grid"></div>
+        <div class="obj-foot">
+          <button class="btn btn-sm" id="obj-reset">Volver a los valores del documento</button>
+          <span class="hint">Los objetivos guían el reparto al pulsar «Generar semana».</span>
+        </div>
+      </details>
     </div>
 
     <div class="week" id="week"></div>
+    <div class="legend" id="legend"></div>
   </section>
 
   <!-- ============ COMPRA ============ -->
@@ -396,7 +490,7 @@
     <p class="lead">Todas las semanas planificadas: las que vienen del repositorio y las que has hecho en este navegador. La despensa es común a todas, así que lo que marcaste como existencias sigue marcado al generar la semana siguiente.</p>
 
     <div class="table-wrap">
-      <table>
+      <table style="min-width:640px">
         <thead><tr>
           <th scope="col">Semana</th><th scope="col">Fechas</th><th scope="col">Platos</th><th scope="col">Origen</th><th scope="col"></th>
         </tr></thead>
@@ -415,30 +509,30 @@
 <!-- Copia de los CSV incrustada, para poder abrir index.html directamente desde disco.
      Se regenera con: python scripts/actualizar-respaldo.py -->
 <script type="text/csv" id="csv-platos">
-nombre;descripcion;tipo;momento;nota;grupos;ingredientes
-Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo y verdura / Proteína ligera;comida;;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
-Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Cereal (arroz) + Proteína mixta;comida;;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
-Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
-Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre + Proteína magra;comida;;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
-Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre + Pescado/Marisco;comida;;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
-Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Cereal (arroz) + Proteína (huevo/carne);comida;;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
-Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre + Proteína ligera;comida;;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Pescado / Marisco;ambos;ideal cena;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
-Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura + Pescado/Marisco;ambos;;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
-Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Pescado / Marisco + Verdura/Lácteo;cena;;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
-Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul + Cereal;cena;;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
-Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Pescado / Marisco;cena;;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
-Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca + Verdura + Cereal;ambos;;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
-Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul + Verdura/Grasa saludable;cena;;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
-Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura + Lácteo;cena;;verdura;tomate|mozzarella|aceite de oliva|albahaca
-Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca + Verdura + Lácteo;cena;;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca + Verdura;cena;;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
-Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja / magra + Verdura;ambos;;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
-Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca + Lácteo + Verdura;ambos;;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
-Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne magra + Verdura;ambos;;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
-Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
-Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;;huevo|verdura;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;ideal cena;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+nombre;descripcion;tipo;momento;tiempo;repeticion;grupos;ingredientes
+Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo y verdura / Proteína ligera;comida;alto;media;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
+Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Cereal (arroz) + Proteína mixta;comida;alto;ocasional;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
+Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
+Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre + Proteína magra;comida;alto;alta;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre + Pescado/Marisco;comida;medio;media;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
+Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Cereal (arroz) + Proteína (huevo/carne);comida;medio;alta;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre + Proteína ligera;comida;medio;media;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
+Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Pescado / Marisco;ambos;bajo;media;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura + Pescado/Marisco;ambos;alto;baja;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Pescado / Marisco + Verdura/Lácteo;cena;bajo;media;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
+Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul + Cereal;cena;bajo;media;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
+Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Pescado / Marisco;cena;bajo;baja;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
+Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca + Verdura + Cereal;ambos;medio;alta;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul + Verdura/Grasa saludable;cena;bajo;media;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
+Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura + Lácteo;cena;bajo;siempre;verdura;tomate|mozzarella|aceite de oliva|albahaca
+Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca + Verdura + Lácteo;cena;bajo;alta;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
+Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca + Verdura;cena;bajo;siempre;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja / magra + Verdura;ambos;medio;media;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca + Lácteo + Verdura;ambos;medio;media;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne magra + Verdura;ambos;medio;alta;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;bajo;media;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
+Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;bajo;alta;huevo|verdura;tortilla de patata y calabacín|pan|tomate
+Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;bajo;alta;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -566,6 +660,10 @@ salsa de soja;si
   const MOMENTOS = ["comida","cena"];
   const MOMENTO_LBL = {comida:"Comida", cena:"Cena", ambos:"Ambos"};
   const DIA_MS = 86400000;
+  const FINDE = {"sábado":1, "domingo":1};
+
+  // Cuánto empuja cada nivel de repetición al elegir plato.
+  const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5};
 
   function aDia(f){ return new Date(f.getFullYear(), f.getMonth(), f.getDate()); }
   function sumaDias(f, n){ const d = aDia(f); d.setDate(d.getDate() + n); return d; }
@@ -603,22 +701,23 @@ salsa de soja;si
 
   /* ============ CSV ============ */
   function leerCSV(texto){
-    const lineas = String(texto).replace(/\r/g, "").split("\n").filter(l => l.trim() !== "");
+    const lineas = String(texto).replace(/\r/g, "").split("\n").filter(function(l){ return l.trim() !== ""; });
     if(!lineas.length) return [];
-    const cab = lineas[0].split(";").map(s => s.trim());
-    return lineas.slice(1).map(l => {
-      const celdas = l.split(";");
-      const o = {};
-      cab.forEach((c, i) => { o[c] = (celdas[i] !== undefined ? celdas[i] : "").trim(); });
+    const cab = lineas[0].split(";").map(function(s){ return s.trim(); });
+    return lineas.slice(1).map(function(l){
+      const celdas = l.split(";"), o = {};
+      cab.forEach(function(c, i){ o[c] = (celdas[i] !== undefined ? celdas[i] : "").trim(); });
       return o;
     });
   }
   function escribirCSV(cabecera, filas){
     const lineas = [cabecera.join(";")];
-    filas.forEach(f => lineas.push(cabecera.map(c => String(f[c] === undefined ? "" : f[c])).join(";")));
+    filas.forEach(function(f){
+      lineas.push(cabecera.map(function(c){ return String(f[c] === undefined ? "" : f[c]); }).join(";"));
+    });
     return lineas.join("\n") + "\n";
   }
-  function lista(s){ return String(s || "").split("|").map(x => x.trim()).filter(Boolean); }
+  function lista(s){ return String(s || "").split("|").map(function(x){ return x.trim(); }).filter(Boolean); }
 
   /* ============ Carga ============ */
   const FUENTES = [
@@ -650,8 +749,8 @@ salsa de soja;si
   }
 
   /* ============ Estado ============ */
-  const CLAVE = "mesa-semanal:v2";
-  let estado = { tab:"semana", semana:null, semanas:{}, despensa:{}, extra:[] };
+  const CLAVE = "mesa-semanal:v3";
+  let estado = { tab:"semana", semana:null, semanas:{}, despensa:{}, extra:[], objetivos:{} };
 
   function cargarEstado(){
     try{
@@ -664,6 +763,7 @@ salsa de soja;si
         estado.semanas = p.semanas && typeof p.semanas === "object" ? p.semanas : {};
         estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
         estado.extra = Array.isArray(p.extra) ? p.extra : [];
+        estado.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
       }
     }catch(e){}
   }
@@ -675,7 +775,11 @@ salsa de soja;si
 
   function construir(){
     PLATOS = datos.platos.map(function(r){
-      return { n:r.nombre, d:r.descripcion, t:r.tipo, m:r.momento, mn:r.nota, g:lista(r.grupos), i:lista(r.ingredientes) };
+      return {
+        n:r.nombre, d:r.descripcion, t:r.tipo, m:r.momento,
+        tiempo:r.tiempo || "medio", rep:r.repeticion || "media",
+        g:lista(r.grupos), i:lista(r.ingredientes)
+      };
     }).filter(function(p){ return p.n; });
 
     SECCION = {}; const orden = [];
@@ -701,12 +805,23 @@ salsa de soja;si
     });
   }
 
+  // Objetivo vigente: el del CSV, salvo que se haya ajustado a mano.
+  function objetivo(k){
+    const base = GRUPOS[k] || {lbl:k, min:0, max:14};
+    const aj = estado.objetivos[k];
+    return { lbl:base.lbl, min:aj ? aj.min : base.min, max:aj ? aj.max : base.max };
+  }
+  function objetivosTocados(){ return Object.keys(estado.objetivos).length > 0; }
+
   function platos(){ return PLATOS.concat(estado.extra); }
   function plato(n){
     const todos = platos();
     for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
     return null;
   }
+  // La base del plato, que decide su color: el primer grupo declarado.
+  function base(p){ return p && p.g.length ? p.g[0] : ""; }
+
   function huecos(id){
     if(estado.semanas[id]) return estado.semanas[id];
     if(REPO_SEMANAS[id]) return REPO_SEMANAS[id];
@@ -717,9 +832,10 @@ salsa de soja;si
     const s = {};
     Object.keys(REPO_SEMANAS).forEach(function(k){ s[k] = 1; });
     Object.keys(estado.semanas).forEach(function(k){ s[k] = 1; });
-    return Object.keys(s)
-      .filter(function(id){ return Object.keys(huecos(id)).some(function(k){ return !!huecos(id)[k]; }); })
-      .sort().reverse();
+    return Object.keys(s).filter(function(id){
+      const h = huecos(id);
+      return Object.keys(h).some(function(k){ return !!h[k]; });
+    }).sort().reverse();
   }
 
   function enCasa(ing){
@@ -747,19 +863,30 @@ salsa de soja;si
       let mejor = null, mejorPunt = -Infinity;
       cands.forEach(function(p){
         let punt = Math.random() * 0.9;
+
+        // 1. Objetivos de equilibrio
         p.g.forEach(function(g){
-          const meta = GRUPOS[g];
-          if(!meta) return;
+          if(!(g in cuenta)) return;
+          const meta = objetivo(g);
           if(cuenta[g] < meta.min) punt += 4;
           else if(cuenta[g] < meta.max) punt += 1.2;
           else punt -= 5;
         });
+
+        // 2. Cada cuánto apetece repetirlo
+        punt += (PESO_REPETICION[p.rep] !== undefined ? PESO_REPETICION[p.rep] : 0);
+
+        // 3. Lo laborioso se reserva al fin de semana; entre semana, cenas rápidas
+        if(p.tiempo === "alto") punt += FINDE[dia] ? 1 : (momento === "cena" ? -2 : -0.8);
+        else if(p.tiempo === "medio" && !FINDE[dia] && momento === "cena") punt -= 0.4;
+
+        // 4. No repetir base en la comida y la cena del mismo día
         const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida")];
         if(hermano){
           const otro = plato(hermano);
           if(otro && otro.g.some(function(g){ return g !== "verdura" && p.g.indexOf(g) !== -1; })) punt -= 3;
         }
-        if(p.m === "ambos" && p.mn === "ideal cena" && momento === "comida") punt -= 1;
+
         if(punt > mejorPunt){ mejorPunt = punt; mejor = p; }
       });
       h[clave] = mejor.n;
@@ -771,7 +898,9 @@ salsa de soja;si
 
   /* ============ Platos ============ */
   const $ = function(id){ return document.getElementById(id); };
-  const tbody = $("tbody-platos"), fBuscar = $("f-buscar"), fMomento = $("f-momento"), fGrupo = $("f-grupo");
+  const tbody = $("tbody-platos");
+  const fBuscar = $("f-buscar"), fMomento = $("f-momento"), fGrupo = $("f-grupo"),
+        fTiempo = $("f-tiempo"), fRepeticion = $("f-repeticion");
 
   function rellenarSelectsGrupo(){
     Object.keys(GRUPOS).forEach(function(k){
@@ -782,12 +911,16 @@ salsa de soja;si
       });
     });
   }
+  function mayus(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
 
   function pintarPlatos(){
-    const q = fBuscar.value.trim().toLowerCase(), m = fMomento.value, g = fGrupo.value;
+    const q = fBuscar.value.trim().toLowerCase();
+    const m = fMomento.value, g = fGrupo.value, ti = fTiempo.value, re = fRepeticion.value;
     const filas = platos().filter(function(p){
       if(m && p.m !== m) return false;
       if(g && p.g.indexOf(g) === -1) return false;
+      if(ti && p.tiempo !== ti) return false;
+      if(re && p.rep !== re) return false;
       if(q && (p.n + " " + p.d + " " + p.t + " " + p.i.join(" ")).toLowerCase().indexOf(q) === -1) return false;
       return true;
     });
@@ -795,7 +928,7 @@ salsa de soja;si
     tbody.textContent = "";
     if(!filas.length){
       const tr = document.createElement("tr"), td = document.createElement("td");
-      td.colSpan = 4; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
+      td.colSpan = 6; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
       td.textContent = "Ningún plato coincide con el filtro.";
       tr.appendChild(td); tbody.appendChild(tr);
     }
@@ -813,20 +946,74 @@ salsa de soja;si
 
       const td3 = document.createElement("td");
       const ch = document.createElement("span"); ch.className = "chip chip-" + p.m;
-      ch.textContent = MOMENTO_LBL[p.m] + (p.mn ? " · " + p.mn : ""); td3.appendChild(ch);
+      ch.textContent = MOMENTO_LBL[p.m] || p.m; td3.appendChild(ch);
 
       const td4 = document.createElement("td");
+      const cht = document.createElement("span"); cht.className = "chip chip-" + p.tiempo;
+      cht.textContent = mayus(p.tiempo); td4.appendChild(cht);
+
+      const td5 = document.createElement("td");
+      const chr = document.createElement("span"); chr.className = "chip chip-" + p.rep;
+      chr.textContent = mayus(p.rep); td5.appendChild(chr);
+
+      const td6 = document.createElement("td");
       const box = document.createElement("div"); box.className = "ings";
       p.i.forEach(function(ing){
         const c = document.createElement("span"); c.className = "chip chip-ing"; c.textContent = ing; box.appendChild(c);
       });
-      td4.appendChild(box);
+      td6.appendChild(box);
 
-      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
+      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+      tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
       tbody.appendChild(tr);
     });
     $("n-platos").textContent = String(platos().length);
   }
+
+  /* ============ Objetivos ajustables ============ */
+  function pintarObjetivos(){
+    const cont = $("obj-grid"); cont.textContent = "";
+    Object.keys(GRUPOS).forEach(function(k){
+      const meta = objetivo(k);
+      const fila = document.createElement("div"); fila.className = "obj-row";
+
+      const sw = document.createElement("span"); sw.className = "swatch";
+      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
+      const nm = document.createElement("span"); nm.className = "name"; nm.textContent = meta.lbl;
+
+      const min = document.createElement("input");
+      min.type = "number"; min.min = "0"; min.max = "14"; min.value = String(meta.min);
+      min.id = "obj-min-" + k;
+      min.setAttribute("aria-label", "Mínimo de " + meta.lbl);
+
+      const sep = document.createElement("span"); sep.className = "sep"; sep.textContent = "–";
+
+      const max = document.createElement("input");
+      max.type = "number"; max.min = "0"; max.max = "14"; max.value = String(meta.max);
+      max.id = "obj-max-" + k;
+      max.setAttribute("aria-label", "Máximo de " + meta.lbl);
+
+      function cambia(){
+        let a = Math.max(0, Math.min(14, Number(min.value) || 0));
+        let b = Math.max(0, Math.min(14, Number(max.value) || 0));
+        if(b < a) b = a;
+        min.value = String(a); max.value = String(b);
+        estado.objetivos[k] = {min:a, max:b};
+        guardar(); pintarSemana();
+      }
+      min.addEventListener("change", cambia);
+      max.addEventListener("change", cambia);
+
+      fila.appendChild(sw); fila.appendChild(nm); fila.appendChild(min); fila.appendChild(sep); fila.appendChild(max);
+      cont.appendChild(fila);
+    });
+  }
+
+  $("obj-reset").addEventListener("click", function(){
+    estado.objetivos = {}; guardar();
+    pintarObjetivos(); pintarSemana();
+    aviso("Objetivos restablecidos a datos/equilibrio.csv");
+  });
 
   /* ============ Semana ============ */
   function semanaActual(){
@@ -854,7 +1041,7 @@ salsa de soja;si
 
     const metros = $("meters"); metros.textContent = "";
     Object.keys(GRUPOS).forEach(function(k){
-      const meta = GRUPOS[k], c = cuenta[k];
+      const meta = objetivo(k), c = cuenta[k];
       const cls = c < meta.min ? "low" : (c > meta.max ? "high" : "ok");
       const d = document.createElement("div"); d.className = "meter " + cls;
       const l = document.createElement("span"); l.className = "lbl"; l.textContent = meta.lbl;
@@ -880,14 +1067,15 @@ salsa de soja;si
         const p = h[clave] ? plato(h[clave]) : null;
         const b = document.createElement("button");
         b.type = "button";
-        b.className = "slot " + momento + (p ? "" : " empty");
-        b.setAttribute("aria-label", "Cambiar el plato de " + dia + ", " + MOMENTO_LBL[momento]);
-        const lbl = document.createElement("span"); lbl.className = "slot-lbl"; lbl.textContent = MOMENTO_LBL[momento];
+        b.className = "slot" + (p ? " g-" + base(p) : " empty");
+        b.setAttribute("aria-label", MOMENTO_LBL[momento] + " del " + dia + ": " +
+          (p ? p.n : "sin asignar") + ". Pulsa para cambiar el plato.");
         const dish = document.createElement("div"); dish.className = "slot-dish";
         dish.textContent = p ? p.n : (h[clave] || "Sin asignar");
-        b.appendChild(lbl); b.appendChild(dish);
+        b.appendChild(dish);
         if(p){
-          const meta = document.createElement("div"); meta.className = "slot-meta"; meta.textContent = p.t; b.appendChild(meta);
+          const meta = document.createElement("div"); meta.className = "slot-meta"; meta.textContent = p.t;
+          b.appendChild(meta);
         }
         b.addEventListener("click", function(){ abrirSelector(dia, momento); });
         card.appendChild(b);
@@ -895,8 +1083,20 @@ salsa de soja;si
       cont.appendChild(card);
     });
 
+    pintarLeyenda();
     $("n-semana").textContent = Object.keys(h).filter(function(k){ return !!h[k]; }).length + "/14";
     $("compra-semana").textContent = etiquetaSemana(lunes);
+  }
+
+  function pintarLeyenda(){
+    const cont = $("legend"); cont.textContent = "";
+    Object.keys(GRUPOS).forEach(function(k){
+      const lg = document.createElement("span"); lg.className = "lg";
+      const sw = document.createElement("span"); sw.className = "sw";
+      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
+      const tx = document.createElement("span"); tx.textContent = GRUPOS[k].lbl;
+      lg.appendChild(sw); lg.appendChild(tx); cont.appendChild(lg);
+    });
   }
 
   $("wk-prev").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); pintarHistorico(); });
@@ -904,7 +1104,7 @@ salsa de soja;si
   $("wk-hoy").addEventListener("click", function(){ irASemana(iso(lunesDe(new Date()))); pintarHistorico(); });
   $("btn-generar").addEventListener("click", function(){
     generar(semanaActual()); pintarSemana(); pintarCompra(); pintarHistorico();
-    aviso("Semana generada: " + etiquetaSemana(desdeIso(semanaActual())));
+    aviso("Semana generada" + (objetivosTocados() ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
   });
   $("btn-vaciar").addEventListener("click", function(){
     fijarHuecos(semanaActual(), {}); pintarSemana(); pintarCompra(); pintarHistorico();
@@ -919,9 +1119,8 @@ salsa de soja;si
 
   function abrirSelector(dia, momento){
     cerrarSelector();
-    const id = semanaActual();
-    const h = {}; const base = huecos(id);
-    Object.keys(base).forEach(function(k){ h[k] = base[k]; });
+    const id = semanaActual(), h = {}, origen = huecos(id);
+    Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
     const clave = dia + "|" + momento;
 
     capa = document.createElement("div"); capa.className = "overlay";
@@ -933,7 +1132,7 @@ salsa de soja;si
 
     const head = document.createElement("header");
     const h3 = document.createElement("h3");
-    h3.textContent = dia.charAt(0).toUpperCase() + dia.slice(1) + " · " + MOMENTO_LBL[momento];
+    h3.textContent = mayus(dia) + " · " + MOMENTO_LBL[momento];
     const buscar = document.createElement("input");
     buscar.type = "search"; buscar.id = "picker-buscar"; buscar.placeholder = "Buscar plato o ingrediente…";
     head.appendChild(h3); head.appendChild(buscar);
@@ -953,11 +1152,14 @@ salsa de soja;si
         const b = document.createElement("button");
         b.type = "button";
         b.className = "opt" + (it.rec ? " rec" : "") + (repetido ? " used" : "");
+        const sw = document.createElement("span"); sw.className = "sw";
+        sw.style.background = "var(--g-" + base(p) + ", var(--surface-2))";
         const txt = document.createElement("div");
         const on = document.createElement("div"); on.className = "on"; on.textContent = p.n;
         const om = document.createElement("div"); om.className = "om";
-        om.textContent = p.t + (repetido ? " · ya está esta semana" : "");
-        txt.appendChild(on); txt.appendChild(om); b.appendChild(txt);
+        om.textContent = p.t + " · preparación " + p.tiempo + (repetido ? " · ya está esta semana" : "");
+        txt.appendChild(on); txt.appendChild(om);
+        b.appendChild(sw); b.appendChild(txt);
         b.addEventListener("click", function(){
           h[clave] = p.n; fijarHuecos(id, h);
           cerrarSelector(); pintarSemana(); pintarCompra(); pintarHistorico();
@@ -1170,23 +1372,31 @@ salsa de soja;si
     const nombres = {};
     Object.keys(SECCION).forEach(function(k){ nombres[k] = 1; });
     Object.keys(estado.despensa).forEach(function(k){ nombres[k] = 1; });
-    const filas = Object.keys(nombres).filter(enCasa)
-      .sort(function(a, b){ return a.localeCompare(b, "es"); })
-      .map(function(i){ return {ingrediente:i, en_casa:"si"}; });
-    return escribirCSV(["ingrediente","en_casa"], filas);
+    return escribirCSV(["ingrediente","en_casa"],
+      Object.keys(nombres).filter(enCasa)
+        .sort(function(a, b){ return a.localeCompare(b, "es"); })
+        .map(function(i){ return {ingrediente:i, en_casa:"si"}; }));
   }
   function csvPlatos(){
-    const filas = platos().map(function(p){
-      return { nombre:p.n, descripcion:p.d, tipo:p.t, momento:p.m, nota:p.mn || "",
-               grupos:p.g.join("|"), ingredientes:p.i.join("|") };
-    });
-    return escribirCSV(["nombre","descripcion","tipo","momento","nota","grupos","ingredientes"], filas);
+    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","grupos","ingredientes"],
+      platos().map(function(p){
+        return { nombre:p.n, descripcion:p.d, tipo:p.t, momento:p.m, tiempo:p.tiempo,
+                 repeticion:p.rep, grupos:p.g.join("|"), ingredientes:p.i.join("|") };
+      }));
+  }
+  function csvEquilibrio(){
+    return escribirCSV(["grupo","etiqueta","minimo","maximo"],
+      Object.keys(GRUPOS).map(function(k){
+        const meta = objetivo(k);
+        return {grupo:k, etiqueta:meta.lbl, minimo:meta.min, maximo:meta.max};
+      }));
   }
 
   const FICHEROS = [
-    {f:"semanas.csv",  t:"Todas las semanas planificadas, una fila por hueco.",     gen:csvSemanas},
-    {f:"despensa.csv", t:"Ingredientes marcados como existencias en casa.",         gen:csvDespensa},
-    {f:"platos.csv",   t:"El repertorio, incluidos los platos que hayas añadido.",  gen:csvPlatos}
+    {f:"semanas.csv",    t:"Todas las semanas planificadas, una fila por hueco.",    gen:csvSemanas},
+    {f:"despensa.csv",   t:"Ingredientes marcados como existencias en casa.",        gen:csvDespensa},
+    {f:"platos.csv",     t:"El repertorio, incluidos los platos que hayas añadido.", gen:csvPlatos},
+    {f:"equilibrio.csv", t:"Los objetivos semanales, con tus ajustes.",              gen:csvEquilibrio}
   ];
 
   function descargar(nombre, texto){
@@ -1239,7 +1449,8 @@ salsa de soja;si
       d: $("a-desc").value.trim() || "Plato añadido a mano.",
       t: $("a-tipo").value.trim() || "Sin clasificar",
       m: $("a-momento").value,
-      mn: "",
+      tiempo: $("a-tiempo").value,
+      rep: $("a-repeticion").value,
       g: [$("a-grupo").value].filter(Boolean),
       i: ings,
       custom: true
@@ -1297,12 +1508,14 @@ salsa de soja;si
     construir();
     cargarEstado();
     rellenarSelectsGrupo();
+    pintarObjetivos();
 
-    const id = semanaActual();
-    const actualVacia = !Object.keys(huecos(id)).some(function(k){ return !!huecos(id)[k]; });
-    if(actualVacia) generar(id);
+    const id = semanaActual(), h = huecos(id);
+    if(!Object.keys(h).some(function(k){ return !!h[k]; })) generar(id);
 
-    [fBuscar, fMomento, fGrupo].forEach(function(el){ el.addEventListener("input", pintarPlatos); });
+    [fBuscar, fMomento, fGrupo, fTiempo, fRepeticion].forEach(function(el){
+      el.addEventListener("input", pintarPlatos);
+    });
     pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico(); pintarCreditos();
     verTab(estado.tab in paneles ? estado.tab : "semana");
   });
