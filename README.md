@@ -15,7 +15,7 @@ datos/ingredientes.csv         a qué sección del súper pertenece cada ingredi
 datos/equilibrio.csv           objetivos semanales de los adultos (editables desde la web)
 datos/equilibrio-nino.csv      objetivos semanales del niño
 datos/semanas.csv              histórico de semanas de los adultos, una fila por plato
-datos/semanas-nino.csv         histórico de semanas del niño
+datos/semanas-nino.csv         histórico de semanas del niño, una fila por plato
 datos/compras.csv              qué había en casa cada semana, el histórico de la compra
 datos/despensa.csv             los básicos que siempre hay en casa
 scripts/actualizar-respaldo.py sincroniza la copia de los CSV incrustada en index.html
@@ -61,9 +61,11 @@ Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de g
 
 Cualquier hueco se cambia a mano pulsando sobre él.
 
-**Semana niño** — Igual, pero contando con que come al mediodía en la guardería: de partida solo tiene cena de lunes a viernes, y comida y cena el sábado y el domingo, nueve huecos. El botón **+ comida** de cada día habilita esa comida cuando hay vacaciones o un día suelto en casa, y **− comida** la quita junto con el plato que tuviera. El estado de cada día se guarda por semana, así que unas vacaciones no afectan al resto.
+**Semana niño** — **La misma estructura que la de adultos**: catorce huecos, comida y cena, dos platos cada uno. Que coma entre semana en la guardería no es un caso especial del programa, sino un plato más: **Menú guarde**, que el generador coloca en la comida de lunes a viernes. Es plato único, no tiene ingredientes y por tanto no suma nada a la compra, y su repetición es *nunca*, así que no aparece en ningún otro hueco por su cuenta.
 
-Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2 y congelados 1-2.
+Si un día no va a la guardería, se sustituye ese Menú guarde por uno o dos platos normales, igual que en el menú de los adultos. No hay nada que habilitar.
+
+Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2, congelados 1-2 y arroz o pasta 1-2. La guardería lleva su propio contador, 0-5, separado del de comer fuera.
 
 **Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en `compras.csv` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de `despensa.csv`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 

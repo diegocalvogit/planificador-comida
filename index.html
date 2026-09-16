@@ -44,6 +44,7 @@
     --g-huevo:#FCF1C8;
     --g-congelado:#E3E5F5;
     --g-fuera:#E6EAEF;
+    --g-guarde:#EFE3E6;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -58,7 +59,7 @@
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
       --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
       --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-      --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35;
+      --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35; --g-guarde:#2E2327;
     }
   }
   :root[data-theme="dark"]{
@@ -73,7 +74,7 @@
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
     --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
     --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-    --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35;
+    --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35; --g-guarde:#2E2327;
   }
 
   *{box-sizing:border-box}
@@ -217,10 +218,6 @@
   .day h3{font-size:14px;font-weight:700;text-transform:capitalize}
   .day .dnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);font-variant-numeric:tabular-nums;margin-left:auto}
   .day.hoy .dnum{color:var(--accent-ink);font-weight:500}
-  .toggle-comida{appearance:none;border:1px solid var(--line);background:var(--ground);border-radius:20px;
-    padding:2px 9px;font-size:11.5px;font-weight:600;color:var(--ink-3);cursor:pointer;white-space:nowrap}
-  .toggle-comida:hover{background:var(--surface-2);color:var(--ink)}
-  .toggle-comida[aria-pressed="true"]{background:var(--warn-soft);border-color:color-mix(in srgb, var(--warn) 35%, transparent);color:var(--warn)}
   .momento-head{display:flex;align-items:center;gap:7px;padding:5px 14px;border-top:1px solid var(--line);
     font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
   .momento-head::before{content:"";width:3px;height:11px;border-radius:2px;flex:none}
@@ -228,9 +225,6 @@
   .momento-head.comida::before{background:var(--warn)}
   .momento-head.cena{background:var(--accent-soft);color:var(--accent-ink)}
   .momento-head.cena::before{background:var(--accent)}
-  .momento-head .quitar{margin-left:auto;appearance:none;background:none;border:0;cursor:pointer;
-    font:inherit;color:inherit;opacity:.7;letter-spacing:.06em}
-  .momento-head .quitar:hover{opacity:1;text-decoration:underline}
 
   .slot{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
     border-top:1px solid var(--line);background-color:var(--surface);padding:10px 14px;cursor:pointer;min-height:56px}
@@ -257,6 +251,7 @@
   .slot.g-huevo{background-color:var(--g-huevo)}
   .slot.g-congelado{background-color:var(--g-congelado)}
   .slot.g-fuera{background-color:var(--g-fuera)}
+  .slot.g-guarde{background-color:var(--g-guarde)}
 
   .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .legend .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
@@ -515,6 +510,7 @@ Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de 
 Macarrones con salchichas;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;arroz|blanca;macarrones|salchichas|tomate frito|queso rallado
 Rollitos de la Yaya;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
 Arroz con pollo;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Menú guarde;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -611,6 +607,7 @@ huevo;Huevo;1;2
 legumbre;Legumbre;1;2
 congelado;Congelados;1;2
 arroz;Arroz y pasta;1;2
+guarde;Guardería;0;5
 fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
@@ -675,14 +672,15 @@ Fuera de casa
   const FINDE = {"sábado":1, "domingo":1};
   const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5, nunca:-999};
 
-  // Los dos repertorios. El niño come al mediodía en la guardería, así que de
-  // partida solo tiene cenas de lunes a viernes; el fin de semana, las dos.
+  // Los dos repertorios tienen la misma estructura: 14 huecos con dos platos.
+  // El niño come entre semana en la guardería, y eso se dice con un plato más.
   const PERFILES = [
     {id:"adultos", lbl:"Adultos", quien:"de los adultos",
-     platos:"platos", semanas:"semanas", equilibrio:"equilibrio", comidasFijas:true},
+     platos:"platos", semanas:"semanas", equilibrio:"equilibrio"},
     {id:"nino", lbl:"Niño", quien:"del niño",
      platos:"platos_nino", semanas:"semanas_nino", equilibrio:"equilibrio_nino",
-     comidasFijas:false, comidasDefecto:["sábado","domingo"]}
+     relleno:{plato:"Menú guarde", momento:"comida",
+              dias:["lunes","martes","miércoles","jueves","viernes"]}}
   ];
   function perfil(id){ return PERFILES.filter(function(p){ return p.id === id; })[0]; }
 
@@ -857,8 +855,8 @@ Fuera de casa
   }
 
   let SECCION = {}, SECCIONES = [], REPO_COMPRAS = {}, TIPOS = [];
-  const REP = { adultos:{PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}},
-                nino:   {PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}} };
+  const REP = { adultos:{PLATOS:[], GRUPOS:{}, REPO:{}},
+                nino:   {PLATOS:[], GRUPOS:{}, REPO:{}} };
 
   function construir(){
     PERFILES.forEach(function(pf){
@@ -876,11 +874,10 @@ Fuera de casa
         r.GRUPOS[x.grupo] = { lbl:x.etiqueta || x.grupo, min:Number(x.minimo) || 0, max:Number(x.maximo) || 99 };
       });
 
-      r.REPO = {}; r.REPO_COMIDAS = {};
+      r.REPO = {};
       (datos[pf.semanas] || []).forEach(function(x){
         if(!x.semana_id) return;
-        if(!r.REPO[x.semana_id]){ r.REPO[x.semana_id] = {}; r.REPO_COMIDAS[x.semana_id] = {}; }
-        if(x.momento === "comida") r.REPO_COMIDAS[x.semana_id][x.dia] = 1;
+        if(!r.REPO[x.semana_id]) r.REPO[x.semana_id] = {};
         if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento + "|" + (x.orden || "1")] = x.plato;
       });
     });
@@ -953,36 +950,21 @@ Fuera de casa
   }
   function fijarHuecos(pid, id, h){ estado[pid].semanas[id] = h; guardar(); }
 
-  // Días con comida habilitada. Los adultos comen siempre; el niño, cuando toca.
-  function comidas(pid, id){
-    const pf = perfil(pid);
-    if(pf.comidasFijas){ const t = {}; DIAS.forEach(function(d){ t[d] = 1; }); return t; }
-    const st = estado[pid];
-    if(st.comidas[id]) return st.comidas[id];
-    if(REP[pid].REPO_COMIDAS[id]) return REP[pid].REPO_COMIDAS[id];
-    const d = {}; (pf.comidasDefecto || []).forEach(function(x){ d[x] = 1; }); return d;
-  }
-  function fijarComidas(pid, id, c){ estado[pid].comidas[id] = c; guardar(); }
-  function momentosDe(pid, id, dia){
-    return comidas(pid, id)[dia] ? MOMENTOS : ["cena"];
-  }
   // Un "slot" es una comida o una cena; dentro caben dos platos, el 1º y el 2º.
-  function slotsDe(pid, id){
+  function slotsDe(){
     const salida = [];
-    DIAS.forEach(function(d){
-      momentosDe(pid, id, d).forEach(function(m){ salida.push(d + "|" + m); });
-    });
+    DIAS.forEach(function(d){ MOMENTOS.forEach(function(m){ salida.push(d + "|" + m); }); });
     return salida;
   }
-  function clavesDe(pid, id){
+  function clavesDe(){
     const salida = [];
-    slotsDe(pid, id).forEach(function(s){ ORDENES.forEach(function(o){ salida.push(s + "|" + o); }); });
+    slotsDe().forEach(function(s){ ORDENES.forEach(function(o){ salida.push(s + "|" + o); }); });
     return salida;
   }
   // Se cuentan las comidas resueltas, no los platos: un plato único ya cubre la suya.
   function llenos(pid, id){
     const h = huecos(pid, id);
-    return slotsDe(pid, id).filter(function(s){ return !!h[s + "|1"]; }).length;
+    return slotsDe().filter(function(s){ return !!h[s + "|1"]; }).length;
   }
 
   function idsSemanas(pid){
@@ -1056,10 +1038,23 @@ Fuera de casa
   function elegible(p, momento){ return p.m === momento || p.m === "ambos"; }
 
   function generar(pid, id){
-    const todos = platos(pid), grupos = REP[pid].GRUPOS;
-    const orden = slotsDe(pid, id).slice().sort(function(){ return Math.random() - 0.5; });
+    const todos = platos(pid), grupos = REP[pid].GRUPOS, pf = perfil(pid);
     const h = {}, usados = {}, cuenta = {};
     Object.keys(grupos).forEach(function(k){ cuenta[k] = 0; });
+
+    // Lo que ya está decidido de antemano: el niño come entre semana en la guardería.
+    const fijados = {};
+    if(pf.relleno){
+      const p = plato(pid, pf.relleno.plato);
+      if(p) pf.relleno.dias.forEach(function(dia){
+        const slot = dia + "|" + pf.relleno.momento;
+        h[slot + "|1"] = p.n;
+        fijados[slot] = 1;
+        p.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
+      });
+    }
+    const orden = slotsDe().filter(function(x){ return !fijados[x]; })
+                           .sort(function(){ return Math.random() - 0.5; });
 
     function puntua(p, dia, momento){
       let punt = Math.random() * 0.9;
@@ -1269,8 +1264,7 @@ Fuera de casa
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", null, [
-        el("div", {class:"eyebrow", text: pf.comidasFijas ? "Lunes a domingo · comida y cena"
-                                                          : "Cenas a diario · comidas solo cuando toca"}),
+        el("div", {class:"eyebrow", text:"Lunes a domingo · comida y cena"}),
         el("h2", {text:"Reparto " + pf.quien})
       ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
@@ -1362,7 +1356,7 @@ Fuera de casa
 
     const grupos = REP[s].GRUPOS, cuenta = {};
     Object.keys(grupos).forEach(function(k){ cuenta[k] = 0; });
-    clavesDe(s, id).forEach(function(k){
+    clavesDe().forEach(function(k){
       const p = h[k] && plato(s, h[k]);
       if(p) p.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
     });
@@ -1380,27 +1374,16 @@ Fuera de casa
     const cont = $("week-" + s); cont.textContent = "";
     DIAS.forEach(function(dia, idx){
       const fecha = sumaDias(lunes, idx);
-      const cab = [el("h3", {text:dia})];
-      if(!pf.comidasFijas && !comidas(s, id)[dia]){
-        cab.push(el("button", {
-          class:"toggle-comida", "aria-pressed":"false",
-          title:"Este día también come en casa", text:"+ comida",
-          onclick:function(){ alternarComida(s, dia); }
-        }));
-      }
-      cab.push(el("span", {class:"dnum", text:fecha.getDate() + " " + MESES_CORTOS[fecha.getMonth()]}));
+      const cab = [
+        el("h3", {text:dia}),
+        el("span", {class:"dnum", text:fecha.getDate() + " " + MESES_CORTOS[fecha.getMonth()]})
+      ];
 
       const card = el("article", {class:"day" + (iso(fecha) === hoy ? " hoy" : "")}, [el("header", null, cab)]);
 
-      momentosDe(s, id, dia).forEach(function(momento){
-        const banda = [document.createTextNode(MOMENTO_LBL[momento])];
-        if(!pf.comidasFijas && momento === "comida"){
-          banda.push(el("button", {
-            class:"quitar", text:"quitar", title:"Ese día no come en casa",
-            onclick:function(){ alternarComida(s, dia); }
-          }));
-        }
-        card.appendChild(el("div", {class:"momento-head " + momento}, banda));
+      MOMENTOS.forEach(function(momento){
+        card.appendChild(el("div", {class:"momento-head " + momento,
+                                    text:MOMENTO_LBL[momento]}));
 
         const primero = h[dia + "|" + momento + "|1"];
         const pPrim = primero ? plato(s, primero) : null;
@@ -1444,30 +1427,7 @@ Fuera de casa
       ]));
     });
 
-    $("n-semana-" + s).textContent = llenos(s, id) + "/" + slotsDe(s, id).length;
-  }
-
-  function alternarComida(pid, dia){
-    const id = semanaActual(), c = {}, actual = comidas(pid, id);
-    Object.keys(actual).forEach(function(k){ if(actual[k]) c[k] = 1; });
-    if(c[dia]){
-      delete c[dia];
-      const h = huecos(pid, id), copia = {};
-      let habia = false;
-      Object.keys(h).forEach(function(k){
-        if(k.indexOf(dia + "|comida|") === 0){ habia = true; return; }
-        copia[k] = h[k];
-      });
-      if(habia){
-        fijarHuecos(pid, id, copia);
-        aviso("Quitada la comida del " + dia + " y sus platos");
-      }
-    }else{
-      c[dia] = 1;
-      aviso("El " + dia + " también come en casa");
-    }
-    fijarComidas(pid, id, c);
-    pintarTodo();
+    $("n-semana-" + s).textContent = llenos(s, id) + "/" + slotsDe().length;
   }
 
   /* ============ Selector de plato ============ */
@@ -1752,7 +1712,7 @@ Fuera de casa
     const mapa = {};
     PERFILES.forEach(function(pf){
       const h = huecos(pf.id, id);
-      clavesDe(pf.id, id).forEach(function(k){
+      clavesDe().forEach(function(k){
         const p = h[k] && plato(pf.id, h[k]);
         if(!p) return;
         p.i.forEach(function(ing){
@@ -1765,7 +1725,7 @@ Fuera de casa
   }
   function distintos(pid, id){
     const h = huecos(pid, id), s = {};
-    clavesDe(pid, id).forEach(function(k){ if(h[k]) s[h[k]] = 1; });
+    clavesDe().forEach(function(k){ if(h[k]) s[h[k]] = 1; });
     return Object.keys(s).length;
   }
 
@@ -1868,7 +1828,7 @@ Fuera de casa
     ids.forEach(function(id){
       const lunes = desdeIso(id);
       function celdaPerfil(pid){
-        const total = clavesDe(pid, id).length, hechos = llenos(pid, id);
+        const total = slotsDe().length, hechos = llenos(pid, id);
         const local = !!estado[pid].semanas[id];
         return el("td", null, [
           el("div", {style:"font-variant-numeric:tabular-nums", text: hechos + " de " + total}),
@@ -1910,20 +1870,15 @@ Fuera de casa
       }));
   }
   function csvSemanas(pid){
-    const pf = perfil(pid), filas = [];
+    const filas = [];
     idsSemanas(pid).slice().reverse().forEach(function(id){
       const lunes = desdeIso(id), h = huecos(pid, id);
       const et = etiquetaSemana(lunes), fin = iso(sumaDias(lunes, 6));
       DIAS.forEach(function(dia){
         MOMENTOS.forEach(function(momento){
-          const habilitado = momento === "cena" || !!comidas(pid, id)[dia];
-          if(!habilitado) return;
           ORDENES.forEach(function(orden){
-            const p = h[dia + "|" + momento + "|" + orden] || "";
-            // En el niño, una comida habilitada escribe su primera fila aunque esté
-            // vacía: la presencia de la fila es lo que dice que ese día come en casa.
-            const marcaComida = !pf.comidasFijas && momento === "comida" && orden === "1";
-            if(!p && !marcaComida) return;
+            const p = h[dia + "|" + momento + "|" + orden];
+            if(!p) return;
             filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin,
                         dia:dia, momento:momento, orden:orden, plato:p});
           });
@@ -1981,7 +1936,7 @@ Fuera de casa
     {f:"platos-nino.csv",     clave:"platos_nino",     t:"Repertorio del niño.",                            gen:function(){ return csvPlatos("nino"); }},
     {f:"ingredientes.csv",    clave:"ingredientes",    t:"Cada ingrediente con su sección del súper.",      gen:csvIngredientes},
     {f:"semanas.csv",         clave:"semanas",         t:"Semanas de los adultos, una fila por plato.",     gen:function(){ return csvSemanas("adultos"); }},
-    {f:"semanas-nino.csv",    clave:"semanas_nino",    t:"Semanas del niño, con las comidas habilitadas.",  gen:function(){ return csvSemanas("nino"); }},
+    {f:"semanas-nino.csv",    clave:"semanas_nino",    t:"Semanas del niño, una fila por plato.",           gen:function(){ return csvSemanas("nino"); }},
     {f:"compras.csv",         clave:"compras",         t:"Qué había en casa cada semana.",                  gen:csvCompras},
     {f:"despensa.csv",        clave:"despensa",        t:"Los básicos que siempre hay en casa.",            gen:csvDespensa},
     {f:"equilibrio.csv",      clave:"equilibrio",      t:"Objetivos semanales de los adultos.",             gen:function(){ return csvEquilibrio("adultos"); }},
