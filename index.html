@@ -404,6 +404,10 @@
   .opt.rec .on::after{content:"recomendado";font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
     text-transform:uppercase;color:var(--ok);background:var(--ok-soft);border-radius:20px;padding:2px 7px;margin-left:8px;vertical-align:middle}
   .opt.used{opacity:.5}
+  .opt.ajeno .on{color:var(--ink-2)}
+  .opt.ajeno .sw{opacity:.55}
+  .opt-sep{padding:9px 16px 5px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--ink-3);border-top:1px solid var(--line);margin-top:4px;background:var(--surface-2)}
   .picker > footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:space-between}
 
   .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));
@@ -550,6 +554,7 @@ Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fre
 Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;ambos;medio;media;no;arroz;arroz|huevos
 Berenjenas rellenas;si;si;Sin descripción.;Verdura|Carne blanca;ambos;alto;baja;no;blanca|verdura;berenjena|carne picada de pollo|tomate frito|queso rallado|cebolla
 Brocoli;si;si;Sin descripción.;Verdura;ambos;medio;baja;no;verdura;brócoli|aceite de oliva
+Nuggets de pollo conjelados;si;si;Sin descripción.;Carne blanca;ambos;bajo;media;no;blanca;nuggets de pollo
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -586,6 +591,7 @@ jamón cocido;Carnicería y pescadería
 lomo de cerdo;Carnicería y pescadería
 lomo de salmón;Carnicería y pescadería
 merluza;Carnicería y pescadería
+nuggets de pollo;Carnicería y pescadería
 pechuga de pavo en lonchas;Carnicería y pescadería
 pechuga de pollo;Carnicería y pescadería
 salchichas;Carnicería y pescadería
@@ -657,26 +663,6 @@ fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Lentejas con verduras y pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Tortilla de patata y calabacín
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Revuelto de gulas, gambas y huevo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;1;Gulas salteadas con gambas y ajo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;2;Garbanzos fritos
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Salmón con verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Judías blancas con verduras y gambas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Pechugas de pollo a la plancha
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Arroz con huevo y carne
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Fajitas de pavo, queso, lechuga y tomate
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Tiras de lomo salteadas con verduras al wok
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Tomate con mozzarella y aceite de oliva
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;2;Parrillada de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Hamburguesas caseras de pollo con queso
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Tostas de tacos de salmón
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;2;Niguiri de tortilla
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Ensaladilla rusa casera
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;2;Parrillada de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Gambas al ajillo tradicionales
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;2;Tomate con mozzarella y aceite de oliva
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Sopa de pollo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Tortilla de patata y calabacín
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas, gambas y huevo
@@ -752,61 +738,29 @@ salsa de soja;si
 semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);aceite de oliva;si
 2026-09-14;3ª semana de septiembre (14-20);ajo;si
-2026-09-14;3ª semana de septiembre (14-20);albahaca;no
-2026-09-14;3ª semana de septiembre (14-20);arroz;no
-2026-09-14;3ª semana de septiembre (14-20);atún en conserva;no
-2026-09-14;3ª semana de septiembre (14-20);berenjena;no
 2026-09-14;3ª semana de septiembre (14-20);calabacín;no
 2026-09-14;3ª semana de septiembre (14-20);calamares;no
-2026-09-14;3ª semana de septiembre (14-20);carne picada de pollo;no
-2026-09-14;3ª semana de septiembre (14-20);cebolla;no
 2026-09-14;3ª semana de septiembre (14-20);croquetas congeladas;no
-2026-09-14;3ª semana de septiembre (14-20);eneldo;no
-2026-09-14;3ª semana de septiembre (14-20);espárragos trigueros;no
-2026-09-14;3ª semana de septiembre (14-20);filetes de ternera;no
 2026-09-14;3ª semana de septiembre (14-20);gambas;no
-2026-09-14;3ª semana de septiembre (14-20);garbanzos cocidos;no
 2026-09-14;3ª semana de septiembre (14-20);guindilla;si
-2026-09-14;3ª semana de septiembre (14-20);guisantes;no
 2026-09-14;3ª semana de septiembre (14-20);gulas;no
 2026-09-14;3ª semana de septiembre (14-20);hamburguesa de pollo;no
 2026-09-14;3ª semana de septiembre (14-20);harina;si
 2026-09-14;3ª semana de septiembre (14-20);huevos;no
 2026-09-14;3ª semana de septiembre (14-20);jamón cocido;no
-2026-09-14;3ª semana de septiembre (14-20);judías blancas cocidas;no
-2026-09-14;3ª semana de septiembre (14-20);lechuga;no
-2026-09-14;3ª semana de septiembre (14-20);lentejas;no
-2026-09-14;3ª semana de septiembre (14-20);limón;no
 2026-09-14;3ª semana de septiembre (14-20);lomo de cerdo;no
-2026-09-14;3ª semana de septiembre (14-20);lomo de salmón;no
 2026-09-14;3ª semana de septiembre (14-20);macarrones;no
-2026-09-14;3ª semana de septiembre (14-20);mayonesa;si
 2026-09-14;3ª semana de septiembre (14-20);merluza;no
-2026-09-14;3ª semana de septiembre (14-20);mozzarella;no
-2026-09-14;3ª semana de septiembre (14-20);pan;no
 2026-09-14;3ª semana de septiembre (14-20);pan de hamburguesa;no
-2026-09-14;3ª semana de septiembre (14-20);pan para tostas;no
 2026-09-14;3ª semana de septiembre (14-20);patata;no
 2026-09-14;3ª semana de septiembre (14-20);patatas paja;no
-2026-09-14;3ª semana de septiembre (14-20);pechuga de pavo en lonchas;no
-2026-09-14;3ª semana de septiembre (14-20);pechuga de pollo;no
-2026-09-14;3ª semana de septiembre (14-20);perejil;no
-2026-09-14;3ª semana de septiembre (14-20);pimentón;si
-2026-09-14;3ª semana de septiembre (14-20);pimiento rojo;no
-2026-09-14;3ª semana de septiembre (14-20);pimiento verde;no
 2026-09-14;3ª semana de septiembre (14-20);puerro;no
-2026-09-14;3ª semana de septiembre (14-20);queso crema;no
 2026-09-14;3ª semana de septiembre (14-20);queso en lonchas;no
 2026-09-14;3ª semana de septiembre (14-20);queso fresco;no
 2026-09-14;3ª semana de septiembre (14-20);queso rallado;no
 2026-09-14;3ª semana de septiembre (14-20);salchichas;no
-2026-09-14;3ª semana de septiembre (14-20);salmón ahumado;no
-2026-09-14;3ª semana de septiembre (14-20);salsa de soja;si
 2026-09-14;3ª semana de septiembre (14-20);tomate;no
 2026-09-14;3ª semana de septiembre (14-20);tomate frito;no
-2026-09-14;3ª semana de septiembre (14-20);tomate triturado;no
-2026-09-14;3ª semana de septiembre (14-20);tortilla de patata y calabacín;no
-2026-09-14;3ª semana de septiembre (14-20);tortillas de trigo;no
 2026-09-14;3ª semana de septiembre (14-20);zanahoria;no
 2026-09-21;4ª semana de septiembre (21-27);aceite de oliva;si
 2026-09-21;4ª semana de septiembre (21-27);ajo;si
@@ -1208,6 +1162,7 @@ Fuera de casa
     return null;
   }
   function base(p){ return p && p.g.length ? p.g[0] : ""; }
+  function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
   // El tipo es una lista; los platos guardados antes del catálogo traían texto suelto.
   function tiposDe(p){ return p ? (Array.isArray(p.t) ? p.t.slice() : lista(p.t)) : []; }
   function tipoTexto(p){ return tiposDe(p).join(" · "); }
@@ -2060,22 +2015,26 @@ Fuera de casa
     const lst = el("div", {class:"picker-list"});
 
     function pinta(){
-      const q = buscar.value.trim().toLowerCase(), usados = {};
+      const q = sinTildes(buscar.value.trim()), usados = {};
       Object.keys(h).forEach(function(k){ if(h[k]) usados[h[k]] = 1; });
-      const items = platos(pid)
-        .filter(function(p){ return !q || (p.n + " " + p.i.join(" ")).toLowerCase().indexOf(q) !== -1; })
+
+      const coinciden = repertorio()
         .filter(function(p){ return p.n !== otroEnSlot; })
-        // Para el segundo plato se sugieren los que no son plato único.
-        .map(function(p){ return {p:p, rec: elegible(p, momento) && (orden === "1" || !p.unico)}; })
-        .sort(function(a, b){ return (b.rec - a.rec) || a.p.n.localeCompare(b.p.n, "es"); });
-      lst.textContent = "";
-      items.forEach(function(it){
-        const p = it.p, repetido = usados[p.n] && h[clave] !== p.n;
+        .filter(function(p){ return !q || sinTildes(p.n + " " + p.i.join(" ")).indexOf(q) !== -1; });
+      const aqui = coinciden.filter(function(p){ return p.menus && p.menus[pid]; });
+      const otros = coinciden.filter(function(p){ return !(p.menus && p.menus[pid]); });
+
+      function opcion(p, ajeno){
+        const repetido = usados[p.n] && h[clave] !== p.n;
+        const rec = !ajeno && elegible(p, momento) && (orden === "1" || !p.unico);
         const notas = [tipoTexto(p), p.unico ? "plato único" : "necesita acompañante"];
         if(repetido) notas.push("ya está esta semana");
-        lst.appendChild(el("button", {
-          type:"button", class:"opt" + (it.rec ? " rec" : "") + (repetido ? " used" : ""),
+        if(ajeno) notas.push("se añadirá al menú " + perfil(pid).quien);
+        return el("button", {
+          type:"button", class:"opt" + (rec ? " rec" : "") + (repetido ? " used" : "") + (ajeno ? " ajeno" : ""),
           onclick:function(){
+            // Si viene del otro menú, entra en este antes de ocupar el hueco.
+            if(ajeno) marcarMenu(p, pid, true);
             h[clave] = p.n; fijarHuecos(pid, id, h); cerrarSelector(); pintarTodo();
           }
         }, [
@@ -2084,10 +2043,25 @@ Fuera de casa
             el("div", {class:"on", text:p.n}),
             el("div", {class:"om", text:notas.join(" · ")})
           ])
-        ]));
-      });
-      if(!items.length){
-        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)", text:"Ningún plato coincide."}));
+        ]);
+      }
+
+      lst.textContent = "";
+      aqui.sort(function(a, b){
+        const ra = elegible(a, momento) && (orden === "1" || !a.unico) ? 1 : 0;
+        const rb = elegible(b, momento) && (orden === "1" || !b.unico) ? 1 : 0;
+        return (rb - ra) || a.n.localeCompare(b.n, "es");
+      }).forEach(function(p){ lst.appendChild(opcion(p, false)); });
+
+      if(otros.length){
+        lst.appendChild(el("div", {class:"opt-sep",
+          text:"En el menú " + perfil(otroPerfil(pid)).quien + " · pulsa para traerlo también a este"}));
+        otros.sort(function(a, b){ return a.n.localeCompare(b.n, "es"); })
+             .forEach(function(p){ lst.appendChild(opcion(p, true)); });
+      }
+      if(!coinciden.length){
+        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)",
+          text:"Ningún plato del repertorio coincide. Créalo en la pestaña Platos."}));
       }
     }
     buscar.addEventListener("input", pinta);
