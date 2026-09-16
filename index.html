@@ -211,13 +211,32 @@
     padding:2px 9px;font-size:11.5px;font-weight:600;color:var(--ink-3);cursor:pointer;white-space:nowrap}
   .toggle-comida:hover{background:var(--surface-2);color:var(--ink)}
   .toggle-comida[aria-pressed="true"]{background:var(--warn-soft);border-color:color-mix(in srgb, var(--warn) 35%, transparent);color:var(--warn)}
-  .slot{display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);
-    background-color:var(--surface);padding:13px 14px;cursor:pointer;min-height:76px}
-  .day .slot:first-of-type{border-top:0}
+  .momento-head{display:flex;align-items:center;gap:7px;padding:5px 14px;border-top:1px solid var(--line);
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
+  .momento-head::before{content:"";width:3px;height:11px;border-radius:2px;flex:none}
+  .momento-head.comida{background:var(--warn-soft);color:var(--warn)}
+  .momento-head.comida::before{background:var(--warn)}
+  .momento-head.cena{background:var(--accent-soft);color:var(--accent-ink)}
+  .momento-head.cena::before{background:var(--accent)}
+  .momento-head .quitar{margin-left:auto;appearance:none;background:none;border:0;cursor:pointer;
+    font:inherit;color:inherit;opacity:.7;letter-spacing:.06em}
+  .momento-head .quitar:hover{opacity:1;text-decoration:underline}
+
+  .slot{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
+    border-top:1px solid var(--line);background-color:var(--surface);padding:10px 14px;cursor:pointer;min-height:56px}
   .slot:hover{background-image:linear-gradient(var(--veil), var(--veil))}
+  .slot .orden{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);flex:none;width:15px;margin-top:3px}
+  .slot .cuerpo{min-width:0}
   .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px}
   .slot .slot-meta{font-size:12.5px;color:var(--ink-2);margin-top:2px}
   .slot.empty .slot-dish{color:var(--ink-3);font-weight:500;font-style:italic}
+  .slot-add{display:flex;gap:9px;align-items:center;width:100%;text-align:left;border:0;
+    border-top:1px dashed var(--line-strong);background:transparent;padding:6px 14px;cursor:pointer;
+    font-size:12.5px;color:var(--ink-3)}
+  .slot-add:hover{background:var(--surface-2);color:var(--ink-2)}
+  .slot-add .orden{font-family:"IBM Plex Mono",monospace;font-size:10.5px;flex:none;width:15px}
+  .chip-unico{background:var(--ok-soft);color:var(--ok)}
+  .chip-doble{background:transparent;border:1px solid var(--line);color:var(--ink-3);font-weight:400}
   .slot.g-verdura{background-color:var(--g-verdura)}
   .slot.g-legumbre{background-color:var(--g-legumbre)}
   .slot.g-arroz{background-color:var(--g-arroz)}
@@ -407,44 +426,44 @@
 <!-- Copia de los CSV incrustada, para poder abrir index.html directamente desde disco.
      Se regenera con: python scripts/actualizar-respaldo.py -->
 <script type="text/csv" id="csv-platos">
-nombre;descripcion;tipo;momento;tiempo;repeticion;grupos;ingredientes
-Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo y verdura / Proteína ligera;comida;alto;media;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
-Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Cereal (arroz) + Proteína mixta;comida;alto;ocasional;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
-Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
-Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre + Proteína magra;comida;alto;alta;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
-Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre + Pescado/Marisco;comida;medio;media;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
-Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Cereal (arroz) + Proteína (huevo/carne);comida;medio;alta;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
-Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre + Proteína ligera;comida;medio;media;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Pescado / Marisco;ambos;bajo;media;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
-Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura + Pescado/Marisco;ambos;alto;baja;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
-Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Pescado / Marisco + Verdura/Lácteo;cena;bajo;media;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
-Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul + Cereal;cena;bajo;media;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
-Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Pescado / Marisco;cena;bajo;baja;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
-Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca + Verdura + Cereal;ambos;medio;alta;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
-Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul + Verdura/Grasa saludable;cena;bajo;media;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
-Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura + Lácteo;cena;bajo;siempre;verdura;tomate|mozzarella|aceite de oliva|albahaca
-Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca + Verdura + Lácteo;cena;bajo;alta;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca + Verdura;cena;bajo;siempre;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
-Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja / magra + Verdura;ambos;medio;media;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
-Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca + Lácteo + Verdura;ambos;medio;media;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
-Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne magra + Verdura;ambos;medio;alta;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
-Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;bajo;media;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
-Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;bajo;alta;huevo|verdura;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;bajo;alta;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
+Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo y verdura / Proteína ligera;comida;alto;media;no;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
+Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Cereal (arroz) + Proteína mixta;comida;alto;ocasional;si;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
+Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;bajo;alta;no;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
+Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre + Proteína magra;comida;alto;alta;si;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre + Pescado/Marisco;comida;medio;media;si;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
+Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Cereal (arroz) + Proteína (huevo/carne);comida;medio;alta;si;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre + Proteína ligera;comida;medio;media;si;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
+Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Pescado / Marisco;ambos;bajo;media;no;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura + Pescado/Marisco;ambos;alto;baja;si;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Pescado / Marisco + Verdura/Lácteo;cena;bajo;media;si;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
+Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul + Cereal;cena;bajo;media;no;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
+Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Pescado / Marisco;cena;bajo;baja;no;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
+Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca + Verdura + Cereal;ambos;medio;alta;si;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul + Verdura/Grasa saludable;cena;bajo;media;si;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
+Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura + Lácteo;cena;bajo;siempre;no;verdura;tomate|mozzarella|aceite de oliva|albahaca
+Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca + Verdura + Lácteo;cena;bajo;alta;si;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
+Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca + Verdura;cena;bajo;siempre;si;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja / magra + Verdura;ambos;medio;media;si;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca + Lácteo + Verdura;ambos;medio;media;si;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne magra + Verdura;ambos;medio;alta;si;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
+Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
+Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 </script>
 <script type="text/csv" id="csv-platos-nino">
-nombre;descripcion;tipo;momento;tiempo;repeticion;grupos;ingredientes
-Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura;ambos;medio;alta;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
-Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura + Pescado blanco;ambos;medio;alta;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
-Puré de verduras con carne;La misma base de verduras con pollo.;Verdura + Carne blanca;ambos;medio;alta;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
-Empanadillas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;congelado;empanadillas congeladas
-Croquetas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;congelado;croquetas congeladas
-Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca + Cereal;ambos;bajo;alta;blanca;caldo de pollo|fideos
-Tortilla;Tortilla de patata, jugosa.;Huevo + Tubérculo;ambos;bajo;siempre;huevo;huevos|patata|aceite de oliva
-Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre + Carne;ambos;bajo;media;legumbre;guisantes|jamón cocido|aceite de oliva
-Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo + Marisco;ambos;bajo;media;huevo|marisco;huevos|gulas|aceite de oliva
-Calamares;Anillas a la plancha o rebozadas.;Pescado / Marisco;ambos;bajo;media;marisco;calamares|harina|aceite de oliva
-Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca;ambos;bajo;media;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
+Crema de verduras;Zanahoria, patata, puerro y calabacín triturados.;Verdura;ambos;medio;alta;no;verdura;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;La misma base de verduras con merluza.;Verdura + Pescado blanco;ambos;medio;alta;si;verdura|marisco;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;La misma base de verduras con pollo.;Verdura + Carne blanca;ambos;medio;alta;si;verdura|blanca;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;no;congelado;empanadillas congeladas
+Croquetas congeladas;Al horno o en freidora de aire.;Congelado;ambos;bajo;media;no;congelado;croquetas congeladas
+Sopa de pollo;Brick de caldo con fideos finos.;Carne blanca + Cereal;ambos;bajo;alta;no;blanca;caldo de pollo|fideos
+Tortilla;Tortilla de patata, jugosa.;Huevo + Tubérculo;ambos;bajo;siempre;no;huevo;huevos|patata|aceite de oliva
+Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre + Carne;ambos;bajo;media;no;legumbre;guisantes|jamón cocido|aceite de oliva
+Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo + Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
+Calamares;Anillas a la plancha o rebozadas.;Pescado / Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
+Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -536,56 +555,61 @@ legumbre;Legumbre;1;2
 congelado;Congelados;1;2
 </script>
 <script type="text/csv" id="csv-semanas">
-semana_id;etiqueta;inicio;fin;dia;momento;plato
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;comida;Garbanzos fritos
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;Sepia a la plancha con ajo y perejil
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;comida;Ensaladilla rusa casera
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;Fajitas marineras
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;comida;Ensalada de garbanzos
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;Pimientos rellenos de bacalao y gambas
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;comida;Hamburguesas caseras de pollo con queso
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;Revuelto de gulas, gambas y huevo
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;comida;Tiras de lomo salteadas con verduras al wok
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;Tortilla de patata y calabacín
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;Paella de marisco y carne
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;Solomillo de cerdo o ternera a la plancha
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;Lentejas con verduras y pollo
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;Tostas de tacos de salmón
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;Lentejas con verduras y pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;Tortilla de patata y calabacín
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;Paella de marisco y carne
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;Tostas de tacos de salmón
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;Judías blancas con verduras y gambas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;Pechugas de pollo a la plancha
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;Fajitas de pollo y pimientos
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;Revuelto de gulas, gambas y huevo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;Ensaladilla rusa casera
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;Gambas al ajillo tradicionales
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;Arroz con huevo y carne
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;Tomate con mozzarella y aceite de oliva
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;Solomillo de cerdo o ternera a la plancha
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;Salmón con verduras
+semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;comida;1;Garbanzos fritos
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;1;Sepia a la plancha con ajo y perejil
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;comida;1;Ensaladilla rusa casera
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;1;Fajitas marineras
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;comida;1;Ensalada de garbanzos
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;1;Pimientos rellenos de bacalao y gambas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;comida;1;Hamburguesas caseras de pollo con queso
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;1;Revuelto de gulas, gambas y huevo
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;comida;1;Tiras de lomo salteadas con verduras al wok
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;1;Tortilla de patata y calabacín
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;2;Tomate con mozzarella y aceite de oliva
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;1;Paella de marisco y carne
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;1;Solomillo de cerdo o ternera a la plancha
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;1;Lentejas con verduras y pollo
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;1;Tostas de tacos de salmón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Lentejas con verduras y pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Tortilla de patata y calabacín
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;1;Paella de marisco y carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Tostas de tacos de salmón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Judías blancas con verduras y gambas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Pechugas de pollo a la plancha
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Fajitas de pollo y pimientos
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Revuelto de gulas, gambas y huevo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Ensaladilla rusa casera
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;2;Garbanzos fritos
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Gambas al ajillo tradicionales
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Arroz con huevo y carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Tomate con mozzarella y aceite de oliva
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Solomillo de cerdo o ternera a la plancha
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Salmón con verduras
 </script>
 <script type="text/csv" id="csv-semanas-nino">
-semana_id;etiqueta;inicio;fin;dia;momento;plato
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;Puré de verduras con carne
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;Calamares
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;Crema de verduras
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;Revuelto de gulas
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;Empanadillas congeladas
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;Sopa de pollo
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;Tortilla
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;Puré de verduras con pescado
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;Guisantes con jamón
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;Crema de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;Puré de verduras con pescado
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;Tortilla
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;Sopa de pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;Croquetas congeladas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;Puré de verduras con carne
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;Revuelto de gulas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;Hamburguesa de pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;Guisantes con jamón
+semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;1;Puré de verduras con carne
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;1;Calamares
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;1;Crema de verduras
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;1;Revuelto de gulas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;1;Empanadillas congeladas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;1;Sopa de pollo
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;2;Croquetas congeladas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;1;Tortilla
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;1;Puré de verduras con pescado
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;1;Guisantes con jamón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Crema de verduras
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Calamares
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Puré de verduras con pescado
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Tortilla
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Sopa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;2;Empanadillas congeladas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Croquetas congeladas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Puré de verduras con carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Revuelto de gulas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Hamburguesa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Guisantes con jamón
 </script>
 <script type="text/csv" id="csv-despensa">
 ingrediente;en_casa
@@ -609,6 +633,9 @@ salsa de soja;si
   const MESES_CORTOS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   const MOMENTOS = ["comida","cena"];
   const MOMENTO_LBL = {comida:"Comida", cena:"Cena", ambos:"Ambos"};
+  // Cada comida y cada cena admite dos platos; el segundo no siempre hace falta.
+  const ORDENES = ["1","2"];
+  const ORDEN_LBL = {"1":"1º", "2":"2º"};
   const DIA_MS = 86400000;
   const FINDE = {"sábado":1, "domingo":1};
   const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5};
@@ -724,7 +751,7 @@ salsa de soja;si
   }
 
   /* ============ Estado ============ */
-  const CLAVE = "mesa-semanal:v4";
+  const CLAVE = "mesa-semanal:v5";
   function perfilVacio(){ return {semanas:{}, ediciones:{}, borrados:[], extra:[], objetivos:{}, comidas:{}}; }
   let estado = { tab:"semana-adultos", semana:null, despensa:{}, secciones:{},
                  adultos:perfilVacio(), nino:perfilVacio() };
@@ -738,19 +765,44 @@ salsa de soja;si
     dest.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
     dest.comidas   = p.comidas   && typeof p.comidas === "object"   ? p.comidas   : {};
   }
+  // Antes cada comida tenía un solo plato: esas claves pasan a ser el primero.
+  function migraOrden(semanas){
+    if(!semanas || typeof semanas !== "object") return semanas;
+    Object.keys(semanas).forEach(function(id){
+      const h = semanas[id], nuevo = {};
+      Object.keys(h).forEach(function(k){
+        nuevo[k.split("|").length === 2 ? k + "|1" : k] = h[k];
+      });
+      semanas[id] = nuevo;
+    });
+    return semanas;
+  }
   function cargarEstado(){
-    let p = null;
+    let p = null, viejo = false;
     try{ p = JSON.parse(localStorage.getItem(CLAVE) || "null"); }catch(e){}
+    if(!p){
+      try{
+        const v4 = JSON.parse(localStorage.getItem("mesa-semanal:v4") || "null");
+        if(v4){ p = v4; viejo = true; }
+      }catch(e){}
+    }
     if(!p){
       // Lo guardado antes de separar adultos y niño pasa al perfil de adultos.
       try{
         const v3 = JSON.parse(localStorage.getItem("mesa-semanal:v3") || "null");
-        if(v3) p = { semana:v3.semana, despensa:v3.despensa, secciones:v3.secciones,
-                     adultos:{semanas:v3.semanas, ediciones:v3.ediciones, borrados:v3.borrados,
-                              extra:v3.extra, objetivos:v3.objetivos} };
+        if(v3){
+          p = { semana:v3.semana, despensa:v3.despensa, secciones:v3.secciones,
+                adultos:{semanas:v3.semanas, ediciones:v3.ediciones, borrados:v3.borrados,
+                         extra:v3.extra, objetivos:v3.objetivos} };
+          viejo = true;
+        }
       }catch(e){}
     }
     if(!p || typeof p !== "object") return;
+    if(viejo){
+      if(p.adultos) migraOrden(p.adultos.semanas);
+      if(p.nino) migraOrden(p.nino.semanas);
+    }
     estado.tab = p.tab || "semana-adultos";
     estado.semana = p.semana || null;
     estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
@@ -772,6 +824,7 @@ salsa de soja;si
       r.PLATOS = (datos[pf.platos] || []).map(function(x){
         return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:x.tipo, m:x.momento,
                  tiempo:x.tiempo || "medio", rep:x.repeticion || "media",
+                 unico: /^(si|sí|1|true|x)$/i.test(x.plato_unico || ""),
                  g:lista(x.grupos), i:lista(x.ingredientes) };
       }).filter(function(x){ return x.n; });
 
@@ -786,7 +839,7 @@ salsa de soja;si
         if(!x.semana_id) return;
         if(!r.REPO[x.semana_id]){ r.REPO[x.semana_id] = {}; r.REPO_COMIDAS[x.semana_id] = {}; }
         if(x.momento === "comida") r.REPO_COMIDAS[x.semana_id][x.dia] = 1;
-        if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento] = x.plato;
+        if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento + "|" + (x.orden || "1")] = x.plato;
       });
     });
 
@@ -817,7 +870,7 @@ salsa de soja;si
       const e = st.ediciones[p.orig];
       if(!e){ salida.push(p); return; }
       salida.push({ orig:p.orig, n:e.n, d:e.d, t:e.t, m:e.m, tiempo:e.tiempo, rep:e.rep,
-                    g:e.g.slice(), i:e.i.slice(), editado:true });
+                    unico:!!e.unico, g:e.g.slice(), i:e.i.slice(), editado:true });
     });
     return salida.concat(st.extra);
   }
@@ -857,16 +910,23 @@ salsa de soja;si
   function momentosDe(pid, id, dia){
     return comidas(pid, id)[dia] ? MOMENTOS : ["cena"];
   }
-  function clavesDe(pid, id){
+  // Un "slot" es una comida o una cena; dentro caben dos platos, el 1º y el 2º.
+  function slotsDe(pid, id){
     const salida = [];
     DIAS.forEach(function(d){
       momentosDe(pid, id, d).forEach(function(m){ salida.push(d + "|" + m); });
     });
     return salida;
   }
+  function clavesDe(pid, id){
+    const salida = [];
+    slotsDe(pid, id).forEach(function(s){ ORDENES.forEach(function(o){ salida.push(s + "|" + o); }); });
+    return salida;
+  }
+  // Se cuentan las comidas resueltas, no los platos: un plato único ya cubre la suya.
   function llenos(pid, id){
     const h = huecos(pid, id);
-    return clavesDe(pid, id).filter(function(k){ return !!h[k]; }).length;
+    return slotsDe(pid, id).filter(function(s){ return !!h[s + "|1"]; }).length;
   }
 
   function idsSemanas(pid){
@@ -910,41 +970,61 @@ salsa de soja;si
 
   function generar(pid, id){
     const todos = platos(pid), grupos = REP[pid].GRUPOS;
-    const orden = clavesDe(pid, id).slice().sort(function(){ return Math.random() - 0.5; });
+    const orden = slotsDe(pid, id).slice().sort(function(){ return Math.random() - 0.5; });
     const h = {}, usados = {}, cuenta = {};
     Object.keys(grupos).forEach(function(k){ cuenta[k] = 0; });
 
-    orden.forEach(function(clave){
-      const partes = clave.split("|"), dia = partes[0], momento = partes[1];
-      const aptos = todos.filter(function(p){ return elegible(p, momento); });
-      // Si no quedan platos sin usar, se permite repetir antes que dejar el hueco vacío.
-      let cands = aptos.filter(function(p){ return !usados[p.n]; });
-      if(!cands.length) cands = aptos;
-      if(!cands.length) return;
-
+    function puntua(p, dia, momento){
+      let punt = Math.random() * 0.9;
+      p.g.forEach(function(g){
+        if(!(g in cuenta)) return;
+        const meta = objetivo(pid, g);
+        if(cuenta[g] < meta.min) punt += 4;
+        else if(cuenta[g] < meta.max) punt += 1.2;
+        else punt -= 5;
+      });
+      punt += (PESO_REPETICION[p.rep] !== undefined ? PESO_REPETICION[p.rep] : 0);
+      if(p.tiempo === "alto") punt += FINDE[dia] ? 1 : (momento === "cena" ? -2 : -0.8);
+      else if(p.tiempo === "medio" && !FINDE[dia] && momento === "cena") punt -= 0.4;
+      const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida") + "|1"];
+      if(hermano){
+        const otro = plato(pid, hermano);
+        if(otro && otro.g.some(function(g){ return g !== "verdura" && p.g.indexOf(g) !== -1; })) punt -= 3;
+      }
+      return punt;
+    }
+    function elige(cands, dia, momento){
       let mejor = null, mejorPunt = -Infinity;
       cands.forEach(function(p){
-        let punt = Math.random() * 0.9;
-        p.g.forEach(function(g){
-          if(!(g in cuenta)) return;
-          const meta = objetivo(pid, g);
-          if(cuenta[g] < meta.min) punt += 4;
-          else if(cuenta[g] < meta.max) punt += 1.2;
-          else punt -= 5;
-        });
-        punt += (PESO_REPETICION[p.rep] !== undefined ? PESO_REPETICION[p.rep] : 0);
-        if(p.tiempo === "alto") punt += FINDE[dia] ? 1 : (momento === "cena" ? -2 : -0.8);
-        else if(p.tiempo === "medio" && !FINDE[dia] && momento === "cena") punt -= 0.4;
-        const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida")];
-        if(hermano){
-          const otro = plato(pid, hermano);
-          if(otro && otro.g.some(function(g){ return g !== "verdura" && p.g.indexOf(g) !== -1; })) punt -= 3;
-        }
+        const punt = puntua(p, dia, momento);
         if(punt > mejorPunt){ mejorPunt = punt; mejor = p; }
       });
-      h[clave] = mejor.n;
-      usados[mejor.n] = 1;
-      mejor.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
+      return mejor;
+    }
+    function apunta(clave, p){
+      h[clave] = p.n;
+      usados[p.n] = 1;
+      p.g.forEach(function(g){ if(g in cuenta) cuenta[g]++; });
+    }
+
+    orden.forEach(function(slot){
+      const partes = slot.split("|"), dia = partes[0], momento = partes[1];
+      const aptos = todos.filter(function(p){ return elegible(p, momento); });
+      if(!aptos.length) return;
+
+      // Primer plato: se prefiere no repetir, pero antes que dejar el hueco vacío se repite.
+      let cands = aptos.filter(function(p){ return !usados[p.n]; });
+      const primero = elige(cands.length ? cands : aptos, dia, momento);
+      if(!primero) return;
+      apunta(slot + "|1", primero);
+
+      // Un plato único basta. Si no lo es, se le busca otro plato que tampoco lo sea.
+      if(primero.unico) return;
+      const parejas = aptos.filter(function(p){ return !p.unico && p.n !== primero.n; });
+      if(!parejas.length) return;
+      const libres = parejas.filter(function(p){ return !usados[p.n]; });
+      const segundo = elige(libres.length ? libres : parejas, dia, momento);
+      if(segundo) apunta(slot + "|2", segundo);
     });
     fijarHuecos(pid, id, h);
   }
@@ -1018,10 +1098,11 @@ salsa de soja;si
       filtro("f-momento", "Momento", [["","Todos"],["comida","Comida"],["cena","Cena"],["ambos","Ambos"]]),
       filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
       filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"]]),
+      filtro("f-unico", "Plato único", [["","Todos"],["si","Sí"],["no","No"]]),
       el("div", {class:"field"}, [el("label", {for:"f-grupo-" + s, text:"Grupo"}), fGrupo])
     ]));
 
-    const cabecera = ["Plato","Tipo de alimento","Momento","Preparación","Repetición","Ingredientes"]
+    const cabecera = ["Plato","Tipo de alimento","Momento","Preparación","Repetición","Plato único","Ingredientes"]
       .map(function(t){ return el("th", {scope:"col", text:t}); });
     cabecera.push(el("th", {scope:"col", class:"col-acc"}));
     p.appendChild(el("div", {class:"table-wrap"}, [
@@ -1039,12 +1120,14 @@ salsa de soja;si
     const q = $("f-buscar-" + s).value.trim().toLowerCase();
     const m = $("f-momento-" + s).value, g = $("f-grupo-" + s).value;
     const ti = $("f-tiempo-" + s).value, re = $("f-repeticion-" + s).value;
+    const un = $("f-unico-" + s).value;
     const cuerpo = $("tbody-platos-" + s);
     const filas = platos(s).filter(function(p){
       if(m && p.m !== m) return false;
       if(g && p.g.indexOf(g) === -1) return false;
       if(ti && p.tiempo !== ti) return false;
       if(re && p.rep !== re) return false;
+      if(un && (un === "si") !== !!p.unico) return false;
       if(q && (p.n + " " + p.d + " " + p.t + " " + p.i.join(" ")).toLowerCase().indexOf(q) === -1) return false;
       return true;
     });
@@ -1052,7 +1135,7 @@ salsa de soja;si
     cuerpo.textContent = "";
     if(!filas.length){
       cuerpo.appendChild(el("tr", null, [
-        el("td", {colspan:"7", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
+        el("td", {colspan:"8", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
       ]));
     }
     filas.forEach(function(p){
@@ -1069,6 +1152,8 @@ salsa de soja;si
         el("td", null, [el("span", {class:"chip chip-" + p.m, text:MOMENTO_LBL[p.m] || p.m})]),
         el("td", null, [el("span", {class:"chip chip-" + p.tiempo, text:mayus(p.tiempo)})]),
         el("td", null, [el("span", {class:"chip chip-" + p.rep, text:mayus(p.rep)})]),
+        el("td", null, [el("span", {class:"chip " + (p.unico ? "chip-unico" : "chip-doble"),
+                                    text: p.unico ? "Sí" : "No"})]),
         el("td", null, [ings]),
         el("td", {class:"col-acc"}, [
           el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + p.n,
@@ -1197,28 +1282,57 @@ salsa de soja;si
     DIAS.forEach(function(dia, idx){
       const fecha = sumaDias(lunes, idx);
       const cab = [el("h3", {text:dia})];
-      if(!pf.comidasFijas){
-        const on = !!comidas(s, id)[dia];
+      if(!pf.comidasFijas && !comidas(s, id)[dia]){
         cab.push(el("button", {
-          class:"toggle-comida", "aria-pressed":String(on),
-          title: on ? "Quitar la comida de este día" : "Este día también come en casa",
-          text: on ? "− comida" : "+ comida",
+          class:"toggle-comida", "aria-pressed":"false",
+          title:"Este día también come en casa", text:"+ comida",
           onclick:function(){ alternarComida(s, dia); }
         }));
       }
       cab.push(el("span", {class:"dnum", text:fecha.getDate() + " " + MESES_CORTOS[fecha.getMonth()]}));
 
       const card = el("article", {class:"day" + (iso(fecha) === hoy ? " hoy" : "")}, [el("header", null, cab)]);
+
       momentosDe(s, id, dia).forEach(function(momento){
-        const clave = dia + "|" + momento;
-        const p = h[clave] ? plato(s, h[clave]) : null;
-        const hijos = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
-        if(p) hijos.push(el("div", {class:"slot-meta", text:p.t}));
-        card.appendChild(el("button", {
-          type:"button", class:"slot" + (p ? " g-" + base(p) : " empty"),
-          "aria-label": MOMENTO_LBL[momento] + " del " + dia + ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiar el plato.",
-          onclick:function(){ abrirSelector(s, dia, momento); }
-        }, hijos));
+        const banda = [document.createTextNode(MOMENTO_LBL[momento])];
+        if(!pf.comidasFijas && momento === "comida"){
+          banda.push(el("button", {
+            class:"quitar", text:"quitar", title:"Ese día no come en casa",
+            onclick:function(){ alternarComida(s, dia); }
+          }));
+        }
+        card.appendChild(el("div", {class:"momento-head " + momento}, banda));
+
+        const primero = h[dia + "|" + momento + "|1"];
+        const pPrim = primero ? plato(s, primero) : null;
+        ORDENES.forEach(function(o){
+          const clave = dia + "|" + momento + "|" + o;
+          const p = h[clave] ? plato(s, h[clave]) : null;
+          // El segundo plato solo ocupa sitio si lo hay; si no, una línea para añadirlo.
+          if(!p && !h[clave] && o === "2"){
+            const basta = pPrim && pPrim.unico;
+            card.appendChild(el("button", {
+              type:"button", class:"slot-add",
+              "aria-label":"Añadir segundo plato a la " + MOMENTO_LBL[momento].toLowerCase() + " del " + dia,
+              onclick:function(){ abrirSelector(s, dia, momento, o); }
+            }, [
+              el("span", {class:"orden", text:ORDEN_LBL[o]}),
+              el("span", {text: basta ? "plato único, no hace falta segundo" : "+ añadir segundo plato"})
+            ]));
+            return;
+          }
+          const cuerpo = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
+          if(p) cuerpo.push(el("div", {class:"slot-meta", text:p.t}));
+          card.appendChild(el("button", {
+            type:"button", class:"slot" + (p ? " g-" + base(p) : " empty"),
+            "aria-label": ORDEN_LBL[o] + " plato de la " + MOMENTO_LBL[momento].toLowerCase() + " del " + dia +
+                          ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiarlo.",
+            onclick:function(){ abrirSelector(s, dia, momento, o); }
+          }, [
+            el("span", {class:"orden", text:ORDEN_LBL[o]}),
+            el("div", {class:"cuerpo"}, cuerpo)
+          ]));
+        });
       });
       cont.appendChild(card);
     });
@@ -1231,7 +1345,7 @@ salsa de soja;si
       ]));
     });
 
-    $("n-semana-" + s).textContent = llenos(s, id) + "/" + clavesDe(s, id).length;
+    $("n-semana-" + s).textContent = llenos(s, id) + "/" + slotsDe(s, id).length;
   }
 
   function alternarComida(pid, dia){
@@ -1239,12 +1353,15 @@ salsa de soja;si
     Object.keys(actual).forEach(function(k){ if(actual[k]) c[k] = 1; });
     if(c[dia]){
       delete c[dia];
-      const h = huecos(pid, id);
-      if(h[dia + "|comida"]){
-        const copia = {};
-        Object.keys(h).forEach(function(k){ if(k !== dia + "|comida") copia[k] = h[k]; });
+      const h = huecos(pid, id), copia = {};
+      let habia = false;
+      Object.keys(h).forEach(function(k){
+        if(k.indexOf(dia + "|comida|") === 0){ habia = true; return; }
+        copia[k] = h[k];
+      });
+      if(habia){
         fijarHuecos(pid, id, copia);
-        aviso("Quitada la comida del " + dia + " y su plato");
+        aviso("Quitada la comida del " + dia + " y sus platos");
       }
     }else{
       c[dia] = 1;
@@ -1261,11 +1378,12 @@ salsa de soja;si
   }
   function escSelector(e){ if(e.key === "Escape") cerrarSelector(); }
 
-  function abrirSelector(pid, dia, momento){
+  function abrirSelector(pid, dia, momento, orden){
     cerrarSelector();
     const id = semanaActual(), h = {}, origen = huecos(pid, id);
     Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
-    const clave = dia + "|" + momento;
+    const clave = dia + "|" + momento + "|" + orden;
+    const otroEnSlot = h[dia + "|" + momento + "|" + (orden === "1" ? "2" : "1")];
 
     const buscar = el("input", {type:"search", id:"picker-buscar", placeholder:"Buscar plato o ingrediente…"});
     const lst = el("div", {class:"picker-list"});
@@ -1275,11 +1393,15 @@ salsa de soja;si
       Object.keys(h).forEach(function(k){ if(h[k]) usados[h[k]] = 1; });
       const items = platos(pid)
         .filter(function(p){ return !q || (p.n + " " + p.i.join(" ")).toLowerCase().indexOf(q) !== -1; })
-        .map(function(p){ return {p:p, rec:elegible(p, momento)}; })
+        .filter(function(p){ return p.n !== otroEnSlot; })
+        // Para el segundo plato se sugieren los que no son plato único.
+        .map(function(p){ return {p:p, rec: elegible(p, momento) && (orden === "1" || !p.unico)}; })
         .sort(function(a, b){ return (b.rec - a.rec) || a.p.n.localeCompare(b.p.n, "es"); });
       lst.textContent = "";
       items.forEach(function(it){
         const p = it.p, repetido = usados[p.n] && h[clave] !== p.n;
+        const notas = [p.t, p.unico ? "plato único" : "necesita acompañante"];
+        if(repetido) notas.push("ya está esta semana");
         lst.appendChild(el("button", {
           type:"button", class:"opt" + (it.rec ? " rec" : "") + (repetido ? " used" : ""),
           onclick:function(){
@@ -1289,7 +1411,7 @@ salsa de soja;si
           el("span", {class:"sw", style:"background:" + colorDe(base(p))}),
           el("div", null, [
             el("div", {class:"on", text:p.n}),
-            el("div", {class:"om", text:p.t + " · preparación " + p.tiempo + (repetido ? " · ya está esta semana" : "")})
+            el("div", {class:"om", text:notas.join(" · ")})
           ])
         ]));
       });
@@ -1303,7 +1425,7 @@ salsa de soja;si
     const caja = el("div", {class:"picker", role:"dialog", "aria-modal":"true",
                             "aria-label":"Elegir plato para " + dia + ", " + MOMENTO_LBL[momento]}, [
       el("header", null, [
-        el("h3", {text:mayus(dia) + " · " + MOMENTO_LBL[momento] + " · " + perfil(pid).lbl}),
+        el("h3", {text:mayus(dia) + " · " + MOMENTO_LBL[momento] + " · " + ORDEN_LBL[orden] + " plato"}),
         buscar
       ]),
       lst,
@@ -1357,6 +1479,10 @@ salsa de soja;si
     const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : (pid === "nino" ? "ambos" : "cena"));
     const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
     const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional"], p ? p.rep : "media");
+    const eUnico  = el("select", {id:"e-unico"}, [
+      el("option", {value:"si", text:"Sí, basta él solo", selected: p && p.unico ? "selected" : null}),
+      el("option", {value:"no", text:"No, lleva acompañante", selected: !p || !p.unico ? "selected" : null})
+    ]);
 
     const gGrid = el("div", {class:"grupos"});
     const gActuales = p ? p.g.slice() : [];
@@ -1451,7 +1577,7 @@ salsa de soja;si
 
         const campos = {
           n:n, d: eDesc.value.trim() || "Sin descripción.", t: eTipo.value.trim() || "Sin clasificar",
-          m: eMom.value, tiempo: eTiempo.value, rep: eRep.value,
+          m: eMom.value, tiempo: eTiempo.value, rep: eRep.value, unico: eUnico.value === "si",
           g: [baseSel].concat(marcados.filter(function(k){ return k !== baseSel; })), i: ings
         };
         if(nuevo){
@@ -1487,6 +1613,7 @@ salsa de soja;si
         campo("Descripción", eDesc, true),
         campo("Tipo de alimento", eTipo, true),
         campo("Momento", eMom), campo("Preparación", eTiempo), campo("Repetición", eRep),
+        campo("Plato único", eUnico, true),
         el("div", {class:"full"}, [
           el("div", {class:"grupo-head"}, [
             el("label", {style:"font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)", text:"Grupos"}),
@@ -1651,10 +1778,11 @@ salsa de soja;si
 
   /* ============ Exportar ============ */
   function csvPlatos(pid){
-    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","grupos","ingredientes"],
+    return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","plato_unico","grupos","ingredientes"],
       platos(pid).map(function(p){
         return { nombre:p.n, descripcion:p.d, tipo:p.t, momento:p.m, tiempo:p.tiempo,
-                 repeticion:p.rep, grupos:p.g.join("|"), ingredientes:p.i.join("|") };
+                 repeticion:p.rep, plato_unico: p.unico ? "si" : "no",
+                 grupos:p.g.join("|"), ingredientes:p.i.join("|") };
       }));
   }
   function csvSemanas(pid){
@@ -1666,15 +1794,19 @@ salsa de soja;si
         MOMENTOS.forEach(function(momento){
           const habilitado = momento === "cena" || !!comidas(pid, id)[dia];
           if(!habilitado) return;
-          const p = h[dia + "|" + momento] || "";
-          // En el niño, una comida habilitada se escribe aunque esté vacía: la
-          // presencia de la fila es lo que dice que ese día come en casa.
-          if(!p && (pf.comidasFijas || momento === "cena")) return;
-          filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin, dia:dia, momento:momento, plato:p});
+          ORDENES.forEach(function(orden){
+            const p = h[dia + "|" + momento + "|" + orden] || "";
+            // En el niño, una comida habilitada escribe su primera fila aunque esté
+            // vacía: la presencia de la fila es lo que dice que ese día come en casa.
+            const marcaComida = !pf.comidasFijas && momento === "comida" && orden === "1";
+            if(!p && !marcaComida) return;
+            filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin,
+                        dia:dia, momento:momento, orden:orden, plato:p});
+          });
         });
       });
     });
-    return escribirCSV(["semana_id","etiqueta","inicio","fin","dia","momento","plato"], filas);
+    return escribirCSV(["semana_id","etiqueta","inicio","fin","dia","momento","orden","plato"], filas);
   }
   function csvEquilibrio(pid){
     return escribirCSV(["grupo","etiqueta","minimo","maximo"],

@@ -1,19 +1,22 @@
-semana_id;etiqueta;inicio;fin;dia;momento;plato
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;Puré de verduras con carne
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;Calamares
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;Crema de verduras
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;Revuelto de gulas
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;Empanadillas congeladas
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;Sopa de pollo
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;Tortilla
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;Puré de verduras con pescado
-2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;Guisantes con jamón
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;Crema de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;Puré de verduras con pescado
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;Tortilla
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;Sopa de pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;Croquetas congeladas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;Puré de verduras con carne
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;Revuelto de gulas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;Hamburguesa de pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;Guisantes con jamón
+semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;lunes;cena;1;Puré de verduras con carne
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;martes;cena;1;Calamares
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;miércoles;cena;1;Crema de verduras
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;jueves;cena;1;Revuelto de gulas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;viernes;cena;1;Empanadillas congeladas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;1;Sopa de pollo
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;comida;2;Croquetas congeladas
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;sábado;cena;1;Tortilla
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;comida;1;Puré de verduras con pescado
+2026-09-07;2ª semana de septiembre (7-13);2026-09-07;2026-09-13;domingo;cena;1;Guisantes con jamón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Crema de verduras
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Calamares
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Puré de verduras con pescado
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Tortilla
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Sopa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;2;Empanadillas congeladas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Croquetas congeladas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Puré de verduras con carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Revuelto de gulas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Hamburguesa de pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Guisantes con jamón
