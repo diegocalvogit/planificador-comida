@@ -291,6 +291,22 @@
   .badge.mod{background:var(--pimenton-soft);color:var(--pimenton)}
   .badge.actual{background:var(--ok-soft);color:var(--ok);margin-left:8px}
 
+  .guardado{display:flex;gap:11px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);
+    border-radius:var(--radius);padding:12px 15px;background:var(--surface);box-shadow:var(--shadow)}
+  .guardado.sucio{border-color:color-mix(in srgb, var(--pimenton) 45%, var(--line));background:var(--pimenton-soft)}
+  .guardado .txt{flex:1 1 240px;min-width:0}
+  .guardado .tit{font-weight:700;font-size:14px}
+  .guardado .det{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .guardado.sucio .tit,.guardado.sucio .det{color:var(--pimenton)}
+  .guardado .acc{display:flex;gap:8px;flex-wrap:wrap}
+  .token-body{padding:16px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+  .token-body ol{margin:0;padding-left:20px;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+  .token-body code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;background:var(--surface-2);
+    border-radius:4px;padding:1px 5px}
+  .token-body input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+    padding:8px 10px;font-family:"IBM Plex Mono",monospace;font-size:13px}
+  .token-aviso{border:1px solid color-mix(in srgb, var(--warn) 40%, transparent);background:var(--warn-soft);
+    color:var(--warn);border-radius:8px;padding:10px 12px;font-size:13px}
   .empty-state{background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:28px 20px;text-align:center;color:var(--ink-2)}
   .hint{font-size:12.5px;color:var(--ink-3)}
 
@@ -381,10 +397,20 @@
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" id="btn-copiar">Copiar lista</button>
-        <button class="btn btn-ghost" id="btn-reset-despensa">Vaciar despensa</button>
+        <button class="btn btn-ghost" id="btn-reset-despensa">Desmarcar la semana</button>
       </div>
     </div>
-    <p class="lead">Los ingredientes de las dos semanas, la de los adultos y la del niño, en una sola lista agrupada por sección del súper. Lo que marques como que ya lo tienes se guarda en la despensa y sigue marcado en las semanas siguientes.</p>
+    <p class="lead">Los ingredientes de las dos semanas, la de los adultos y la del niño, en una sola lista agrupada por sección del súper. Cada semana guarda su propia foto de lo que había en casa; lo que no digas de una semana se hereda de la anterior.</p>
+
+    <div class="weeknav">
+      <button class="arrow" id="cp-prev" aria-label="Compra de la semana anterior">◀</button>
+      <div class="wk">
+        <div class="lbl" id="cp-label">—</div>
+        <div class="sub" id="cp-sub">—</div>
+      </div>
+      <button class="arrow" id="cp-next" aria-label="Compra de la semana siguiente">▶</button>
+      <button class="btn btn-sm" id="cp-hoy">Semana actual</button>
+    </div>
 
     <div class="compra-head">
       <div class="counts">
@@ -418,7 +444,9 @@
     </div>
 
     <h3 style="margin:26px 0 4px;font-size:16px">Guardar los datos en el repositorio</h3>
-    <p class="lead">Lo que cambias aquí vive en este navegador. Para que quede fijo y accesible desde cualquier sitio, descarga el fichero y sustitúyelo en la carpeta <code>datos/</code> del repositorio.</p>
+    <p class="lead">Mientras no guardes, los cambios viven solo en este navegador. Al guardar, los CSV de <code>datos/</code> se reescriben en GitHub y pasan a ser lo que ve todo el mundo.</p>
+
+    <div class="guardado" id="guardado"></div>
     <div class="files" id="files"></div>
   </section>
 </main>
@@ -631,6 +659,120 @@ mayonesa;si
 pimentón;si
 salsa de soja;si
 </script>
+<script type="text/csv" id="csv-compras">
+semana_id;etiqueta;ingrediente;en_casa
+2026-09-07;2ª semana de septiembre (7-13);aceite de oliva;si
+2026-09-07;2ª semana de septiembre (7-13);aguacate;no
+2026-09-07;2ª semana de septiembre (7-13);ajo;si
+2026-09-07;2ª semana de septiembre (7-13);albahaca;no
+2026-09-07;2ª semana de septiembre (7-13);arroz;no
+2026-09-07;2ª semana de septiembre (7-13);atún en conserva;no
+2026-09-07;2ª semana de septiembre (7-13);azafrán;si
+2026-09-07;2ª semana de septiembre (7-13);bacalao;no
+2026-09-07;2ª semana de septiembre (7-13);calabacín;no
+2026-09-07;2ª semana de septiembre (7-13);calamares;no
+2026-09-07;2ª semana de septiembre (7-13);caldo de pescado;no
+2026-09-07;2ª semana de septiembre (7-13);caldo de pollo;no
+2026-09-07;2ª semana de septiembre (7-13);carne picada de pollo;no
+2026-09-07;2ª semana de septiembre (7-13);cebolla;no
+2026-09-07;2ª semana de septiembre (7-13);champiñones;no
+2026-09-07;2ª semana de septiembre (7-13);croquetas congeladas;no
+2026-09-07;2ª semana de septiembre (7-13);empanadillas congeladas;no
+2026-09-07;2ª semana de septiembre (7-13);eneldo;no
+2026-09-07;2ª semana de septiembre (7-13);fideos;no
+2026-09-07;2ª semana de septiembre (7-13);gambas;no
+2026-09-07;2ª semana de septiembre (7-13);garbanzos cocidos;no
+2026-09-07;2ª semana de septiembre (7-13);guisantes;no
+2026-09-07;2ª semana de septiembre (7-13);gulas;no
+2026-09-07;2ª semana de septiembre (7-13);harina;si
+2026-09-07;2ª semana de septiembre (7-13);huevos;no
+2026-09-07;2ª semana de septiembre (7-13);jamón cocido;no
+2026-09-07;2ª semana de septiembre (7-13);lechuga;no
+2026-09-07;2ª semana de septiembre (7-13);lentejas;no
+2026-09-07;2ª semana de septiembre (7-13);limón;no
+2026-09-07;2ª semana de septiembre (7-13);lomo de cerdo;no
+2026-09-07;2ª semana de septiembre (7-13);mayonesa;si
+2026-09-07;2ª semana de septiembre (7-13);merluza;no
+2026-09-07;2ª semana de septiembre (7-13);mozzarella;no
+2026-09-07;2ª semana de septiembre (7-13);nata para cocinar;no
+2026-09-07;2ª semana de septiembre (7-13);pan;no
+2026-09-07;2ª semana de septiembre (7-13);pan de hamburguesa;no
+2026-09-07;2ª semana de septiembre (7-13);pan para tostas;no
+2026-09-07;2ª semana de septiembre (7-13);patata;no
+2026-09-07;2ª semana de septiembre (7-13);pechuga de pollo;no
+2026-09-07;2ª semana de septiembre (7-13);perejil;no
+2026-09-07;2ª semana de septiembre (7-13);pimentón;si
+2026-09-07;2ª semana de septiembre (7-13);pimiento rojo;no
+2026-09-07;2ª semana de septiembre (7-13);pimiento verde;no
+2026-09-07;2ª semana de septiembre (7-13);pimientos del piquillo;no
+2026-09-07;2ª semana de septiembre (7-13);puerro;no
+2026-09-07;2ª semana de septiembre (7-13);queso crema;no
+2026-09-07;2ª semana de septiembre (7-13);queso en lonchas;no
+2026-09-07;2ª semana de septiembre (7-13);queso fresco;no
+2026-09-07;2ª semana de septiembre (7-13);salmón ahumado;no
+2026-09-07;2ª semana de septiembre (7-13);salsa de soja;si
+2026-09-07;2ª semana de septiembre (7-13);sepia;no
+2026-09-07;2ª semana de septiembre (7-13);solomillo de cerdo;no
+2026-09-07;2ª semana de septiembre (7-13);tomate;no
+2026-09-07;2ª semana de septiembre (7-13);tomate triturado;no
+2026-09-07;2ª semana de septiembre (7-13);tortilla de patata y calabacín;no
+2026-09-07;2ª semana de septiembre (7-13);tortillas de trigo;no
+2026-09-07;2ª semana de septiembre (7-13);zanahoria;no
+2026-09-14;3ª semana de septiembre (14-20);aceite de oliva;si
+2026-09-14;3ª semana de septiembre (14-20);ajo;si
+2026-09-14;3ª semana de septiembre (14-20);albahaca;no
+2026-09-14;3ª semana de septiembre (14-20);arroz;no
+2026-09-14;3ª semana de septiembre (14-20);atún en conserva;no
+2026-09-14;3ª semana de septiembre (14-20);azafrán;si
+2026-09-14;3ª semana de septiembre (14-20);calabacín;no
+2026-09-14;3ª semana de septiembre (14-20);calamares;no
+2026-09-14;3ª semana de septiembre (14-20);caldo de pescado;no
+2026-09-14;3ª semana de septiembre (14-20);caldo de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);cebolla;no
+2026-09-14;3ª semana de septiembre (14-20);champiñones;no
+2026-09-14;3ª semana de septiembre (14-20);croquetas congeladas;no
+2026-09-14;3ª semana de septiembre (14-20);empanadillas congeladas;no
+2026-09-14;3ª semana de septiembre (14-20);eneldo;no
+2026-09-14;3ª semana de septiembre (14-20);especias para fajitas;no
+2026-09-14;3ª semana de septiembre (14-20);fideos;no
+2026-09-14;3ª semana de septiembre (14-20);filetes de ternera;no
+2026-09-14;3ª semana de septiembre (14-20);gambas;no
+2026-09-14;3ª semana de septiembre (14-20);garbanzos cocidos;no
+2026-09-14;3ª semana de septiembre (14-20);guindilla;si
+2026-09-14;3ª semana de septiembre (14-20);guisantes;no
+2026-09-14;3ª semana de septiembre (14-20);gulas;no
+2026-09-14;3ª semana de septiembre (14-20);hamburguesa de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);harina;si
+2026-09-14;3ª semana de septiembre (14-20);huevos;no
+2026-09-14;3ª semana de septiembre (14-20);jamón cocido;no
+2026-09-14;3ª semana de septiembre (14-20);judías blancas cocidas;no
+2026-09-14;3ª semana de septiembre (14-20);lechuga;no
+2026-09-14;3ª semana de septiembre (14-20);lentejas;no
+2026-09-14;3ª semana de septiembre (14-20);limón;no
+2026-09-14;3ª semana de septiembre (14-20);lomo de salmón;no
+2026-09-14;3ª semana de septiembre (14-20);mayonesa;si
+2026-09-14;3ª semana de septiembre (14-20);merluza;no
+2026-09-14;3ª semana de septiembre (14-20);mozzarella;no
+2026-09-14;3ª semana de septiembre (14-20);pan;no
+2026-09-14;3ª semana de septiembre (14-20);pan de hamburguesa;no
+2026-09-14;3ª semana de septiembre (14-20);pan para tostas;no
+2026-09-14;3ª semana de septiembre (14-20);patata;no
+2026-09-14;3ª semana de septiembre (14-20);pechuga de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);perejil;no
+2026-09-14;3ª semana de septiembre (14-20);pimentón;si
+2026-09-14;3ª semana de septiembre (14-20);pimiento rojo;no
+2026-09-14;3ª semana de septiembre (14-20);pimiento verde;no
+2026-09-14;3ª semana de septiembre (14-20);puerro;no
+2026-09-14;3ª semana de septiembre (14-20);queso crema;no
+2026-09-14;3ª semana de septiembre (14-20);salmón ahumado;no
+2026-09-14;3ª semana de septiembre (14-20);solomillo de cerdo;no
+2026-09-14;3ª semana de septiembre (14-20);tomate;no
+2026-09-14;3ª semana de septiembre (14-20);tomate frito;no
+2026-09-14;3ª semana de septiembre (14-20);tomate triturado;no
+2026-09-14;3ª semana de septiembre (14-20);tortilla de patata y calabacín;no
+2026-09-14;3ª semana de septiembre (14-20);tortillas de trigo;no
+2026-09-14;3ª semana de septiembre (14-20);zanahoria;no
+</script>
 
 <script>
 (function(){
@@ -738,9 +880,11 @@ salsa de soja;si
     ["equilibrio_nino",  "datos/equilibrio-nino.csv",  "csv-equilibrio-nino"],
     ["semanas",          "datos/semanas.csv",          "csv-semanas"],
     ["semanas_nino",     "datos/semanas-nino.csv",     "csv-semanas-nino"],
-    ["despensa",         "datos/despensa.csv",         "csv-despensa"]
+    ["despensa",         "datos/despensa.csv",         "csv-despensa"],
+    ["compras",          "datos/compras.csv",          "csv-compras"]
   ];
-  const datos = {};
+  const datos = {};    // filas ya parseadas
+  const crudos = {};   // el texto tal cual vino, para detectar cambios sin guardar
   let desdeRespaldo = false;
 
   function respaldo(id){
@@ -755,6 +899,7 @@ salsa de soja;si
         if(r.ok) texto = await r.text();
       }catch(e){ /* file:// o sin red: usamos la copia incrustada */ }
       if(texto === null){ desdeRespaldo = true; texto = respaldo(f[2]); }
+      crudos[f[0]] = texto;
       datos[f[0]] = leerCSV(texto);
     }));
   }
@@ -763,6 +908,7 @@ salsa de soja;si
   const CLAVE = "mesa-semanal:v5";
   function perfilVacio(){ return {semanas:{}, ediciones:{}, borrados:[], extra:[], objetivos:{}, comidas:{}}; }
   let estado = { tab:"semana-adultos", semana:null, despensa:{}, secciones:{},
+                 compras:{}, semanasBorradas:[],
                  adultos:perfilVacio(), nino:perfilVacio() };
 
   function fusionaPerfil(dest, p){
@@ -816,6 +962,8 @@ salsa de soja;si
     estado.semana = p.semana || null;
     estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
     estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
+    estado.compras = p.compras && typeof p.compras === "object" ? p.compras : {};
+    estado.semanasBorradas = Array.isArray(p.semanasBorradas) ? p.semanasBorradas : [];
     fusionaPerfil(estado.adultos, p.adultos);
     fusionaPerfil(estado.nino, p.nino);
   }
@@ -823,7 +971,7 @@ salsa de soja;si
     try{ localStorage.setItem(CLAVE, JSON.stringify(estado)); }catch(e){}
   }
 
-  let SECCION = {}, SECCIONES = [];
+  let SECCION = {}, SECCIONES = [], REPO_COMPRAS = {};
   const REP = { adultos:{PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}},
                 nino:   {PLATOS:[], GRUPOS:{}, REPO:{}, REPO_COMIDAS:{}} };
 
@@ -850,6 +998,14 @@ salsa de soja;si
         if(x.momento === "comida") r.REPO_COMIDAS[x.semana_id][x.dia] = 1;
         if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento + "|" + (x.orden || "1")] = x.plato;
       });
+    });
+
+    // Compras ya registradas: qué había en casa cada semana.
+    REPO_COMPRAS = {};
+    (datos.compras || []).forEach(function(x){
+      if(!x.semana_id || !x.ingrediente) return;
+      if(!REPO_COMPRAS[x.semana_id]) REPO_COMPRAS[x.semana_id] = {};
+      REPO_COMPRAS[x.semana_id][x.ingrediente] = /^(si|sí|1|true|x)$/i.test(x.en_casa || "");
     });
 
     // El orden de los bloques de la compra es el orden de aparición en el CSV.
@@ -943,6 +1099,7 @@ salsa de soja;si
     Object.keys(REP[pid].REPO).forEach(function(k){ s[k] = 1; });
     Object.keys(estado[pid].semanas).forEach(function(k){ s[k] = 1; });
     return Object.keys(s).filter(function(id){
+      if(estado.semanasBorradas.indexOf(id) !== -1) return false;
       const h = huecos(pid, id);
       return Object.keys(h).some(function(k){ return !!h[k]; });
     }).sort().reverse();
@@ -953,10 +1110,40 @@ salsa de soja;si
     return Object.keys(s).sort().reverse();
   }
 
-  function enCasa(ing){
-    if(Object.prototype.hasOwnProperty.call(estado.despensa, ing)) return !!estado.despensa[ing];
+  // Cada semana guarda su propia foto de lo que había en casa.
+  function semanasConCompra(){
+    const s = {};
+    Object.keys(REPO_COMPRAS).forEach(function(k){ s[k] = 1; });
+    Object.keys(estado.compras).forEach(function(k){ s[k] = 1; });
+    return Object.keys(s).filter(function(k){ return estado.semanasBorradas.indexOf(k) === -1; }).sort();
+  }
+  function marcaDe(id, ing){
+    const l = estado.compras[id];
+    if(l && Object.prototype.hasOwnProperty.call(l, ing)) return !!l[ing];
+    const r = REPO_COMPRAS[id];
+    if(r && Object.prototype.hasOwnProperty.call(r, ing)) return !!r[ing];
+    return null;
+  }
+  function enDespensaFija(ing){
     const f = (datos.despensa || []).filter(function(r){ return r.ingrediente === ing; })[0];
     return !!(f && /^(si|sí|1|true|x)$/i.test(f.en_casa || ""));
+  }
+  // Si la semana no dice nada de ese ingrediente, se hereda de la última que sí lo diga.
+  function enCasa(ing, id){
+    id = id || semanaActual();
+    const propia = marcaDe(id, ing);
+    if(propia !== null) return propia;
+    const previas = semanasConCompra().filter(function(x){ return x < id; }).reverse();
+    for(let i = 0; i < previas.length; i++){
+      const m = marcaDe(previas[i], ing);
+      if(m !== null) return m;
+    }
+    return enDespensaFija(ing);
+  }
+  function marcar(id, ing, v){
+    if(!estado.compras[id]) estado.compras[id] = {};
+    estado.compras[id][ing] = !!v;
+    guardar();
   }
 
   // Al renombrar o borrar un plato, sus huecos dejan de apuntar a un nombre muerto.
@@ -1665,8 +1852,12 @@ salsa de soja;si
   }
 
   function pintarCompra(){
-    const id = semanaActual(), mapa = ingredientesDeSemana(id);
-    $("compra-semana").textContent = etiquetaSemana(desdeIso(id));
+    const id = semanaActual(), mapa = ingredientesDeSemana(id), lunes = desdeIso(id);
+    $("compra-semana").textContent = "Compra de la semana";
+    const et = $("cp-label");
+    et.textContent = etiquetaSemana(lunes);
+    $("cp-sub").textContent = subtituloSemana(lunes);
+    if(id === iso(lunesDe(new Date()))) et.appendChild(el("span", {class:"now", text:"esta semana"}));
     $("c-adultos").textContent = String(distintos("adultos", id));
     $("c-nino").textContent = String(distintos("nino", id));
 
@@ -1685,7 +1876,7 @@ salsa de soja;si
       const sec = seccionDe(ing);
       if(!porSeccion[sec]) porSeccion[sec] = [];
       porSeccion[sec].push(ing);
-      if(enCasa(ing)) tengo++; else comprar++;
+      if(enCasa(ing, id)) tengo++; else comprar++;
     });
 
     ordenSecciones(Object.keys(porSeccion)).forEach(function(titulo){
@@ -1694,17 +1885,17 @@ salsa de soja;si
       const sec = el("section", {class:"sec"}, [
         el("header", null, [
           el("h3", {text:titulo}),
-          el("span", {class:"sec-n", text:items.filter(function(i){ return !enCasa(i); }).length + " de " + items.length})
+          el("span", {class:"sec-n", text:items.filter(function(i){ return !enCasa(i, id); }).length + " de " + items.length})
         ])
       ]);
       items.forEach(function(ing){
         const cb = el("input", {type:"checkbox", id:"ing-" + ing.replace(/[^a-z0-9]+/gi, "-")});
-        cb.checked = enCasa(ing);
+        cb.checked = enCasa(ing, id);
         cb.addEventListener("change", function(){
-          estado.despensa[ing] = cb.checked; guardar(); pintarCompra();
+          marcar(id, ing, cb.checked); pintarCompra(); pintarHistorico();
         });
         const usos = mapa[ing];
-        sec.appendChild(el("label", {class:"item" + (enCasa(ing) ? " have" : "")}, [
+        sec.appendChild(el("label", {class:"item" + (enCasa(ing, id) ? " have" : "")}, [
           cb,
           el("div", {class:"txt"}, [
             el("div", {class:"nm", text:ing}),
@@ -1721,11 +1912,14 @@ salsa de soja;si
   }
 
   $("btn-reset-despensa").addEventListener("click", function(){
-    const mapa = ingredientesDeSemana(semanaActual());
-    Object.keys(mapa).forEach(function(ing){ estado.despensa[ing] = false; });
-    guardar(); pintarCompra();
-    aviso("Despensa vaciada para los ingredientes de esta semana");
+    const id = semanaActual(), mapa = ingredientesDeSemana(id);
+    Object.keys(mapa).forEach(function(ing){ marcar(id, ing, false); });
+    pintarCompra(); pintarHistorico();
+    aviso("Nada marcado como existencias en esta semana");
   });
+  $("cp-prev").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); });
+  $("cp-next").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), 7))); });
+  $("cp-hoy").addEventListener("click", function(){ irASemana(iso(lunesDe(new Date()))); });
 
   $("btn-copiar").addEventListener("click", function(){
     const id = semanaActual(), mapa = ingredientesDeSemana(id);
@@ -1733,7 +1927,7 @@ salsa de soja;si
     const presentes = Object.keys(mapa).map(seccionDe).filter(function(v, i, a){ return a.indexOf(v) === i; });
     ordenSecciones(presentes).forEach(function(titulo){
       const items = Object.keys(mapa)
-        .filter(function(i){ return seccionDe(i) === titulo && !enCasa(i); })
+        .filter(function(i){ return seccionDe(i) === titulo && !enCasa(i, id); })
         .sort(function(a, b){ return a.localeCompare(b, "es"); });
       if(!items.length) return;
       lineas.push(titulo.toUpperCase());
@@ -1775,12 +1969,16 @@ salsa de soja;si
           el("button", {class:"btn btn-sm", text: id === actual ? "Abierta" : "Abrir",
             disabled: id === actual ? "disabled" : null,
             style: id === actual ? "opacity:.5" : null,
-            onclick:function(){ irASemana(id); verTab("semana-adultos"); }})
+            onclick:function(){ irASemana(id); verTab("semana-adultos"); }}),
+          el("button", {class:"btn btn-sm btn-ghost", style:"color:var(--pimenton);margin-left:6px",
+            text:"Borrar", "aria-label":"Borrar " + etiquetaSemana(lunes),
+            onclick:function(){ borrarSemana(id); }})
         ])
       ]));
     });
 
     $("n-historico").textContent = String(ids.length);
+    pintarGuardado();
     pintarFicheros();
   }
 
@@ -1844,21 +2042,39 @@ salsa de soja;si
     Object.keys(estado.secciones).forEach(function(k){ nombres[k] = 1; });
     Object.keys(estado.despensa).forEach(function(k){ nombres[k] = 1; });
     return escribirCSV(["ingrediente","en_casa"],
-      Object.keys(nombres).filter(enCasa)
+      Object.keys(nombres).filter(enDespensaFija)
         .sort(function(a, b){ return a.localeCompare(b, "es"); })
         .map(function(i){ return {ingrediente:i, en_casa:"si"}; }));
   }
 
+  function csvCompras(){
+    const filas = [];
+    idsTodas().slice().reverse().forEach(function(id){
+      const et = etiquetaSemana(desdeIso(id)), mapa = ingredientesDeSemana(id);
+      Object.keys(mapa).sort(function(x, y){ return x.localeCompare(y, "es"); }).forEach(function(ing){
+        filas.push({semana_id:id, etiqueta:et, ingrediente:ing, en_casa: enCasa(ing, id) ? "si" : "no"});
+      });
+    });
+    return escribirCSV(["semana_id","etiqueta","ingrediente","en_casa"], filas);
+  }
+
   const FICHEROS = [
-    {f:"platos.csv",          t:"Repertorio de los adultos.",                       gen:function(){ return csvPlatos("adultos"); }},
-    {f:"platos-nino.csv",     t:"Repertorio del niño.",                             gen:function(){ return csvPlatos("nino"); }},
-    {f:"ingredientes.csv",    t:"Cada ingrediente con su sección del súper.",       gen:csvIngredientes},
-    {f:"semanas.csv",         t:"Semanas de los adultos, una fila por hueco.",      gen:function(){ return csvSemanas("adultos"); }},
-    {f:"semanas-nino.csv",    t:"Semanas del niño, con las comidas habilitadas.",   gen:function(){ return csvSemanas("nino"); }},
-    {f:"despensa.csv",        t:"Ingredientes marcados como existencias en casa.",  gen:csvDespensa},
-    {f:"equilibrio.csv",      t:"Objetivos semanales de los adultos.",              gen:function(){ return csvEquilibrio("adultos"); }},
-    {f:"equilibrio-nino.csv", t:"Objetivos semanales del niño.",                    gen:function(){ return csvEquilibrio("nino"); }}
+    {f:"platos.csv",          clave:"platos",          t:"Repertorio de los adultos.",                      gen:function(){ return csvPlatos("adultos"); }},
+    {f:"platos-nino.csv",     clave:"platos_nino",     t:"Repertorio del niño.",                            gen:function(){ return csvPlatos("nino"); }},
+    {f:"ingredientes.csv",    clave:"ingredientes",    t:"Cada ingrediente con su sección del súper.",      gen:csvIngredientes},
+    {f:"semanas.csv",         clave:"semanas",         t:"Semanas de los adultos, una fila por plato.",     gen:function(){ return csvSemanas("adultos"); }},
+    {f:"semanas-nino.csv",    clave:"semanas_nino",    t:"Semanas del niño, con las comidas habilitadas.",  gen:function(){ return csvSemanas("nino"); }},
+    {f:"compras.csv",         clave:"compras",         t:"Qué había en casa cada semana.",                  gen:csvCompras},
+    {f:"despensa.csv",        clave:"despensa",        t:"Los básicos que siempre hay en casa.",            gen:csvDespensa},
+    {f:"equilibrio.csv",      clave:"equilibrio",      t:"Objetivos semanales de los adultos.",             gen:function(){ return csvEquilibrio("adultos"); }},
+    {f:"equilibrio-nino.csv", clave:"equilibrio_nino", t:"Objetivos semanales del niño.",                   gen:function(){ return csvEquilibrio("nino"); }}
   ];
+
+  // Un fichero está "sucio" cuando lo que generaría la web no es lo que hay en datos/.
+  function normaliza(t){ return String(t || "").replace(/\r/g, "").replace(/\n+$/, "") + "\n"; }
+  function sucios(){
+    return FICHEROS.filter(function(x){ return normaliza(x.gen()) !== normaliza(crudos[x.clave]); });
+  }
 
   function descargar(nombre, texto){
     try{
@@ -1882,8 +2098,12 @@ salsa de soja;si
   function pintarFicheros(){
     const cont = $("files"); cont.textContent = "";
     FICHEROS.forEach(function(item){
+      const cambiado = normaliza(item.gen()) !== normaliza(crudos[item.clave]);
       cont.appendChild(el("div", {class:"file"}, [
-        el("h4", {text:"datos/" + item.f}),
+        el("h4", null, [
+          document.createTextNode("datos/" + item.f),
+          cambiado ? el("span", {class:"badge mod", text:"cambiado"}) : null
+        ]),
         el("p", {text:item.t}),
         el("div", {class:"row"}, [
           el("button", {class:"btn btn-sm btn-primary", text:"Descargar",
@@ -1893,6 +2113,183 @@ salsa de soja;si
         ])
       ]));
     });
+  }
+
+  function borrarSemana(id){
+    if(!window.confirm("¿Borrar " + etiquetaSemana(desdeIso(id)) + " del histórico?\n" +
+                       "Se van sus dos menús y su compra. Tendrás que guardar para que desaparezca del repositorio."))
+      return;
+    if(estado.semanasBorradas.indexOf(id) === -1) estado.semanasBorradas.push(id);
+    PERFILES.forEach(function(pf){
+      delete estado[pf.id].semanas[id];
+      delete estado[pf.id].comidas[id];
+    });
+    delete estado.compras[id];
+    guardar(); pintarTodo();
+    aviso("Semana borrada del histórico");
+  }
+
+  /* ============ Guardar en el repositorio ============ */
+  // El token es del usuario, vive solo en este navegador y solo viaja a api.github.com.
+  const REPO_GH = {owner:"diegocalvogit", repo:"planificador-comida", rama:"main"};
+  const CLAVE_TOKEN = "menu-semanal:gh-token";
+
+  function leerToken(){ try{ return localStorage.getItem(CLAVE_TOKEN) || ""; }catch(e){ return ""; } }
+  function fijarToken(t){
+    try{ if(t) localStorage.setItem(CLAVE_TOKEN, t); else localStorage.removeItem(CLAVE_TOKEN); }catch(e){}
+  }
+  function aBase64(txt){
+    const bytes = new TextEncoder().encode(txt);
+    let bin = "";
+    bytes.forEach(function(b){ bin += String.fromCharCode(b); });
+    return btoa(bin);
+  }
+  async function apiGH(ruta, opciones){
+    const o = opciones || {};
+    o.headers = Object.assign({
+      "Accept":"application/vnd.github+json",
+      "Authorization":"Bearer " + leerToken(),
+      "X-GitHub-Api-Version":"2022-11-28"
+    }, o.headers || {});
+    let r;
+    try{ r = await fetch("https://api.github.com" + ruta, o); }
+    catch(e){ return {ok:false, estado:0, cuerpo:{message:"sin conexión con GitHub"}}; }
+    let cuerpo = null;
+    try{ cuerpo = await r.json(); }catch(e){}
+    return {ok:r.ok, estado:r.status, cuerpo:cuerpo};
+  }
+  function motivo(r){
+    return r && r.cuerpo && r.cuerpo.message ? r.cuerpo.message : "error " + (r ? r.estado : "?");
+  }
+
+  let guardando = false;
+  async function guardarEnGitHub(){
+    if(guardando) return;
+    const pendientes = sucios();
+    if(!pendientes.length){ aviso("No hay nada que guardar"); return; }
+    if(!leerToken()){ pedirToken(); return; }
+
+    guardando = true;
+    pintarGuardado();
+    const base = "/repos/" + REPO_GH.owner + "/" + REPO_GH.repo + "/contents/datos/";
+    const hechos = [], fallos = [];
+    aviso("Guardando " + pendientes.length + " ficheros en GitHub…");
+
+    for(let i = 0; i < pendientes.length; i++){
+      const item = pendientes[i], texto = item.gen();
+      const actual = await apiGH(base + item.f + "?ref=" + REPO_GH.rama);
+      if(!actual.ok && actual.estado !== 404){
+        fallos.push(item.f + ": " + motivo(actual));
+        if(actual.estado === 401 || actual.estado === 403 || actual.estado === 0) break;
+        continue;
+      }
+      const puesta = await apiGH(base + item.f, {
+        method:"PUT",
+        body: JSON.stringify({
+          message: "Menu Semanal: actualizar datos/" + item.f,
+          content: aBase64(texto),
+          branch: REPO_GH.rama,
+          sha: actual.ok && actual.cuerpo ? actual.cuerpo.sha : undefined
+        })
+      });
+      if(puesta.ok){
+        hechos.push(item.f);
+        crudos[item.clave] = texto;   // deja de contar como cambio sin guardar
+      }else{
+        fallos.push(item.f + ": " + motivo(puesta));
+        if(puesta.estado === 401 || puesta.estado === 403 || puesta.estado === 0) break;
+      }
+    }
+
+    guardando = false;
+    pintarGuardado(); pintarFicheros();
+    if(!hechos.length) aviso("No se ha podido guardar — " + (fallos[0] || "sin cambios"));
+    else if(fallos.length) aviso("Guardados " + hechos.length + ", falló " + fallos[0]);
+    else aviso("Guardados " + hechos.length + " ficheros. GitHub Pages tarda un par de minutos en reflejarlo.");
+  }
+
+  let capaToken = null;
+  function cerrarToken(){ if(capaToken){ capaToken.remove(); capaToken = null; } }
+  function pedirToken(){
+    cerrarToken();
+    const campoTok = el("input", {type:"password", id:"gh-token", autocomplete:"off",
+                                  spellcheck:"false", placeholder:"github_pat_…"});
+    const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true", "aria-label":"Conectar con GitHub"}, [
+      el("header", null, [el("h3", {text:"Conectar con GitHub"})]),
+      el("div", {class:"token-body"}, [
+        el("p", {style:"margin:0;font-size:13.5px;color:var(--ink-2)",
+                 text:"Para escribir en " + REPO_GH.owner + "/" + REPO_GH.repo + " hace falta un token tuyo:"}),
+        el("ol", null, [
+          el("li", null, [document.createTextNode("Entra en "),
+                          el("code", {text:"github.com/settings/personal-access-tokens/new"})]),
+          el("li", null, [document.createTextNode("Repository access: "),
+                          el("code", {text:"Only select repositories"}),
+                          document.createTextNode(" y elige "),
+                          el("code", {text:REPO_GH.repo})]),
+          el("li", null, [document.createTextNode("En Repository permissions, pon "),
+                          el("code", {text:"Contents"}),
+                          document.createTextNode(" en "),
+                          el("code", {text:"Read and write"}),
+                          document.createTextNode(". Ningún permiso más.")]),
+          el("li", {text:"Ponle caducidad y genera el token."})
+        ]),
+        el("label", {for:"gh-token", text:"Pega el token aquí",
+                     style:"font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)"}),
+        campoTok,
+        el("div", {class:"token-aviso", text:
+          "El token se guarda en este navegador y solo se envía a api.github.com. No sale de aquí, pero quien " +
+          "use este navegador o tenga instalada una extensión podría leerlo: por eso conviene que solo dé acceso " +
+          "a este repositorio y que caduque."})
+      ]),
+      el("footer", null, [
+        el("div", {class:"der"}, [
+          el("button", {class:"btn", text:"Cancelar", onclick:cerrarToken}),
+          el("button", {class:"btn btn-primary", text:"Conectar y guardar", onclick:function(){
+            const t = campoTok.value.trim();
+            if(!t){ aviso("Pega el token"); campoTok.focus(); return; }
+            fijarToken(t); cerrarToken(); pintarGuardado(); guardarEnGitHub();
+          }})
+        ])
+      ])
+    ]);
+    capaToken = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaToken) cerrarToken(); }}, [caja]);
+    document.body.appendChild(capaToken);
+    campoTok.focus();
+  }
+
+  function descartarLocal(){
+    if(!window.confirm("¿Descartar lo que hay en este navegador y volver a lo guardado en el repositorio?\n" +
+                       "Se pierde todo lo que no hayas guardado.")) return;
+    try{ localStorage.removeItem(CLAVE); }catch(e){}
+    location.reload();
+  }
+
+  function pintarGuardado(){
+    const cont = $("guardado"); cont.textContent = "";
+    const pendientes = sucios(), hayToken = !!leerToken();
+    cont.className = "guardado" + (pendientes.length ? " sucio" : "");
+    cont.appendChild(el("div", {class:"txt"}, [
+      el("div", {class:"tit", text: guardando ? "Guardando…" : (pendientes.length
+        ? (pendientes.length === 1 ? "1 fichero sin guardar" : pendientes.length + " ficheros sin guardar")
+        : "Todo guardado en el repositorio")}),
+      el("div", {class:"det", text: pendientes.length
+        ? pendientes.map(function(x){ return x.f; }).join(", ")
+        : (hayToken ? "Conectado con GitHub, listo para guardar cuando haga falta."
+                    : "Aún no has conectado GitHub: te pedirá el token la primera vez que guardes.")})
+    ]));
+    const acc = el("div", {class:"acc"}, [
+      el("button", {class:"btn btn-primary", text: guardando ? "Guardando…" : "Guardar en GitHub",
+                    disabled: (guardando || !pendientes.length) ? "disabled" : null,
+                    style: (guardando || !pendientes.length) ? "opacity:.5" : null,
+                    onclick:guardarEnGitHub}),
+      el("button", {class:"btn", text:"Descartar y recargar", onclick:descartarLocal})
+    ]);
+    if(hayToken){
+      acc.appendChild(el("button", {class:"btn btn-ghost", text:"Olvidar token", onclick:function(){
+        fijarToken(""); pintarGuardado(); aviso("Token olvidado en este navegador");
+      }}));
+    }
+    cont.appendChild(acc);
   }
 
   /* ============ Avisos ============ */

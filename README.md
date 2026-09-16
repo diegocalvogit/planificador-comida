@@ -15,7 +15,8 @@ datos/equilibrio.csv           objetivos semanales de los adultos (editables des
 datos/equilibrio-nino.csv      objetivos semanales del niño
 datos/semanas.csv              histórico de semanas de los adultos, una fila por plato
 datos/semanas-nino.csv         histórico de semanas del niño
-datos/despensa.csv             ingredientes que hay en casa
+datos/compras.csv              qué había en casa cada semana, el histórico de la compra
+datos/despensa.csv             los básicos que siempre hay en casa
 scripts/actualizar-respaldo.py sincroniza la copia de los CSV incrustada en index.html
 ```
 
@@ -63,15 +64,28 @@ Cualquier hueco se cambia a mano pulsando sobre él.
 
 Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2 y congelados 1-2.
 
-**Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, derivada de forma determinista de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*: eso es la despensa, es común a todas las semanas y sigue marcado al generar la siguiente.
+**Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en `compras.csv` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de `despensa.csv`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 
-**Histórico** — Todas las semanas planificadas, con los huecos cubiertos de adultos y de niño en cada una, y un botón para abrir cualquiera de ellas. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
+**Histórico** — Todas las semanas planificadas, con los huecos cubiertos de adultos y de niño en cada una, y botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
 
 ## Cómo se guardan los cambios
 
-Una página estática servida por GitHub Pages puede **leer** los CSV del repositorio, pero no puede escribir en él: para eso haría falta un token de GitHub incrustado en el HTML, lo que en un repositorio público equivale a regalar el acceso a la cuenta.
+Todo lo que tocas en la web se guarda primero en el `localStorage` del navegador. La pestaña **Histórico** dice en todo momento cuántos ficheros tienes sin guardar y cuáles, y ofrece tres salidas:
 
-Por eso los cambios se guardan primero en el `localStorage` del navegador, y la pestaña **Histórico** ofrece, para cada fichero, un botón *Descargar* y otro *Copiar*. El fichero descargado sustituye al de `datos/` y se sube al repositorio con un commit normal. A partir de ese momento el dato es común a todos los dispositivos.
+**Guardar en GitHub** reescribe los CSV de `datos/` directamente en el repositorio, con un commit por fichero, usando la API de GitHub. La primera vez pide un token:
+
+1. En `github.com/settings/personal-access-tokens/new`
+2. Repository access: *Only select repositories* → `planificador-comida`
+3. Repository permissions: `Contents` en *Read and write*. Ningún permiso más.
+4. Con caducidad.
+
+El token se guarda en el `localStorage` de ese navegador y solo viaja a `api.github.com`. No sale de ahí, pero quien use ese navegador o tenga instalada una extensión podría leerlo: de ahí que convenga acotarlo a este repositorio y ponerle fecha de caducidad. *Olvidar token* lo borra. Un token robado solo permite tocar este repositorio, y se revoca desde la propia página de GitHub.
+
+**Descargar** / **Copiar**, en cada fichero, para hacerlo a mano si prefieres no usar token.
+
+**Descartar y recargar** tira lo que haya en el navegador y vuelve a lo que diga el repositorio, que es la forma de resolver cualquier descuadre entre dispositivos.
+
+Después de guardar, GitHub Pages tarda un par de minutos en republicar la web.
 
 ## Trabajar con el proyecto
 

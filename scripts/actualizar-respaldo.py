@@ -25,6 +25,7 @@ FICHEROS = {
     "csv-semanas": "semanas.csv",
     "csv-semanas-nino": "semanas-nino.csv",
     "csv-despensa": "despensa.csv",
+    "csv-compras": "compras.csv",
 }
 
 
