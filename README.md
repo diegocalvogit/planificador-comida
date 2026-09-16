@@ -1,4 +1,4 @@
-# Planificador de comidas de casa — *Mesa Semanal*
+# Planificador de comidas de casa — *Menú Semanal*
 
 Página web de una sola pieza, sin dependencias ni build, para organizar las comidas de casa. Los datos viven en ficheros CSV dentro de `datos/`, legibles y editables directamente desde GitHub.
 
@@ -25,7 +25,7 @@ Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` pa
 
 ## Las seis pestañas
 
-**Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
+**Platos** — Los 23 platos del repertorio: descripción, tipo de alimento, momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas.
 
 Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV o lo hayas añadido tú: los ocho campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. Un plato editado se marca como *modificado* y tiene un *Deshacer cambios* que lo devuelve a lo que dice el CSV; también se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
 
@@ -40,7 +40,7 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 - respeta el momento de cada plato y no repite plato dentro de la semana;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
-- pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*;
+- pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
 - persigue estos objetivos, que salen de `datos/equilibrio.csv`:
 
@@ -53,6 +53,7 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 | Carne blanca | 3–4 |
 | Carne roja o magra | 1–2 |
 | Huevo | 2–3 |
+| Fuera de casa | 0–2 |
 
 Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
@@ -85,6 +86,12 @@ Para verlo en local igual que en Pages:
 ```
 python -m http.server 8765
 ```
+
+## Dos platos especiales
+
+**Restaurante** está en los dos repertorios, para los días que se sale de la planificación. No tiene ingredientes, así que no suma nada a la compra; es plato único, así que no pide segundo; su grupo es *fuera de casa*, que no compite con los grupos nutricionales y lleva su propio contador en el panel de equilibrio; y su repetición es *nunca*, de modo que el generador no lo propone solo.
+
+**Parrillada de verduras** —calabacín, berenjena, pimiento, cebolla y espárragos— es el plato de solo verduras de los adultos, pensado como primero o guarnición: no es plato único.
 
 ## Origen de los datos
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mesa Semanal</title>
+<title>Menú Semanal</title>
 <meta name="description" content="Planificador de las comidas de casa: repertorio de platos de adultos y del niño, reparto semanal equilibrado, lista de la compra e histórico de semanas.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,6 +43,7 @@
     --g-roja:#F8DCD8;
     --g-huevo:#FCF1C8;
     --g-congelado:#E3E5F5;
+    --g-fuera:#E6EAEF;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
@@ -57,7 +58,7 @@
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
       --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
       --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-      --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639;
+      --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35;
     }
   }
   :root[data-theme="dark"]{
@@ -72,7 +73,7 @@
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
     --g-verdura:#1B2C1F; --g-legumbre:#2E2717; --g-arroz:#272219;
     --g-marisco:#122A2B; --g-azul:#152539; --g-blanca:#30251A;
-    --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639;
+    --g-roja:#35211F; --g-huevo:#302B15; --g-congelado:#212639; --g-fuera:#242B35;
   }
 
   *{box-sizing:border-box}
@@ -133,7 +134,7 @@
   .chip-alto{background:var(--pimenton-soft);color:var(--pimenton)}
   .chip-siempre,.chip-alta{background:var(--accent-soft);color:var(--accent-ink)}
   .chip-media{background:var(--surface-2);color:var(--ink-2)}
-  .chip-baja,.chip-ocasional{background:transparent;border:1px solid var(--line);color:var(--ink-3);font-weight:400}
+  .chip-baja,.chip-ocasional,.chip-nunca{background:transparent;border:1px solid var(--line);color:var(--ink-3);font-weight:400}
 
   .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
   .field{display:flex;flex-direction:column;gap:4px}
@@ -246,6 +247,7 @@
   .slot.g-roja{background-color:var(--g-roja)}
   .slot.g-huevo{background-color:var(--g-huevo)}
   .slot.g-congelado{background-color:var(--g-congelado)}
+  .slot.g-fuera{background-color:var(--g-fuera)}
 
   .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
   .legend .lg{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);
@@ -358,7 +360,7 @@
 <div class="top">
   <div class="top-inner">
     <div class="brand">
-      <h1>Mesa Semanal</h1>
+      <h1>Menú Semanal</h1>
       <span class="tag">Comidas de casa</span>
     </div>
     <nav class="tabs" role="tablist" aria-label="Secciones" id="tabs"></nav>
@@ -450,6 +452,8 @@ Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimiento
 Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;bajo;media;no;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
 Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;bajo;alta;no;huevo|verdura;tortilla de patata y calabacín|pan|tomate
 Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;bajo;alta;si;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
+Parrillada de verduras;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;verdura;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 </script>
 <script type="text/csv" id="csv-platos-nino">
 nombre;descripcion;tipo;momento;tiempo;repeticion;plato_unico;grupos;ingredientes
@@ -464,16 +468,19 @@ Guisantes con jamón;Guisantes salteados con taquitos de jamón.;Legumbre + Carn
 Revuelto de gulas;Huevo revuelto con gulas, sin picante.;Huevo + Marisco;ambos;bajo;media;no;huevo|marisco;huevos|gulas|aceite de oliva
 Calamares;Anillas a la plancha o rebozadas.;Pescado / Marisco;ambos;bajo;media;no;marisco;calamares|harina|aceite de oliva
 Hamburguesa de pollo;A la plancha, con pan o en plato.;Carne blanca;ambos;bajo;media;si;blanca;hamburguesa de pollo|pan de hamburguesa|tomate
+Restaurante;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;fuera;
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
 aguacate;Frutería y verdulería
 ajo;Frutería y verdulería
 albahaca;Frutería y verdulería
+berenjena;Frutería y verdulería
 calabacín;Frutería y verdulería
 cebolla;Frutería y verdulería
 champiñones;Frutería y verdulería
 eneldo;Frutería y verdulería
+espárragos trigueros;Frutería y verdulería
 guisantes;Frutería y verdulería
 lechuga;Frutería y verdulería
 limón;Frutería y verdulería
@@ -544,6 +551,7 @@ blanca;Carne blanca;3;4
 roja;Carne roja o magra;1;2
 huevo;Huevo;2;3
 verdura;Verdura de base;5;9
+fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-equilibrio-nino">
 grupo;etiqueta;minimo;maximo
@@ -553,6 +561,7 @@ blanca;Carne blanca;2;3
 huevo;Huevo;1;2
 legumbre;Legumbre;1;2
 congelado;Congelados;1;2
+fuera;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
@@ -638,7 +647,7 @@ salsa de soja;si
   const ORDEN_LBL = {"1":"1º", "2":"2º"};
   const DIA_MS = 86400000;
   const FINDE = {"sábado":1, "domingo":1};
-  const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5};
+  const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5, nunca:-999};
 
   // Los dos repertorios. El niño come al mediodía en la guardería, así que de
   // partida solo tiene cenas de lunes a viernes; el fin de semana, las dos.
@@ -1097,7 +1106,7 @@ salsa de soja;si
       el("div", {class:"field grow"}, [el("label", {for:"f-buscar-" + s, text:"Buscar"}), buscar]),
       filtro("f-momento", "Momento", [["","Todos"],["comida","Comida"],["cena","Cena"],["ambos","Ambos"]]),
       filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
-      filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"]]),
+      filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"],["nunca","Nunca"]]),
       filtro("f-unico", "Plato único", [["","Todos"],["si","Sí"],["no","No"]]),
       el("div", {class:"field"}, [el("label", {for:"f-grupo-" + s, text:"Grupo"}), fGrupo])
     ]));
@@ -1478,7 +1487,7 @@ salsa de soja;si
     const eTipo   = el("input", {type:"text", id:"e-tipo", value: p ? p.t : "", placeholder:"Pescado blanco + Tubérculo"});
     const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : (pid === "nino" ? "ambos" : "cena"));
     const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
-    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional"], p ? p.rep : "media");
+    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional","nunca"], p ? p.rep : "media");
     const eUnico  = el("select", {id:"e-unico"}, [
       el("option", {value:"si", text:"Sí, basta él solo", selected: p && p.unico ? "selected" : null}),
       el("option", {value:"no", text:"No, lleva acompañante", selected: !p || !p.unico ? "selected" : null})
@@ -1562,7 +1571,6 @@ salsa de soja;si
       el("button", {class:"btn btn-primary", text: nuevo ? "Añadir al repertorio" : "Guardar cambios", onclick:function(){
         const n = eNombre.value.trim(), ings = leerIngredientes();
         if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
-        if(!ings.length){ aviso("Añade al menos un ingrediente"); eIngs.focus(); return; }
         const choque = plato(pid, n);
         if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
 
