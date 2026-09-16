@@ -106,6 +106,8 @@
   .tab .n{font-family:"IBM Plex Mono", monospace;font-size:11px;background:var(--surface-2);color:var(--ink-2);border-radius:20px;padding:1px 7px}
   .tab[aria-selected="true"] .n{background:var(--accent-soft);color:var(--accent-ink)}
   .tab .quien{font-weight:400;color:var(--ink-3)}
+  .tab.pendiente .n{background:var(--pimenton-soft);color:var(--pimenton)}
+  .tab.pendiente .n::after{content:" ●";font-size:9px;vertical-align:middle}
   .tab[aria-selected="true"] .quien{color:var(--accent-ink);font-weight:600}
 
   main{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:22px 64px}
@@ -291,6 +293,7 @@
   .badge{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
     border-radius:20px;padding:2px 8px;background:var(--surface-2);color:var(--ink-2)}
   .badge.local{background:var(--pimenton-soft);color:var(--pimenton)}
+  .badge.guardada{background:var(--ok-soft);color:var(--ok)}
   .badge.repo{background:var(--accent-soft);color:var(--accent-ink)}
   .badge.mod{background:var(--pimenton-soft);color:var(--pimenton)}
   .badge.actual{background:var(--ok-soft);color:var(--ok);margin-left:8px}
@@ -440,7 +443,7 @@
         <h2>Histórico de semanas</h2>
       </div>
     </div>
-    <p class="lead">Todas las semanas planificadas: las que vienen del repositorio y las que has hecho en este navegador. La despensa es común a todas, así que lo que marcaste como existencias sigue marcado al generar la semana siguiente.</p>
+    <p class="lead">Todas las semanas planificadas, con las comidas que tienes resueltas de cada menú. <strong>Guardada</strong> quiere decir que esa semana es idéntica a la que hay en el repositorio; <strong>sin guardar</strong>, que la has tocado desde la última vez que guardaste.</p>
 
     <div class="table-wrap">
       <table class="estrecha">
@@ -511,6 +514,8 @@ Macarrones con salchichas;Macarrones con tomate y salchichas en rodajas.;Pasta|E
 Rollitos de la Yaya;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;blanca;jamón cocido|queso en lonchas
 Arroz con pollo;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|blanca;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
 Menú guarde;Ese día come en la guardería: no entra en la lista de la compra.;Fuera de casa;comida;bajo;nunca;si;guarde;
+Lomo con queso;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;
+Queso fresco;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -634,15 +639,24 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 </script>
 <script type="text/csv" id="csv-semanas-nino">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Sopa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;2;Rollitos de la Yaya
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Guisantes con jamón
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Arroz con pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Crema de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;2;Tortilla
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Restaurante
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Sopa de pollo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Rollitos de la Yaya
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Guisantes con jamón
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Lomo con queso
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Arroz con pollo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Croquetas congeladas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Rollitos de la Yaya
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Crema de verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;2;Tortilla
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Hamburguesa de pollo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Restaurante
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Hamburguesa de pollo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Queso fresco
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Macarrones con salchichas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Revuelto de gulas
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Macarrones con salchichas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Restaurante
 </script>
 <script type="text/csv" id="csv-despensa">
 ingrediente;en_casa
@@ -667,6 +681,7 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);caldo de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);carne picada de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);cebolla;no
+2026-09-21;4ª semana de septiembre (21-27);croquetas congeladas;no
 2026-09-21;4ª semana de septiembre (21-27);eneldo;no
 2026-09-21;4ª semana de septiembre (21-27);espárragos trigueros;no
 2026-09-21;4ª semana de septiembre (21-27);especias para fajitas;no
@@ -677,6 +692,7 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);guindilla;si
 2026-09-21;4ª semana de septiembre (21-27);guisantes;no
 2026-09-21;4ª semana de septiembre (21-27);gulas;no
+2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);huevos;no
 2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
 2026-09-21;4ª semana de septiembre (21-27);judías blancas cocidas;no
@@ -702,6 +718,7 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);puerro;no
 2026-09-21;4ª semana de septiembre (21-27);queso crema;no
 2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
+2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
 2026-09-21;4ª semana de septiembre (21-27);queso rallado;no
 2026-09-21;4ª semana de septiembre (21-27);salchichas;no
 2026-09-21;4ª semana de septiembre (21-27);salmón ahumado;no
@@ -1032,6 +1049,13 @@ Fuera de casa
     return {};
   }
   function fijarHuecos(pid, id, h){ estado[pid].semanas[id] = h; guardar(); }
+  // Guardada = lo que se ve es exactamente lo que hay en datos/semanas*.csv.
+  function semanaGuardada(pid, id){
+    const local = huecos(pid, id), repo = REP[pid].REPO[id] || {}, claves = {};
+    Object.keys(local).forEach(function(k){ if(local[k]) claves[k] = 1; });
+    Object.keys(repo).forEach(function(k){ if(repo[k]) claves[k] = 1; });
+    return Object.keys(claves).every(function(k){ return local[k] === repo[k]; });
+  }
 
   // Un "slot" es una comida o una cena; dentro caben dos platos, el 1º y el 2º.
   function slotsDe(){
@@ -1912,10 +1936,11 @@ Fuera de casa
       const lunes = desdeIso(id);
       function celdaPerfil(pid){
         const total = slotsDe().length, hechos = llenos(pid, id);
-        const local = !!estado[pid].semanas[id];
+        const guardada = semanaGuardada(pid, id);
         return el("td", null, [
           el("div", {style:"font-variant-numeric:tabular-nums", text: hechos + " de " + total}),
-          el("span", {class:"badge " + (local ? "local" : "repo"), text: local ? "este navegador" : "repositorio"})
+          el("span", {class:"badge " + (guardada ? "guardada" : "local"),
+                      text: guardada ? "guardada" : "sin guardar"})
         ]);
       }
       const primera = el("td", null, [el("div", {class:"wk", text:etiquetaSemana(lunes)})]);
@@ -2151,6 +2176,7 @@ Fuera de casa
       if(puesta.ok){
         hechos.push(item.f);
         crudos[item.clave] = texto;   // deja de contar como cambio sin guardar
+        datos[item.clave] = leerCSV(texto);
       }else{
         fallos.push(item.f + ": " + motivo(puesta));
         if(puesta.estado === 401 || puesta.estado === 403 || puesta.estado === 0) break;
@@ -2158,7 +2184,8 @@ Fuera de casa
     }
 
     guardando = false;
-    pintarGuardado(); pintarFicheros();
+    if(hechos.length) construir();   // lo recién guardado pasa a ser la referencia
+    pintarTodo();
     if(!hechos.length) aviso("No se ha podido guardar — " + (fallos[0] || "sin cambios"));
     else if(fallos.length) aviso("Guardados " + hechos.length + ", falló " + fallos[0]);
     else aviso("Guardados " + hechos.length + " ficheros. GitHub Pages tarda un par de minutos en reflejarlo.");
@@ -2223,6 +2250,7 @@ Fuera de casa
   function pintarGuardado(){
     const cont = $("guardado"); cont.textContent = "";
     const pendientes = sucios(), hayToken = !!leerToken();
+    $("tab-historico").classList.toggle("pendiente", pendientes.length > 0);
     cont.className = "guardado" + (pendientes.length ? " sucio" : "");
     cont.appendChild(el("div", {class:"txt"}, [
       el("div", {class:"tit", text: guardando ? "Guardando…" : (pendientes.length
@@ -2288,12 +2316,17 @@ Fuera de casa
       pintarObjetivos(pf);
     });
 
-    // Que la semana en curso abra con contenido, no vacía.
+    // La primera vez la semana en curso se rellena sola, para no abrir en blanco.
+    // Con histórico ya guardado no se toca nada: inventar una semana marcaría
+    // ficheros como "sin guardar" sin que nadie haya pedido nada.
     const id = semanaActual();
-    PERFILES.forEach(function(pf){
-      const h = huecos(pf.id, id);
-      if(!Object.keys(h).some(function(k){ return !!h[k]; })) generar(pf.id, id);
-    });
+    const hayHistorico = PERFILES.some(function(pf){ return Object.keys(REP[pf.id].REPO).length > 0; });
+    if(!hayHistorico){
+      PERFILES.forEach(function(pf){
+        const h = huecos(pf.id, id);
+        if(!Object.keys(h).some(function(k){ return !!h[k]; })) generar(pf.id, id);
+      });
+    }
 
     pintarTodo();
     pintarCreditos();

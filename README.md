@@ -69,7 +69,7 @@ Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 
 
 **Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en `compras.csv` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de `despensa.csv`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 
-**Histórico** — Todas las semanas planificadas, con los huecos cubiertos de adultos y de niño en cada una, y botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
+**Histórico** — Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
 
 ## Cómo se guardan los cambios
 
@@ -89,6 +89,8 @@ El token se guarda en el `localStorage` de ese navegador y solo viaja a `api.git
 **Descartar y recargar** tira lo que haya en el navegador y vuelve a lo que diga el repositorio, que es la forma de resolver cualquier descuadre entre dispositivos.
 
 Después de guardar, GitHub Pages tarda un par de minutos en republicar la web.
+
+La web solo genera una semana por su cuenta la primera vez, cuando el repositorio aún no tiene ninguna. Con histórico guardado no inventa nada: los repartos los pides tú con *Generar semana*.
 
 ## Trabajar con el proyecto
 
