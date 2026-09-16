@@ -538,6 +538,8 @@ Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la co
 Lomo con queso;no;si;Sin descripción.;Carne blanca|Queso;ambos;bajo;media;no;blanca;lomo de cerdo|queso en lonchas
 Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;guarde;queso fresco
 Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;ambos;medio;media;no;arroz;arroz|huevos
+Berenjenas rellenas;si;si;Sin descripción.;Verdura|Carne blanca;ambos;alto;baja;no;blanca|verdura;berenjena|carne picada de pollo|tomate frito|queso rallado|cebolla
+Brocoli;si;si;Sin descripción.;Verdura;ambos;medio;baja;no;verdura;brócoli|aceite de oliva
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -545,6 +547,7 @@ aguacate;Frutería y verdulería
 ajo;Frutería y verdulería
 albahaca;Frutería y verdulería
 berenjena;Frutería y verdulería
+brócoli;Frutería y verdulería
 calabacín;Frutería y verdulería
 cebolla;Frutería y verdulería
 champiñones;Frutería y verdulería
@@ -2573,12 +2576,22 @@ Fuera de casa
     bytes.forEach(function(b){ bin += String.fromCharCode(b); });
     return btoa(bin);
   }
+  function deBase64(b64){
+    const bin = atob(String(b64 || "").replace(/\n/g, ""));
+    const bytes = new Uint8Array(bin.length);
+    for(let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
   async function apiGH(ruta, opciones){
     const o = opciones || {};
+    // Sin esto el navegador reutiliza la respuesta anterior y devuelve un sha
+    // viejo: GitHub rechaza la escritura con "does not match".
+    o.cache = "no-store";
     o.headers = Object.assign({
       "Accept":"application/vnd.github+json",
       "Authorization":"Bearer " + leerToken(),
-      "X-GitHub-Api-Version":"2022-11-28"
+      "X-GitHub-Api-Version":"2022-11-28",
+      "If-None-Match":""
     }, o.headers || {});
     let r;
     try{ r = await fetch("https://api.github.com" + ruta, o); }
@@ -2604,30 +2617,52 @@ Fuera de casa
     const hechos = [], fallos = [];
     aviso("Guardando " + pendientes.length + " ficheros en GitHub…");
 
-    for(let i = 0; i < pendientes.length; i++){
+    let cortar = false, desfasados = 0;
+    for(let i = 0; i < pendientes.length && !cortar; i++){
       const item = pendientes[i], texto = item.gen();
-      const actual = await apiGH(base + item.f + "?ref=" + REPO_GH.rama);
-      if(!actual.ok && actual.estado !== 404){
-        fallos.push(item.f + ": " + motivo(actual));
-        if(actual.estado === 401 || actual.estado === 403 || actual.estado === 0) break;
+
+      async function escribe(){
+        const actual = await apiGH(base + item.f + "?ref=" + REPO_GH.rama + "&t=" + Date.now());
+        if(!actual.ok && actual.estado !== 404) return {err:actual};
+        // Si en GitHub hay algo distinto de lo que cargó esta pestaña, alguien lo
+        // tocó mientras tanto: escribir encima se lo llevaría por delante.
+        if(actual.ok && actual.cuerpo && actual.cuerpo.content){
+          const remoto = deBase64(actual.cuerpo.content);
+          if(normaliza(remoto) !== normaliza(crudos[item.clave])) return {desfase:true};
+        }
+        const puesta = await apiGH(base + item.f, {
+          method:"PUT",
+          body: JSON.stringify({
+            message: "Menu Semanal: actualizar datos/" + item.f,
+            content: aBase64(texto),
+            branch: REPO_GH.rama,
+            sha: actual.ok && actual.cuerpo ? actual.cuerpo.sha : undefined
+          })
+        });
+        return {puesta:puesta};
+      }
+
+      let res = await escribe();
+      // 409: el sha se quedó corto entre la lectura y la escritura. Un reintento basta.
+      if(res.puesta && !res.puesta.ok && res.puesta.estado === 409) res = await escribe();
+
+      if(res.desfase){
+        desfasados++;
+        fallos.push(item.f + ": cambió en GitHub desde que abriste la web");
         continue;
       }
-      const puesta = await apiGH(base + item.f, {
-        method:"PUT",
-        body: JSON.stringify({
-          message: "Menu Semanal: actualizar datos/" + item.f,
-          content: aBase64(texto),
-          branch: REPO_GH.rama,
-          sha: actual.ok && actual.cuerpo ? actual.cuerpo.sha : undefined
-        })
-      });
-      if(puesta.ok){
+      if(res.err){
+        fallos.push(item.f + ": " + motivo(res.err));
+        if(res.err.estado === 401 || res.err.estado === 403 || res.err.estado === 0) cortar = true;
+        continue;
+      }
+      if(res.puesta.ok){
         hechos.push(item.f);
         crudos[item.clave] = texto;   // deja de contar como cambio sin guardar
         datos[item.clave] = leerCSV(texto);
       }else{
-        fallos.push(item.f + ": " + motivo(puesta));
-        if(puesta.estado === 401 || puesta.estado === 403 || puesta.estado === 0) break;
+        fallos.push(item.f + ": " + motivo(res.puesta));
+        if(res.puesta.estado === 401 || res.puesta.estado === 403 || res.puesta.estado === 0) cortar = true;
       }
     }
 
@@ -2639,7 +2674,8 @@ Fuera de casa
     }
     ultimoGuardado = {cuando:new Date(), hechos:hechos, fallos:fallos};
     pintarTodo();
-    if(!hechos.length) aviso("No se ha podido guardar — " + (fallos[0] || "sin cambios"));
+    if(desfasados) aviso("Hay ficheros más nuevos en GitHub: recarga la página y vuelve a guardar");
+    else if(!hechos.length) aviso("No se ha podido guardar — " + (fallos[0] || "sin cambios"));
     else if(fallos.length) aviso("Guardados " + hechos.length + ", falló " + fallos[0]);
     else aviso("Guardados " + hechos.length + " ficheros. GitHub Pages tarda un par de minutos en reflejarlo.");
   }
@@ -2749,6 +2785,16 @@ Fuera de casa
           (h.length ? h.join(", ") : "ningún fichero") + (f.length ? " · falló " + f.join("; ") : "")})
       ]);
       if(f.length) det.style.color = "var(--pimenton)";
+      if(f.some(function(x){ return x.indexOf("cambió en GitHub") !== -1; })){
+        det.appendChild(el("div", {style:"margin-top:5px"}, [
+          el("span", {style:"font-weight:600", text:"Se guardó desde otro sitio después de abrir esta pestaña. "}),
+          el("span", {text:"Recarga la página y vuelve a guardar: al recargar se leen los CSV nuevos y " +
+                           "lo que tengas sin guardar aquí se conserva. «Descartar y recargar» es otra cosa: " +
+                           "ese sí tira tus cambios."}),
+          el("button", {class:"btn btn-sm", style:"margin-left:8px", text:"Recargar",
+                        onclick:function(){ location.reload(); }})
+        ]));
+      }
       cont.appendChild(det);
     }
   }
