@@ -262,14 +262,39 @@
 
   .empty-state{background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);padding:28px 20px;text-align:center;color:var(--ink-2)}
 
-  details.adder{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
-  details.adder > summary{padding:11px 16px;cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
-  details.adder > summary::-webkit-details-marker{display:none}
-  details.adder > summary::before{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:16px}
-  details.adder[open] > summary{border-bottom:1px solid var(--line)}
-  .adder-body{padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
-  .adder-body .full{grid-column:1/-1}
   .hint{font-size:12.5px;color:var(--ink-3)}
+
+  /* Editor de platos */
+  .editor{background:var(--surface);width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;
+    border:1px solid var(--line);border-radius:14px 14px 0 0;box-shadow:0 20px 60px -20px rgba(0,0,0,.5)}
+  @media (min-width:640px){ .editor{border-radius:14px} }
+  .editor > header{padding:14px 18px 12px;border-bottom:1px solid var(--line);display:flex;
+    justify-content:space-between;align-items:baseline;gap:10px}
+  .editor h3{font-size:16px;font-weight:700}
+  .editor-body{overflow-y:auto;padding:16px 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:13px}
+  .editor-body .full{grid-column:1/-1}
+  .editor-body input, .editor-body select, .editor-body textarea{width:100%}
+  .editor-body textarea{min-height:86px;resize:vertical;font-size:14px;line-height:1.45}
+  .editor > footer{padding:11px 18px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .editor > footer .der{display:flex;gap:8px;margin-left:auto}
+  .grupos{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px;margin-top:6px}
+  .grupo-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:8px;padding:5px 10px;background:var(--ground)}
+  .grupo-row .sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
+  .grupo-row .nm{flex:1 1 auto;font-size:13px;min-width:0}
+  .grupo-row input{width:auto;flex:none;cursor:pointer;margin:0}
+  .grupo-row input[type="checkbox"]{accent-color:var(--accent)}
+  .grupo-row input[type="radio"]{accent-color:var(--pimenton)}
+  .grupo-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .grupo-head .base-lbl{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--pimenton)}
+  .nuevos{margin-top:11px;border:1px solid color-mix(in srgb, var(--warn) 40%, transparent);
+    border-radius:8px;background:var(--warn-soft);padding:10px 12px}
+  .nuevos h5{margin:0 0 3px;font-size:12.5px;font-weight:700;color:var(--warn)}
+  .nuevo-row{display:flex;align-items:center;gap:9px;margin-top:7px}
+  .nuevo-row .nm{flex:1 1 auto;font-size:13px;min-width:0}
+  .nuevo-row select{flex:0 1 215px;font-size:13px;padding:4px 7px}
+  .badge.mod{background:var(--pimenton-soft);color:var(--pimenton);margin-left:7px}
+  .col-acc{width:1%;white-space:nowrap;text-align:right}
 
   .overlay{position:fixed;inset:0;background:rgba(10,16,24,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center}
   @media (min-width:640px){ .overlay{align-items:center;padding:24px} }
@@ -327,8 +352,9 @@
         <div class="eyebrow">datos/platos.csv</div>
         <h2>Todos los platos disponibles</h2>
       </div>
+      <button class="btn btn-primary" id="btn-nuevo-plato">Nuevo plato</button>
     </div>
-    <p class="lead">El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
+    <p class="lead">El repertorio completo, con su grupo nutricional, cuándo conviene comerlo, lo que cuesta prepararlo y cada cuánto apetece repetirlo. Cualquier plato se edita entero desde su botón <em>Editar</em>. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
 
     <div class="filters">
       <div class="field grow">
@@ -379,37 +405,12 @@
           <th scope="col">Preparación</th>
           <th scope="col">Repetición</th>
           <th scope="col">Ingredientes</th>
+          <th scope="col" class="col-acc"></th>
         </tr></thead>
         <tbody id="tbody-platos"></tbody>
       </table>
     </div>
-
-    <details class="adder">
-      <summary>Añadir un plato nuevo</summary>
-      <div class="adder-body">
-        <div class="field full"><label for="a-nombre">Nombre del plato</label><input type="text" id="a-nombre" placeholder="Merluza al horno con patata"></div>
-        <div class="field full"><label for="a-desc">Descripción</label><input type="text" id="a-desc" placeholder="Lomos de merluza con patata panadera y cebolla."></div>
-        <div class="field"><label for="a-tipo">Tipo de alimento</label><input type="text" id="a-tipo" placeholder="Pescado blanco + Tubérculo"></div>
-        <div class="field"><label for="a-momento">Momento</label>
-          <select id="a-momento"><option value="comida">Comida</option><option value="cena">Cena</option><option value="ambos">Ambos</option></select>
-        </div>
-        <div class="field"><label for="a-tiempo">Preparación</label>
-          <select id="a-tiempo"><option value="bajo">Bajo</option><option value="medio" selected>Medio</option><option value="alto">Alto</option></select>
-        </div>
-        <div class="field"><label for="a-repeticion">Repetición</label>
-          <select id="a-repeticion">
-            <option value="siempre">Siempre</option><option value="alta">Alta</option>
-            <option value="media" selected>Media</option><option value="baja">Baja</option><option value="ocasional">Ocasional</option>
-          </select>
-        </div>
-        <div class="field"><label for="a-grupo">Grupo base</label><select id="a-grupo"></select></div>
-        <div class="field full"><label for="a-ings">Ingredientes, separados por comas</label><input type="text" id="a-ings" placeholder="merluza, patata, cebolla, aceite de oliva"></div>
-        <div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-primary" id="a-guardar">Añadir al repertorio</button>
-          <span class="hint">Se guarda en este navegador. Para dejarlo fijo, descarga <code>platos.csv</code> desde el Histórico y súbelo al repositorio.</span>
-        </div>
-      </div>
-    </details>
+    <p class="hint" style="margin-top:12px">Los cambios se guardan en este navegador. Para dejarlos fijos, descarga <code>platos.csv</code> e <code>ingredientes.csv</code> desde el Histórico y súbelos al repositorio.</p>
   </section>
 
   <!-- ============ SEMANA ============ -->
@@ -552,19 +553,19 @@ pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
 tomate;Frutería y verdulería
 zanahoria;Frutería y verdulería
-bacalao;Pescadería y congelados
-calamares;Pescadería y congelados
-gambas;Pescadería y congelados
-gulas;Pescadería y congelados
-lomo de salmón;Pescadería y congelados
-salmón ahumado;Pescadería y congelados
-sepia;Pescadería y congelados
-carne picada de pollo;Carnicería
-filetes de ternera;Carnicería
-lomo de cerdo;Carnicería
-pechuga de pavo en lonchas;Carnicería
-pechuga de pollo;Carnicería
-solomillo de cerdo;Carnicería
+bacalao;Carnicería y pescadería
+calamares;Carnicería y pescadería
+carne picada de pollo;Carnicería y pescadería
+filetes de ternera;Carnicería y pescadería
+gambas;Carnicería y pescadería
+gulas;Carnicería y pescadería
+lomo de cerdo;Carnicería y pescadería
+lomo de salmón;Carnicería y pescadería
+pechuga de pavo en lonchas;Carnicería y pescadería
+pechuga de pollo;Carnicería y pescadería
+salmón ahumado;Carnicería y pescadería
+sepia;Carnicería y pescadería
+solomillo de cerdo;Carnicería y pescadería
 huevos;Huevos, lácteos y refrigerados
 mozzarella;Huevos, lácteos y refrigerados
 nata para cocinar;Huevos, lácteos y refrigerados
@@ -572,9 +573,6 @@ queso crema;Huevos, lácteos y refrigerados
 queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
-pan;Panadería
-pan de hamburguesa;Panadería
-pan para tostas;Panadería
 aceite de oliva;Despensa
 arroz;Despensa
 atún en conserva;Despensa
@@ -594,6 +592,9 @@ salsa de soja;Despensa
 tomate frito;Despensa
 tomate triturado;Despensa
 tortillas de trigo;Despensa
+pan;Panadería
+pan de hamburguesa;Panadería
+pan para tostas;Panadería
 </script>
 <script type="text/csv" id="csv-equilibrio">
 grupo;etiqueta;minimo;maximo
@@ -750,7 +751,8 @@ salsa de soja;si
 
   /* ============ Estado ============ */
   const CLAVE = "mesa-semanal:v3";
-  let estado = { tab:"semana", semana:null, semanas:{}, despensa:{}, extra:[], objetivos:{} };
+  let estado = { tab:"semana", semana:null, semanas:{}, despensa:{}, extra:[],
+                 objetivos:{}, ediciones:{}, borrados:[], secciones:{} };
 
   function cargarEstado(){
     try{
@@ -764,6 +766,9 @@ salsa de soja;si
         estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
         estado.extra = Array.isArray(p.extra) ? p.extra : [];
         estado.objetivos = p.objetivos && typeof p.objetivos === "object" ? p.objetivos : {};
+        estado.ediciones = p.ediciones && typeof p.ediciones === "object" ? p.ediciones : {};
+        estado.borrados = Array.isArray(p.borrados) ? p.borrados : [];
+        estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
       }
     }catch(e){}
   }
@@ -776,19 +781,20 @@ salsa de soja;si
   function construir(){
     PLATOS = datos.platos.map(function(r){
       return {
+        orig:r.nombre,
         n:r.nombre, d:r.descripcion, t:r.tipo, m:r.momento,
         tiempo:r.tiempo || "medio", rep:r.repeticion || "media",
         g:lista(r.grupos), i:lista(r.ingredientes)
       };
     }).filter(function(p){ return p.n; });
 
+    // El orden de los bloques de la compra es el orden de aparición en el CSV.
     SECCION = {}; const orden = [];
     datos.ingredientes.forEach(function(r){
       if(!r.ingrediente) return;
       SECCION[r.ingrediente] = r.seccion || "Otros";
       if(orden.indexOf(SECCION[r.ingrediente]) === -1) orden.push(SECCION[r.ingrediente]);
     });
-    if(orden.indexOf("Otros") === -1) orden.push("Otros");
     SECCIONES = orden;
 
     GRUPOS = {};
@@ -813,7 +819,21 @@ salsa de soja;si
   }
   function objetivosTocados(){ return Object.keys(estado.objetivos).length > 0; }
 
-  function platos(){ return PLATOS.concat(estado.extra); }
+  // Repertorio vigente: los del CSV con las ediciones aplicadas, sin los borrados,
+  // más los añadidos a mano. `orig` identifica al plato del CSV aunque se renombre.
+  function platos(){
+    const base = [];
+    PLATOS.forEach(function(p){
+      if(estado.borrados.indexOf(p.orig) !== -1) return;
+      const e = estado.ediciones[p.orig];
+      if(!e){ base.push(p); return; }
+      base.push({
+        orig:p.orig, n:e.n, d:e.d, t:e.t, m:e.m, tiempo:e.tiempo, rep:e.rep,
+        g:e.g.slice(), i:e.i.slice(), editado:true
+      });
+    });
+    return base.concat(estado.extra);
+  }
   function plato(n){
     const todos = platos();
     for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
@@ -821,6 +841,30 @@ salsa de soja;si
   }
   // La base del plato, que decide su color: el primer grupo declarado.
   function base(p){ return p && p.g.length ? p.g[0] : ""; }
+  // Sección del súper, con las que hayas asignado tú por encima del CSV.
+  function seccionDe(ing){ return estado.secciones[ing] || SECCION[ing] || "Otros"; }
+  // Los bloques desconocidos y "Otros" se cuelan antes del último del CSV,
+  // para que el último bloque del CSV siga cerrando la lista.
+  function ordenSecciones(presentes){
+    const extras = presentes.filter(function(s){ return SECCIONES.indexOf(s) === -1; }).sort();
+    if(!SECCIONES.length) return extras;
+    return SECCIONES.slice(0, -1).concat(extras, SECCIONES.slice(-1));
+  }
+
+  // Al renombrar o borrar un plato, sus huecos dejan de apuntar a un nombre muerto.
+  function reemplazarEnSemanas(viejo, nuevo){
+    if(!viejo || viejo === nuevo) return;
+    idsSemanas().forEach(function(id){
+      const h = huecos(id), copia = {};
+      let tocado = false;
+      Object.keys(h).forEach(function(k){
+        if(h[k] === viejo){ tocado = true; if(nuevo) copia[k] = nuevo; }
+        else copia[k] = h[k];
+      });
+      if(tocado) estado.semanas[id] = copia;
+    });
+    guardar();
+  }
 
   function huecos(id){
     if(estado.semanas[id]) return estado.semanas[id];
@@ -904,11 +948,9 @@ salsa de soja;si
 
   function rellenarSelectsGrupo(){
     Object.keys(GRUPOS).forEach(function(k){
-      [fGrupo, $("a-grupo")].forEach(function(sel){
-        const o = document.createElement("option");
-        o.value = k; o.textContent = GRUPOS[k].lbl;
-        sel.appendChild(o);
-      });
+      const o = document.createElement("option");
+      o.value = k; o.textContent = GRUPOS[k].lbl;
+      fGrupo.appendChild(o);
     });
   }
   function mayus(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : ""; }
@@ -928,7 +970,7 @@ salsa de soja;si
     tbody.textContent = "";
     if(!filas.length){
       const tr = document.createElement("tr"), td = document.createElement("td");
-      td.colSpan = 6; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
+      td.colSpan = 7; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
       td.textContent = "Ningún plato coincide con el filtro.";
       tr.appendChild(td); tbody.appendChild(tr);
     }
@@ -937,7 +979,11 @@ salsa de soja;si
 
       const td1 = document.createElement("td");
       const nm = document.createElement("div"); nm.className = "dish-name"; nm.textContent = p.n;
-      if(p.custom){ const fl = document.createElement("span"); fl.className = "custom-flag"; fl.textContent = "añadido"; nm.appendChild(fl); }
+      if(p.custom || p.editado){
+        const fl = document.createElement("span"); fl.className = "custom-flag";
+        fl.textContent = p.custom ? "añadido" : "modificado";
+        nm.appendChild(fl);
+      }
       const ds = document.createElement("div"); ds.className = "dish-desc"; ds.textContent = p.d;
       td1.appendChild(nm); td1.appendChild(ds);
 
@@ -963,8 +1009,17 @@ salsa de soja;si
       });
       td6.appendChild(box);
 
+      const td7 = document.createElement("td"); td7.className = "col-acc";
+      const editar = document.createElement("button");
+      editar.className = "btn btn-sm"; editar.textContent = "Editar";
+      editar.setAttribute("aria-label", "Editar " + p.n);
+      editar.addEventListener("click", function(){
+        abrirEditor(p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig});
+      });
+      td7.appendChild(editar);
+
       tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-      tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6);
+      tr.appendChild(td4); tr.appendChild(td5); tr.appendChild(td6); tr.appendChild(td7);
       tbody.appendChild(tr);
     });
     $("n-platos").textContent = String(platos().length);
@@ -1228,14 +1283,13 @@ salsa de soja;si
     let comprar = 0, tengo = 0;
     const porSeccion = {};
     ingredientes.sort(function(a, b){ return a.localeCompare(b, "es"); }).forEach(function(ing){
-      const sec = SECCION[ing] || "Otros";
+      const sec = seccionDe(ing);
       if(!porSeccion[sec]) porSeccion[sec] = [];
       porSeccion[sec].push(ing);
       if(enCasa(ing)) tengo++; else comprar++;
     });
 
-    const extras = Object.keys(porSeccion).filter(function(s){ return SECCIONES.indexOf(s) === -1; }).sort();
-    SECCIONES.concat(extras).forEach(function(titulo){
+    ordenSecciones(Object.keys(porSeccion)).forEach(function(titulo){
       const items = porSeccion[titulo];
       if(!items || !items.length) return;
       const sec = document.createElement("section"); sec.className = "sec";
@@ -1280,14 +1334,10 @@ salsa de soja;si
   $("btn-copiar").addEventListener("click", function(){
     const id = semanaActual(), mapa = ingredientesDeSemana(id);
     const lineas = ["Lista de la compra - " + etiquetaSemana(desdeIso(id)), ""];
-    const secciones = SECCIONES.slice();
-    Object.keys(mapa).forEach(function(i){
-      const s = SECCION[i] || "Otros";
-      if(secciones.indexOf(s) === -1) secciones.push(s);
-    });
-    secciones.forEach(function(titulo){
+    const presentes = Object.keys(mapa).map(seccionDe).filter(function(v, ix, arr){ return arr.indexOf(v) === ix; });
+    ordenSecciones(presentes).forEach(function(titulo){
       const items = Object.keys(mapa)
-        .filter(function(i){ return (SECCION[i] || "Otros") === titulo && !enCasa(i); })
+        .filter(function(i){ return seccionDe(i) === titulo && !enCasa(i); })
         .sort(function(a, b){ return a.localeCompare(b, "es"); });
       if(!items.length) return;
       lineas.push(titulo.toUpperCase());
@@ -1371,11 +1421,26 @@ salsa de soja;si
   function csvDespensa(){
     const nombres = {};
     Object.keys(SECCION).forEach(function(k){ nombres[k] = 1; });
+    Object.keys(estado.secciones).forEach(function(k){ nombres[k] = 1; });
     Object.keys(estado.despensa).forEach(function(k){ nombres[k] = 1; });
     return escribirCSV(["ingrediente","en_casa"],
       Object.keys(nombres).filter(enCasa)
         .sort(function(a, b){ return a.localeCompare(b, "es"); })
         .map(function(i){ return {ingrediente:i, en_casa:"si"}; }));
+  }
+  function csvIngredientes(){
+    // Solo los ingredientes que algún plato usa, agrupados por bloque en el orden de la compra.
+    const usados = {};
+    platos().forEach(function(p){ p.i.forEach(function(ing){ usados[ing] = 1; }); });
+    const nombres = Object.keys(usados);
+    const presentes = nombres.map(seccionDe).filter(function(v, ix, arr){ return arr.indexOf(v) === ix; });
+    const filas = [];
+    ordenSecciones(presentes).forEach(function(sec){
+      nombres.filter(function(i){ return seccionDe(i) === sec; })
+        .sort(function(a, b){ return a.localeCompare(b, "es"); })
+        .forEach(function(i){ filas.push({ingrediente:i, seccion:sec}); });
+    });
+    return escribirCSV(["ingrediente","seccion"], filas);
   }
   function csvPlatos(){
     return escribirCSV(["nombre","descripcion","tipo","momento","tiempo","repeticion","grupos","ingredientes"],
@@ -1393,10 +1458,11 @@ salsa de soja;si
   }
 
   const FICHEROS = [
-    {f:"semanas.csv",    t:"Todas las semanas planificadas, una fila por hueco.",    gen:csvSemanas},
-    {f:"despensa.csv",   t:"Ingredientes marcados como existencias en casa.",        gen:csvDespensa},
-    {f:"platos.csv",     t:"El repertorio, incluidos los platos que hayas añadido.", gen:csvPlatos},
-    {f:"equilibrio.csv", t:"Los objetivos semanales, con tus ajustes.",              gen:csvEquilibrio}
+    {f:"platos.csv",       t:"El repertorio con tus ediciones, altas y bajas.",        gen:csvPlatos},
+    {f:"ingredientes.csv", t:"Cada ingrediente con su sección del súper.",             gen:csvIngredientes},
+    {f:"semanas.csv",      t:"Todas las semanas planificadas, una fila por hueco.",    gen:csvSemanas},
+    {f:"despensa.csv",     t:"Ingredientes marcados como existencias en casa.",        gen:csvDespensa},
+    {f:"equilibrio.csv",   t:"Los objetivos semanales, con tus ajustes.",              gen:csvEquilibrio}
   ];
 
   function descargar(nombre, texto){
@@ -1437,29 +1503,260 @@ salsa de soja;si
     });
   }
 
-  /* ============ Añadir plato ============ */
-  $("a-guardar").addEventListener("click", function(){
-    const n = $("a-nombre").value.trim();
-    const ings = $("a-ings").value.split(",").map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean);
-    if(!n){ aviso("Ponle nombre al plato"); return; }
-    if(!ings.length){ aviso("Añade al menos un ingrediente"); return; }
-    if(plato(n)){ aviso("Ya existe un plato con ese nombre"); return; }
-    estado.extra.push({
-      n:n,
-      d: $("a-desc").value.trim() || "Plato añadido a mano.",
-      t: $("a-tipo").value.trim() || "Sin clasificar",
-      m: $("a-momento").value,
-      tiempo: $("a-tiempo").value,
-      rep: $("a-repeticion").value,
-      g: [$("a-grupo").value].filter(Boolean),
-      i: ings,
-      custom: true
+  /* ============ Editor de platos ============ */
+  let capaEditor = null;
+  function cerrarEditor(){
+    if(capaEditor){ capaEditor.remove(); capaEditor = null; document.removeEventListener("keydown", escEditor); }
+  }
+  function escEditor(e){ if(e.key === "Escape") cerrarEditor(); }
+
+  function campo(etiqueta, control, ancho){
+    const d = document.createElement("div");
+    d.className = "field" + (ancho ? " full" : "");
+    const l = document.createElement("label"); l.setAttribute("for", control.id); l.textContent = etiqueta;
+    d.appendChild(l); d.appendChild(control);
+    return d;
+  }
+  function selectDe(id, opciones, valor){
+    const s = document.createElement("select"); s.id = id;
+    opciones.forEach(function(o){
+      const op = document.createElement("option");
+      op.value = o; op.textContent = mayus(o);
+      if(o === valor) op.selected = true;
+      s.appendChild(op);
     });
-    guardar();
-    ["a-nombre","a-desc","a-tipo","a-ings"].forEach(function(id){ $(id).value = ""; });
-    pintarPlatos(); pintarCompra();
-    aviso("Plato añadido. Descarga platos.csv en el Histórico para dejarlo fijo.");
-  });
+    return s;
+  }
+  function entrada(id, valor, marcador){
+    const i = document.createElement("input");
+    i.type = "text"; i.id = id; i.value = valor || "";
+    if(marcador) i.placeholder = marcador;
+    return i;
+  }
+
+  // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
+  function abrirEditor(ref){
+    cerrarEditor();
+    const nuevo = !ref;
+    let p = null;
+    if(ref && ref.tipo === "base"){
+      p = platos().filter(function(x){ return x.orig === ref.orig; })[0];
+    }else if(ref && ref.tipo === "extra"){
+      p = estado.extra.filter(function(x){ return x.uid === ref.uid; })[0];
+    }
+    if(!nuevo && !p){ aviso("Ese plato ya no existe"); return; }
+    const nombreAntes = p ? p.n : "";
+
+    capaEditor = document.createElement("div");
+    capaEditor.className = "overlay";
+    capaEditor.addEventListener("click", function(e){ if(e.target === capaEditor) cerrarEditor(); });
+
+    const caja = document.createElement("div");
+    caja.className = "editor"; caja.setAttribute("role","dialog"); caja.setAttribute("aria-modal","true");
+    caja.setAttribute("aria-label", nuevo ? "Nuevo plato" : "Editar " + p.n);
+
+    const head = document.createElement("header");
+    const h3 = document.createElement("h3"); h3.textContent = nuevo ? "Nuevo plato" : "Editar plato";
+    head.appendChild(h3);
+    if(!nuevo){
+      const b = document.createElement("span");
+      b.className = "badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo"));
+      b.style.marginLeft = "0";
+      b.textContent = p.custom ? "añadido" : (p.editado ? "modificado" : "del repositorio");
+      head.appendChild(b);
+    }
+
+    const body = document.createElement("div"); body.className = "editor-body";
+
+    const eNombre = entrada("e-nombre", p ? p.n : "", "Merluza al horno con patata");
+    const eDesc   = entrada("e-desc", p ? p.d : "", "Lomos de merluza con patata panadera y cebolla.");
+    const eTipo   = entrada("e-tipo", p ? p.t : "", "Pescado blanco + Tubérculo");
+    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : "cena");
+    const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
+    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional"], p ? p.rep : "media");
+
+    body.appendChild(campo("Nombre del plato", eNombre, true));
+    body.appendChild(campo("Descripción", eDesc, true));
+    body.appendChild(campo("Tipo de alimento", eTipo, true));
+    body.appendChild(campo("Momento", eMom));
+    body.appendChild(campo("Preparación", eTiempo));
+    body.appendChild(campo("Repetición", eRep));
+
+    // Grupos: los que marques, y cuál de ellos es la base que da el color.
+    const gBloque = document.createElement("div"); gBloque.className = "full";
+    const gHead = document.createElement("div"); gHead.className = "grupo-head";
+    const gLbl = document.createElement("label");
+    gLbl.style.cssText = "font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)";
+    gLbl.textContent = "Grupos";
+    const gBase = document.createElement("span"); gBase.className = "base-lbl"; gBase.textContent = "● base = color";
+    gHead.appendChild(gLbl); gHead.appendChild(gBase);
+    const gGrid = document.createElement("div"); gGrid.className = "grupos";
+
+    const gActuales = p ? p.g.slice() : [];
+    Object.keys(GRUPOS).forEach(function(k){
+      const fila = document.createElement("div"); fila.className = "grupo-row";
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.id = "e-g-" + k; cb.checked = gActuales.indexOf(k) !== -1;
+      cb.setAttribute("aria-label", "Pertenece a " + GRUPOS[k].lbl);
+      const rd = document.createElement("input");
+      rd.type = "radio"; rd.name = "e-base"; rd.id = "e-b-" + k; rd.value = k;
+      rd.checked = gActuales.length > 0 && gActuales[0] === k;
+      rd.setAttribute("aria-label", GRUPOS[k].lbl + " es la base");
+      const sw = document.createElement("span"); sw.className = "sw";
+      sw.style.background = "var(--g-" + k + ", var(--surface-2))";
+      const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = GRUPOS[k].lbl;
+      cb.addEventListener("change", function(){ if(!cb.checked && rd.checked) rd.checked = false; });
+      rd.addEventListener("change", function(){ if(rd.checked) cb.checked = true; });
+      fila.appendChild(cb); fila.appendChild(rd); fila.appendChild(sw); fila.appendChild(nm);
+      gGrid.appendChild(fila);
+    });
+    gBloque.appendChild(gHead); gBloque.appendChild(gGrid);
+    body.appendChild(gBloque);
+
+    // Ingredientes y, debajo, los que aún no tienen sección del súper.
+    const eIngs = document.createElement("textarea");
+    eIngs.id = "e-ings";
+    eIngs.value = p ? p.i.join(", ") : "";
+    eIngs.placeholder = "merluza, patata, cebolla, aceite de oliva";
+    body.appendChild(campo("Ingredientes, separados por comas o saltos de línea", eIngs, true));
+
+    const nuevos = document.createElement("div"); nuevos.className = "full";
+    body.appendChild(nuevos);
+
+    function leerIngredientes(){
+      return eIngs.value.split(/[,\n]/)
+        .map(function(s){ return s.trim().toLowerCase(); })
+        .filter(Boolean)
+        .filter(function(v, idx, arr){ return arr.indexOf(v) === idx; });
+    }
+    const asignadas = {};
+    function pintarNuevos(){
+      const sinSeccion = leerIngredientes().filter(function(ing){
+        return !SECCION[ing] && !estado.secciones[ing];
+      });
+      nuevos.textContent = "";
+      if(!sinSeccion.length) return;
+      const caja2 = document.createElement("div"); caja2.className = "nuevos";
+      const h5 = document.createElement("h5"); h5.textContent = "Ingredientes nuevos";
+      const p2 = document.createElement("p");
+      p2.style.cssText = "margin:0;font-size:12.5px;color:var(--warn)";
+      p2.textContent = "Dales una sección del súper para que caigan en su sitio en la lista de la compra.";
+      caja2.appendChild(h5); caja2.appendChild(p2);
+      sinSeccion.forEach(function(ing){
+        const fila = document.createElement("div"); fila.className = "nuevo-row";
+        const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = ing;
+        const sel = document.createElement("select");
+        sel.id = "e-sec-" + ing.replace(/[^a-z0-9]+/gi, "-");
+        sel.setAttribute("aria-label", "Sección de " + ing);
+        SECCIONES.concat(["Otros"]).forEach(function(s){
+          const o = document.createElement("option"); o.value = s; o.textContent = s;
+          if(asignadas[ing] === s) o.selected = true;
+          sel.appendChild(o);
+        });
+        if(!asignadas[ing]) asignadas[ing] = sel.value;
+        sel.addEventListener("change", function(){ asignadas[ing] = sel.value; });
+        fila.appendChild(nm); fila.appendChild(sel);
+        caja2.appendChild(fila);
+      });
+      nuevos.appendChild(caja2);
+    }
+    eIngs.addEventListener("input", pintarNuevos);
+    pintarNuevos();
+
+    // Pie: borrar / deshacer a la izquierda, cancelar y guardar a la derecha.
+    const foot = document.createElement("footer");
+    if(!nuevo){
+      const borrar = document.createElement("button");
+      borrar.className = "btn btn-ghost"; borrar.textContent = "Eliminar";
+      borrar.style.color = "var(--pimenton)";
+      borrar.addEventListener("click", function(){
+        if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio? Se quitará de las semanas en las que esté.")) return;
+        reemplazarEnSemanas(p.n, null);
+        if(p.custom){
+          estado.extra = estado.extra.filter(function(x){ return x.uid !== p.uid; });
+        }else{
+          if(estado.borrados.indexOf(p.orig) === -1) estado.borrados.push(p.orig);
+          delete estado.ediciones[p.orig];
+        }
+        guardar(); cerrarEditor();
+        pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
+        aviso("Plato eliminado");
+      });
+      foot.appendChild(borrar);
+
+      if(p.editado){
+        const deshacer = document.createElement("button");
+        deshacer.className = "btn btn-ghost"; deshacer.textContent = "Deshacer cambios";
+        deshacer.addEventListener("click", function(){
+          const original = PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
+          delete estado.ediciones[p.orig];
+          if(original) reemplazarEnSemanas(p.n, original.n);
+          guardar(); cerrarEditor();
+          pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
+          aviso("Plato devuelto a lo que dice el CSV");
+        });
+        foot.appendChild(deshacer);
+      }
+    }
+    const der = document.createElement("div"); der.className = "der";
+    const cancelar = document.createElement("button");
+    cancelar.className = "btn"; cancelar.textContent = "Cancelar";
+    cancelar.addEventListener("click", cerrarEditor);
+    const guardarBtn = document.createElement("button");
+    guardarBtn.className = "btn btn-primary"; guardarBtn.textContent = nuevo ? "Añadir al repertorio" : "Guardar cambios";
+    guardarBtn.addEventListener("click", function(){
+      const n = eNombre.value.trim();
+      const ings = leerIngredientes();
+      if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
+      if(!ings.length){ aviso("Añade al menos un ingrediente"); eIngs.focus(); return; }
+      const choque = plato(n);
+      if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
+
+      const marcados = Object.keys(GRUPOS).filter(function(k){ return $("e-g-" + k).checked; });
+      if(!marcados.length){ aviso("Marca al menos un grupo"); return; }
+      const radio = document.querySelector('input[name="e-base"]:checked');
+      const baseSel = radio && marcados.indexOf(radio.value) !== -1 ? radio.value : marcados[0];
+      const grupos = [baseSel].concat(marcados.filter(function(k){ return k !== baseSel; }));
+
+      ings.forEach(function(ing){
+        if(!SECCION[ing] && !estado.secciones[ing] && asignadas[ing]) estado.secciones[ing] = asignadas[ing];
+      });
+
+      const campos = {
+        n:n,
+        d: eDesc.value.trim() || "Sin descripción.",
+        t: eTipo.value.trim() || "Sin clasificar",
+        m: eMom.value, tiempo: eTiempo.value, rep: eRep.value,
+        g: grupos, i: ings
+      };
+
+      if(nuevo){
+        campos.uid = "x" + Date.now().toString(36);
+        campos.custom = true;
+        estado.extra.push(campos);
+      }else if(p.custom){
+        const obj = estado.extra.filter(function(x){ return x.uid === p.uid; })[0];
+        Object.keys(campos).forEach(function(k){ obj[k] = campos[k]; });
+        reemplazarEnSemanas(nombreAntes, n);
+      }else{
+        estado.ediciones[p.orig] = campos;
+        reemplazarEnSemanas(nombreAntes, n);
+      }
+      guardar(); cerrarEditor();
+      pintarPlatos(); pintarSemana(); pintarCompra(); pintarHistorico();
+      aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
+    });
+    der.appendChild(cancelar); der.appendChild(guardarBtn);
+    foot.appendChild(der);
+
+    caja.appendChild(head); caja.appendChild(body); caja.appendChild(foot);
+    capaEditor.appendChild(caja);
+    document.body.appendChild(capaEditor);
+    document.addEventListener("keydown", escEditor);
+    eNombre.focus();
+  }
+
+  $("btn-nuevo-plato").addEventListener("click", function(){ abrirEditor(null); });
 
   /* ============ Pestañas y avisos ============ */
   const paneles = {

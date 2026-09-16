@@ -15,19 +15,19 @@ pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
 tomate;Frutería y verdulería
 zanahoria;Frutería y verdulería
-bacalao;Pescadería y congelados
-calamares;Pescadería y congelados
-gambas;Pescadería y congelados
-gulas;Pescadería y congelados
-lomo de salmón;Pescadería y congelados
-salmón ahumado;Pescadería y congelados
-sepia;Pescadería y congelados
-carne picada de pollo;Carnicería
-filetes de ternera;Carnicería
-lomo de cerdo;Carnicería
-pechuga de pavo en lonchas;Carnicería
-pechuga de pollo;Carnicería
-solomillo de cerdo;Carnicería
+bacalao;Carnicería y pescadería
+calamares;Carnicería y pescadería
+carne picada de pollo;Carnicería y pescadería
+filetes de ternera;Carnicería y pescadería
+gambas;Carnicería y pescadería
+gulas;Carnicería y pescadería
+lomo de cerdo;Carnicería y pescadería
+lomo de salmón;Carnicería y pescadería
+pechuga de pavo en lonchas;Carnicería y pescadería
+pechuga de pollo;Carnicería y pescadería
+salmón ahumado;Carnicería y pescadería
+sepia;Carnicería y pescadería
+solomillo de cerdo;Carnicería y pescadería
 huevos;Huevos, lácteos y refrigerados
 mozzarella;Huevos, lácteos y refrigerados
 nata para cocinar;Huevos, lácteos y refrigerados
@@ -35,9 +35,6 @@ queso crema;Huevos, lácteos y refrigerados
 queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
-pan;Panadería
-pan de hamburguesa;Panadería
-pan para tostas;Panadería
 aceite de oliva;Despensa
 arroz;Despensa
 atún en conserva;Despensa
@@ -57,3 +54,6 @@ salsa de soja;Despensa
 tomate frito;Despensa
 tomate triturado;Despensa
 tortillas de trigo;Despensa
+pan;Panadería
+pan de hamburguesa;Panadería
+pan para tostas;Panadería
