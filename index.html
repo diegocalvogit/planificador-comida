@@ -1,0 +1,1015 @@
+<title>Mesa Semanal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+  :root{
+    --ground:#F3F6FA;
+    --surface:#FFFFFF;
+    --surface-2:#E8EDF5;
+    --ink:#131E2D;
+    --ink-2:#556982;
+    --ink-3:#8092AA;
+    --line:#D2DBE7;
+    --line-strong:#B6C3D4;
+    --accent:#2B59A8;
+    --accent-ink:#1D3F79;
+    --accent-soft:#DFE8F8;
+    --pimenton:#BF5129;
+    --pimenton-soft:#F8E4DA;
+    --ok:#2C7A58;
+    --ok-soft:#DBEEE5;
+    --warn:#9A6A10;
+    --warn-soft:#F7EBD2;
+    --shadow:0 1px 2px rgba(19,30,45,.06), 0 8px 24px -16px rgba(19,30,45,.30);
+    --radius:10px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D131B;
+      --surface:#151E2A;
+      --surface-2:#1E2937;
+      --ink:#E6EDF7;
+      --ink-2:#9DAEC5;
+      --ink-3:#72859E;
+      --line:#283445;
+      --line-strong:#3A4A61;
+      --accent:#7FA6E9;
+      --accent-ink:#B3CBF4;
+      --accent-soft:#1B2A43;
+      --pimenton:#E3855A;
+      --pimenton-soft:#38211A;
+      --ok:#63C79A;
+      --ok-soft:#14301F;
+      --warn:#D9A64A;
+      --warn-soft:#332714;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D131B;
+    --surface:#151E2A;
+    --surface-2:#1E2937;
+    --ink:#E6EDF7;
+    --ink-2:#9DAEC5;
+    --ink-3:#72859E;
+    --line:#283445;
+    --line-strong:#3A4A61;
+    --accent:#7FA6E9;
+    --accent-ink:#B3CBF4;
+    --accent-soft:#1B2A43;
+    --pimenton:#E3855A;
+    --pimenton-soft:#38211A;
+    --ok:#63C79A;
+    --ok-soft:#14301F;
+    --warn:#D9A64A;
+    --warn-soft:#332714;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--ink);
+    font-family:"Source Sans 3", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size:15px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;margin:0;text-wrap:balance;letter-spacing:-.01em}
+  button,input,select,textarea{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+  /* ---------- Cabecera ---------- */
+  .top{
+    position:sticky;
+    top:env(safe-area-inset-top, 0px);
+    z-index:40;
+    background:color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .top-inner{max-width:1120px;margin:0 auto;padding:14px 20px 0;display:flex;flex-direction:column;gap:12px}
+  .brand{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .brand h1{font-size:23px;font-weight:800}
+  .brand .tag{
+    font-family:"IBM Plex Mono", ui-monospace, monospace;
+    font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+  }
+  .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{
+    appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+    padding:9px 12px 11px;cursor:pointer;color:var(--ink-2);font-weight:600;white-space:nowrap;
+    display:flex;align-items:center;gap:7px;
+  }
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--accent-ink);border-bottom-color:var(--accent)}
+  .tab .n{
+    font-family:"IBM Plex Mono", monospace;font-size:11px;
+    background:var(--surface-2);color:var(--ink-2);border-radius:20px;padding:1px 7px;
+  }
+  .tab[aria-selected="true"] .n{background:var(--accent-soft);color:var(--accent-ink)}
+
+  /* ---------- Estructura ---------- */
+  main{max-width:1120px;margin:0 auto;padding:22px 20px 64px}
+  .lead{color:var(--ink-2);max-width:66ch;margin:0 0 18px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .section-head h2{font-size:19px;font-weight:700}
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;font-size:11px;letter-spacing:.09em;
+    text-transform:uppercase;color:var(--ink-3);margin-bottom:3px;
+  }
+
+  .btn{
+    appearance:none;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+    padding:7px 13px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;
+    display:inline-flex;align-items:center;gap:7px;transition:background .12s, border-color .12s;
+  }
+  .btn:hover{background:var(--surface-2)}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  :root[data-theme="dark"] .btn-primary,
+  .btn-primary{color:#fff}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .btn-primary{color:#0D131B} }
+  :root[data-theme="dark"] .btn-primary{color:#0D131B}
+  .btn-primary:hover{filter:brightness(1.07);background:var(--accent)}
+  .btn-ghost{border-color:transparent;background:transparent;color:var(--ink-2)}
+  .btn-ghost:hover{background:var(--surface-2);color:var(--ink)}
+
+  /* ---------- Chips ---------- */
+  .chip{
+    display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:2px 9px;
+    font-size:12px;font-weight:600;white-space:nowrap;
+    background:var(--surface-2);color:var(--ink-2);
+  }
+  .chip-comida{background:var(--warn-soft);color:var(--warn)}
+  .chip-cena{background:var(--accent-soft);color:var(--accent-ink)}
+  .chip-ambos{background:var(--ok-soft);color:var(--ok)}
+  .chip-ing{
+    background:transparent;border:1px solid var(--line);color:var(--ink-2);
+    font-weight:400;font-size:12px;padding:1px 8px;
+  }
+
+  /* ---------- Filtros ---------- */
+  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  input[type="text"], input[type="search"], select, textarea{
+    background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 10px;
+    min-width:0;max-width:100%;
+  }
+  .grow{flex:1 1 220px}
+  .grow input{width:100%}
+
+  /* ---------- Tabla de platos ---------- */
+  .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:720px}
+  thead th{
+    text-align:left;font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;
+    border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;
+  }
+  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover{background:var(--surface-2)}
+  .dish-name{font-weight:700;font-family:"Bricolage Grotesque", sans-serif;font-size:15px}
+  .dish-desc{color:var(--ink-2);font-size:13.5px;margin-top:2px;max-width:42ch}
+  .tipo{font-size:13px;color:var(--ink-2);max-width:24ch}
+  .ings{display:flex;flex-wrap:wrap;gap:5px;max-width:34ch}
+  .custom-flag{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--pimenton);letter-spacing:.06em}
+
+  /* ---------- Semana ---------- */
+  .balance{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow);
+  }
+  .balance h3{font-size:14px;font-weight:700;margin-bottom:3px}
+  .balance p{margin:0 0 11px;color:var(--ink-2);font-size:13.5px}
+  .meters{display:flex;flex-wrap:wrap;gap:8px}
+  .meter{
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;
+    padding:6px 10px;background:var(--ground);
+  }
+  .meter .lbl{font-size:13px;color:var(--ink-2)}
+  .meter .val{font-family:"IBM Plex Mono",monospace;font-size:13px;font-variant-numeric:tabular-nums;font-weight:500}
+  .meter .rng{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+  .meter.ok{border-color:color-mix(in srgb, var(--ok) 45%, var(--line))}
+  .meter.ok .val{color:var(--ok)}
+  .meter.low{border-color:color-mix(in srgb, var(--warn) 45%, var(--line))}
+  .meter.low .val{color:var(--warn)}
+  .meter.high{border-color:color-mix(in srgb, var(--pimenton) 45%, var(--line))}
+  .meter.high .val{color:var(--pimenton)}
+
+  .week{display:grid;grid-template-columns:repeat(auto-fill, minmax(268px, 1fr));gap:12px}
+  .day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .day > header{
+    padding:9px 14px;border-bottom:1px solid var(--line);
+    display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  }
+  .day h3{font-size:14px;font-weight:700}
+  .day .dnum{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+  .slot{
+    display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);
+    background:transparent;padding:11px 14px;cursor:pointer;
+  }
+  .day .slot:first-of-type{border-top:0}
+  .slot:hover{background:var(--surface-2)}
+  .slot .slot-lbl{
+    font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:6px;
+  }
+  .slot .slot-lbl::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--warn)}
+  .slot.cena .slot-lbl::before{background:var(--accent)}
+  .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px;margin-top:3px}
+  .slot .slot-meta{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+  .slot.empty .slot-dish{color:var(--ink-3);font-weight:500;font-style:italic}
+
+  /* ---------- Compra ---------- */
+  .compra-head{
+    display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:13px 16px;margin-bottom:16px;box-shadow:var(--shadow);
+  }
+  .counts{display:flex;gap:18px;flex-wrap:wrap}
+  .count .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+  .count .v{font-family:"Bricolage Grotesque",sans-serif;font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+  .count.buy .v{color:var(--pimenton)}
+  .count.have .v{color:var(--ok)}
+  .secs{display:grid;grid-template-columns:repeat(auto-fill, minmax(300px,1fr));gap:12px;align-items:start}
+  .sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+  .sec > header{
+    padding:9px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;
+    align-items:baseline;gap:8px;background:var(--surface-2);
+  }
+  .sec h3{font-size:13px;font-weight:700;letter-spacing:.01em}
+  .sec .sec-n{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+  .item{display:flex;gap:11px;padding:9px 14px;border-top:1px solid var(--line);align-items:flex-start}
+  .sec .item:first-of-type{border-top:0}
+  .item input[type="checkbox"]{margin-top:3px;width:16px;height:16px;accent-color:var(--ok);flex:none;cursor:pointer}
+  .item .txt{min-width:0}
+  .item .nm{font-weight:600;font-size:14px}
+  .item .why{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+  .item.have .nm{text-decoration:line-through;color:var(--ink-3);font-weight:400}
+  .item.have .why{opacity:.65}
+
+  .empty-state{
+    background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:28px 20px;text-align:center;color:var(--ink-2);
+  }
+
+  /* ---------- Añadir plato ---------- */
+  details.adder{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  details.adder > summary{padding:11px 16px;cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+  details.adder > summary::-webkit-details-marker{display:none}
+  details.adder > summary::before{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:16px}
+  details.adder[open] > summary{border-bottom:1px solid var(--line)}
+  .adder-body{padding:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;align-items:end}
+  .adder-body .full{grid-column:1/-1}
+  .hint{font-size:12.5px;color:var(--ink-3)}
+
+  /* ---------- Selector de plato ---------- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(10,16,24,.5);z-index:100;
+    display:flex;align-items:flex-end;justify-content:center;padding:0;
+  }
+  @media (min-width:640px){ .overlay{align-items:center;padding:24px} }
+  .picker{
+    background:var(--surface);width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;
+    border:1px solid var(--line);border-radius:14px 14px 0 0;box-shadow:0 20px 60px -20px rgba(0,0,0,.5);
+  }
+  @media (min-width:640px){ .picker{border-radius:14px} }
+  .picker > header{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
+  .picker h3{font-size:16px;font-weight:700}
+  .picker-list{overflow-y:auto;padding:6px 0}
+  .opt{
+    display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;
+    padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line);
+  }
+  .opt:hover{background:var(--surface-2)}
+  .opt:last-child{border-bottom:0}
+  .opt .on{font-weight:600;font-size:14px}
+  .opt .om{font-size:12.5px;color:var(--ink-3);margin-top:1px}
+  .opt.rec .on::after{content:"recomendado";font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.07em;text-transform:uppercase;color:var(--ok);background:var(--ok-soft);
+    border-radius:20px;padding:2px 7px;margin-left:8px;vertical-align:middle}
+  .opt.used{opacity:.5}
+  .picker > footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:space-between}
+
+  .toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));
+    background:var(--ink);color:var(--ground);padding:9px 16px;border-radius:20px;font-size:13.5px;
+    font-weight:600;z-index:200;box-shadow:var(--shadow);
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .toast{animation:pop .2s ease-out}
+    @keyframes pop{from{opacity:0;transform:translateX(-50%) translateY(6px)}}
+  }
+  footer.credits{max-width:1120px;margin:0 auto;padding:0 20px 40px;color:var(--ink-3);font-size:12.5px}
+</style>
+
+<div class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <h1>Mesa Semanal</h1>
+      <span class="tag">Comidas de casa</span>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Secciones">
+      <button class="tab" id="tab-platos" role="tab" aria-controls="panel-platos" aria-selected="true" data-panel="platos">Platos <span class="n" id="n-platos">23</span></button>
+      <button class="tab" id="tab-semana" role="tab" aria-controls="panel-semana" aria-selected="false" data-panel="semana">Semana <span class="n" id="n-semana">0/14</span></button>
+      <button class="tab" id="tab-compra" role="tab" aria-controls="panel-compra" aria-selected="false" data-panel="compra">Compra <span class="n" id="n-compra">0</span></button>
+    </nav>
+  </div>
+</div>
+
+<main>
+  <!-- ============ PLATOS ============ -->
+  <section id="panel-platos" role="tabpanel" aria-labelledby="tab-platos">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Repertorio de casa</div>
+        <h2>Todos los platos disponibles</h2>
+      </div>
+    </div>
+    <p class="lead">El catálogo completo, con su grupo nutricional, el momento recomendado y los ingredientes de cada plato. La lista de la compra sale exactamente de estos ingredientes: lo que no esté aquí, no aparecerá allí.</p>
+
+    <div class="filters">
+      <div class="field grow">
+        <label for="f-buscar">Buscar</label>
+        <input type="search" id="f-buscar" placeholder="Plato o ingrediente…">
+      </div>
+      <div class="field">
+        <label for="f-momento">Momento</label>
+        <select id="f-momento">
+          <option value="">Todos</option>
+          <option value="comida">Comida</option>
+          <option value="cena">Cena</option>
+          <option value="ambos">Ambos</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-grupo">Grupo</label>
+        <select id="f-grupo"><option value="">Todos</option></select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Plato</th>
+            <th scope="col">Tipo de alimento</th>
+            <th scope="col">Momento</th>
+            <th scope="col">Ingredientes</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-platos"></tbody>
+      </table>
+    </div>
+
+    <details class="adder">
+      <summary>Añadir un plato nuevo</summary>
+      <div class="adder-body">
+        <div class="field full">
+          <label for="a-nombre">Nombre del plato</label>
+          <input type="text" id="a-nombre" placeholder="Merluza al horno con patata">
+        </div>
+        <div class="field full">
+          <label for="a-desc">Descripción</label>
+          <input type="text" id="a-desc" placeholder="Lomos de merluza con patata panadera y cebolla.">
+        </div>
+        <div class="field">
+          <label for="a-tipo">Tipo de alimento</label>
+          <input type="text" id="a-tipo" placeholder="Pescado blanco + Tubérculo">
+        </div>
+        <div class="field">
+          <label for="a-momento">Momento recomendado</label>
+          <select id="a-momento">
+            <option value="comida">Comida</option>
+            <option value="cena">Cena</option>
+            <option value="ambos">Ambos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="a-grupo">Grupo para el equilibrio</label>
+          <select id="a-grupo"></select>
+        </div>
+        <div class="field full">
+          <label for="a-ings">Ingredientes, separados por comas</label>
+          <input type="text" id="a-ings" placeholder="merluza, patata, cebolla, aceite de oliva">
+        </div>
+        <div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-primary" id="a-guardar">Añadir al repertorio</button>
+          <span class="hint">Los ingredientes que no reconozca irán a la sección «Otros» de la compra.</span>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============ SEMANA ============ -->
+  <section id="panel-semana" role="tabpanel" aria-labelledby="tab-semana" hidden>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Lunes a domingo · comida y cena</div>
+        <h2>Reparto de la semana</h2>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btn-generar">Generar semana</button>
+        <button class="btn" id="btn-vaciar">Vaciar</button>
+      </div>
+    </div>
+    <p class="lead">Genera un reparto que respeta el momento recomendado de cada plato y los criterios de equilibrio del documento. Luego toca cualquier hueco para cambiar el plato por otro del repertorio.</p>
+
+    <div class="balance">
+      <h3>Equilibrio de la semana</h3>
+      <p>Veces que aparece cada grupo, frente al objetivo semanal.</p>
+      <div class="meters" id="meters"></div>
+    </div>
+
+    <div class="week" id="week"></div>
+  </section>
+
+  <!-- ============ COMPRA ============ -->
+  <section id="panel-compra" role="tabpanel" aria-labelledby="tab-compra" hidden>
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Derivada del reparto semanal</div>
+        <h2>Lista de la compra</h2>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="btn-copiar">Copiar lista</button>
+        <button class="btn btn-ghost" id="btn-reset-despensa">Desmarcar todo</button>
+      </div>
+    </div>
+    <p class="lead">Todos los ingredientes de los platos de la semana, agrupados por sección del súper. Marca lo que ya tienes en casa y se quedará fuera de la lista.</p>
+
+    <div class="compra-head">
+      <div class="counts">
+        <div class="count buy"><div class="k">Por comprar</div><div class="v" id="c-buy">0</div></div>
+        <div class="count have"><div class="k">Ya en casa</div><div class="v" id="c-have">0</div></div>
+        <div class="count"><div class="k">Platos de la semana</div><div class="v" id="c-dishes">0</div></div>
+      </div>
+    </div>
+
+    <div class="secs" id="secs"></div>
+  </section>
+</main>
+
+<footer class="credits">
+  Mesa Semanal · repertorio propio de casa, 23 platos base. Los datos se guardan solo en este navegador.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ====================== Datos ====================== */
+  // Sección del súper para cada ingrediente. Lo que no esté aquí cae en "otros".
+  const SECCION = {
+    // Frutería y verdulería
+    "patata":"verduleria","zanahoria":"verduleria","guisantes":"verduleria","pimiento rojo":"verduleria",
+    "pimiento verde":"verduleria","cebolla":"verduleria","calabacín":"verduleria","ajo":"verduleria",
+    "perejil":"verduleria","tomate":"verduleria","lechuga":"verduleria","aguacate":"verduleria",
+    "champiñones":"verduleria","limón":"verduleria","albahaca":"verduleria","eneldo":"verduleria",
+    // Pescadería y congelados
+    "gambas":"pescaderia","calamares":"pescaderia","sepia":"pescaderia","bacalao":"pescaderia",
+    "lomo de salmón":"pescaderia","salmón ahumado":"pescaderia","gulas":"pescaderia",
+    // Carnicería
+    "pechuga de pollo":"carniceria","carne picada de pollo":"carniceria","pechuga de pavo en lonchas":"carniceria",
+    "solomillo de cerdo":"carniceria","lomo de cerdo":"carniceria","filetes de ternera":"carniceria",
+    // Huevos, lácteos y refrigerados
+    "huevos":"lacteos","mozzarella":"lacteos","queso fresco":"lacteos","queso en lonchas":"lacteos",
+    "queso crema":"lacteos","nata para cocinar":"lacteos","tortilla de patata y calabacín":"lacteos",
+    // Panadería
+    "pan":"panaderia","pan para tostas":"panaderia","pan de hamburguesa":"panaderia",
+    // Despensa
+    "arroz":"despensa","lentejas":"despensa","garbanzos cocidos":"despensa","judías blancas cocidas":"despensa",
+    "atún en conserva":"despensa","mayonesa":"despensa","aceite de oliva":"despensa","pimentón":"despensa",
+    "azafrán":"despensa","caldo de pescado":"despensa","tomate triturado":"despensa","tomate frito":"despensa",
+    "guindilla":"despensa","harina":"despensa","salsa de soja":"despensa","especias para fajitas":"despensa",
+    "patatas paja":"despensa","pimientos del piquillo":"despensa","tortillas de trigo":"despensa"
+  };
+
+  const SECCIONES = [
+    ["verduleria","Frutería y verdulería"],
+    ["pescaderia","Pescadería y congelados"],
+    ["carniceria","Carnicería"],
+    ["lacteos","Huevos, lácteos y refrigerados"],
+    ["panaderia","Panadería"],
+    ["despensa","Despensa"],
+    ["otros","Otros"]
+  ];
+
+  const GRUPOS = {
+    legumbre:{lbl:"Legumbres", min:2, max:3},
+    arroz:{lbl:"Arroces", min:1, max:2},
+    marisco:{lbl:"Pescado blanco y marisco", min:3, max:4},
+    azul:{lbl:"Pescado azul", min:1, max:2},
+    blanca:{lbl:"Carne blanca", min:3, max:4},
+    roja:{lbl:"Carne roja o magra", min:1, max:2},
+    huevo:{lbl:"Huevo", min:2, max:3},
+    verdura:{lbl:"Verdura de base", min:5, max:9}
+  };
+
+  const BASE = [
+    {n:"Ensaladilla rusa casera", d:"Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.", t:"Tubérculo y verdura / Proteína ligera", m:"comida", g:["verdura"],
+     i:["patata","zanahoria","guisantes","atún en conserva","huevos","mayonesa"]},
+    {n:"Paella de marisco y carne", d:"Arroz con gambas, calamares, pimiento y pollo.", t:"Cereal (arroz) + Proteína mixta", m:"comida", g:["arroz","marisco","blanca"],
+     i:["arroz","gambas","calamares","pimiento rojo","pechuga de pollo","caldo de pescado","azafrán","aceite de oliva"]},
+    {n:"Garbanzos fritos", d:"Salteado tradicional de garbanzos.", t:"Legumbre", m:"comida", g:["legumbre"],
+     i:["garbanzos cocidos","ajo","cebolla","pimentón","aceite de oliva"]},
+    {n:"Lentejas con verduras y pollo", d:"Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.", t:"Legumbre + Proteína magra", m:"comida", g:["legumbre","blanca","verdura"],
+     i:["lentejas","zanahoria","calabacín","patata","pimiento verde","pechuga de pollo","cebolla","aceite de oliva"]},
+    {n:"Judías blancas con verduras y gambas", d:"Guiso suave de judías blancas con marisco y vegetales.", t:"Legumbre + Pescado/Marisco", m:"comida", g:["legumbre","marisco","verdura"],
+     i:["judías blancas cocidas","gambas","cebolla","pimiento verde","zanahoria","tomate triturado","ajo"]},
+    {n:"Arroz con huevo y carne", d:"Plato combinado de arroz, huevo a la plancha y carne.", t:"Cereal (arroz) + Proteína (huevo/carne)", m:"comida", g:["arroz","huevo","roja"],
+     i:["arroz","huevos","filetes de ternera","tomate frito","aceite de oliva"]},
+    {n:"Ensalada de garbanzos", d:"Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.", t:"Legumbre + Proteína ligera", m:"comida", g:["legumbre","verdura"],
+     i:["garbanzos cocidos","patata","zanahoria","atún en conserva","huevos","mayonesa"]},
+    {n:"Gulas salteadas con gambas y ajo", d:"Servidas solas, sobre una cama de patatas paja o en un revuelto.", t:"Pescado / Marisco", m:"ambos", mn:"ideal cena", g:["marisco"],
+     i:["gulas","gambas","ajo","guindilla","aceite de oliva","patatas paja"]},
+    {n:"Pimientos rellenos de bacalao y gambas", d:"Acompañados de una salsa ligera de pimientos o tomate.", t:"Verdura + Pescado/Marisco", m:"ambos", g:["marisco","verdura"],
+     i:["pimientos del piquillo","bacalao","gambas","cebolla","nata para cocinar","tomate triturado","harina"]},
+    {n:"Sepia a la plancha con ajo y perejil", d:"Acompañada de tomate con mozzarella.", t:"Pescado / Marisco + Verdura/Lácteo", m:"cena", g:["marisco","verdura"],
+     i:["sepia","ajo","perejil","aceite de oliva","tomate","mozzarella"]},
+    {n:"Tostas de tacos de salmón", d:"Tostadas con tacos de salmón fresco o ahumado.", t:"Pescado azul + Cereal", m:"cena", g:["azul"],
+     i:["pan para tostas","salmón ahumado","queso crema","limón","eneldo"]},
+    {n:"Gambas al ajillo tradicionales", d:"Gambas salteadas con ajo y guindilla.", t:"Pescado / Marisco", m:"cena", g:["marisco"],
+     i:["gambas","ajo","guindilla","aceite de oliva","perejil","pan"]},
+    {n:"Fajitas de pollo y pimientos", d:"Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.", t:"Carne blanca + Verdura + Cereal", m:"ambos", g:["blanca","verdura"],
+     i:["tortillas de trigo","pechuga de pollo","pimiento rojo","pimiento verde","cebolla","especias para fajitas"]},
+    {n:"Fajitas marineras", d:"Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.", t:"Pescado azul + Verdura/Grasa saludable", m:"cena", g:["azul","verdura"],
+     i:["tortillas de trigo","salmón ahumado","aguacate","queso fresco","limón"]},
+    {n:"Tomate con mozzarella y aceite de oliva", d:"La clásica ensalada Caprese, rápida, fresca y ligera.", t:"Verdura + Lácteo", m:"cena", g:["verdura"],
+     i:["tomate","mozzarella","aceite de oliva","albahaca"]},
+    {n:"Fajitas de pavo, queso, lechuga y tomate", d:"Fajitas frías o templadas, ideales sin encender fuego.", t:"Carne blanca + Verdura + Lácteo", m:"cena", g:["blanca","verdura"],
+     i:["tortillas de trigo","pechuga de pavo en lonchas","queso en lonchas","lechuga","tomate"]},
+    {n:"Pechugas de pollo a la plancha", d:"Acompañadas de ensalada variada.", t:"Carne blanca + Verdura", m:"cena", g:["blanca","verdura"],
+     i:["pechuga de pollo","lechuga","tomate","zanahoria","aceite de oliva"]},
+    {n:"Solomillo de cerdo o ternera a la plancha", d:"Con guarnición de champiñones o guisantes.", t:"Carne roja / magra + Verdura", m:"ambos", g:["roja","verdura"],
+     i:["solomillo de cerdo","champiñones","guisantes","ajo","aceite de oliva"]},
+    {n:"Hamburguesas caseras de pollo con queso", d:"En plato con ensalada o en pan con tomate fresco.", t:"Carne blanca + Lácteo + Verdura", m:"ambos", g:["blanca"],
+     i:["carne picada de pollo","queso en lonchas","pan de hamburguesa","lechuga","tomate","cebolla"]},
+    {n:"Tiras de lomo salteadas con verduras al wok", d:"Con calabacín, zanahoria y pimientos en juliana.", t:"Carne magra + Verdura", m:"ambos", g:["roja","verdura"],
+     i:["lomo de cerdo","calabacín","zanahoria","pimiento rojo","salsa de soja","aceite de oliva"]},
+    {n:"Revuelto de gulas, gambas y huevo", d:"Plato rápido y sabroso de sartén.", t:"Huevo + Pescado/Marisco", m:"cena", g:["huevo","marisco"],
+     i:["huevos","gulas","gambas","ajo","aceite de oliva","perejil"]},
+    {n:"Tortilla de patata y calabacín", d:"Preparado de Mercadona, más jugosa y con un plus de verdura.", t:"Huevo + Tubérculo + Verdura", m:"cena", g:["huevo","verdura"],
+     i:["tortilla de patata y calabacín","pan","tomate"]},
+    {n:"Salmón con verduras", d:"Preparado de Mercadona: lomo o tacos de salmón con hortalizas.", t:"Pescado azul + Verdura", m:"ambos", mn:"ideal cena", g:["azul","verdura"],
+     i:["lomo de salmón","calabacín","zanahoria","cebolla","aceite de oliva"]}
+  ];
+
+  const DIAS = ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+  const MOMENTO_LBL = {comida:"Comida", cena:"Cena", ambos:"Ambos"};
+
+  /* ====================== Estado ====================== */
+  const KEY = "mesa-semanal:v1";
+  let state = { tab:"platos", plan:null, despensa:{}, extra:[] };
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(KEY);
+      if(raw){
+        const p = JSON.parse(raw);
+        if(p && typeof p === "object"){
+          state.tab = p.tab || "platos";
+          state.plan = Array.isArray(p.plan) && p.plan.length === 14 ? p.plan : null;
+          state.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
+          state.extra = Array.isArray(p.extra) ? p.extra : [];
+        }
+      }
+    }catch(e){ /* navegador sin almacenamiento: seguimos en memoria */ }
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){}
+  }
+
+  function platos(){ return BASE.concat(state.extra); }
+  function platoPorNombre(n){ return platos().find(p => p.n === n) || null; }
+
+  /* ====================== Generador ====================== */
+  function elegible(p, momento){ return p.m === momento || p.m === "ambos"; }
+
+  function generar(){
+    const all = platos();
+    const slots = [];
+    for(let d=0; d<7; d++){ slots.push({d, m:"comida"}); slots.push({d, m:"cena"}); }
+    // Rellenamos en orden aleatorio para que el equilibrio no se concentre al principio.
+    const orden = slots.map((s,idx)=>({s,idx})).sort(()=>Math.random()-0.5);
+
+    const plan = new Array(14).fill(null);
+    const usados = new Set();
+    const cuenta = {};
+    Object.keys(GRUPOS).forEach(k => cuenta[k] = 0);
+
+    for(const {s, idx} of orden){
+      const cands = all.filter(p => elegible(p, s.m) && !usados.has(p.n));
+      if(!cands.length) continue;
+      let mejor = null, mejorScore = -Infinity;
+      for(const p of cands){
+        let score = Math.random() * 0.9;
+        for(const g of p.g){
+          const meta = GRUPOS[g];
+          if(!meta) continue;
+          if(cuenta[g] < meta.min) score += 4;
+          else if(cuenta[g] < meta.max) score += 1.2;
+          else score -= 5;
+        }
+        // Evitamos repetir el mismo grupo principal en comida y cena del mismo día.
+        const hermano = plan[s.d*2 + (s.m === "comida" ? 1 : 0)];
+        if(hermano){
+          const otro = platoPorNombre(hermano);
+          if(otro && otro.g.some(g => g !== "verdura" && p.g.includes(g))) score -= 3;
+        }
+        if(p.m === "ambos" && p.mn === "ideal cena" && s.m === "comida") score -= 1;
+        if(score > mejorScore){ mejorScore = score; mejor = p; }
+      }
+      plan[idx] = mejor.n;
+      usados.add(mejor.n);
+      mejor.g.forEach(g => { if(g in cuenta) cuenta[g]++; });
+    }
+    state.plan = plan;
+    save();
+  }
+
+  /* ====================== Render: platos ====================== */
+  const tbody = document.getElementById("tbody-platos");
+  const fBuscar = document.getElementById("f-buscar");
+  const fMomento = document.getElementById("f-momento");
+  const fGrupo = document.getElementById("f-grupo");
+
+  Object.entries(GRUPOS).forEach(([k,v])=>{
+    const o = document.createElement("option"); o.value = k; o.textContent = v.lbl; fGrupo.appendChild(o);
+    const o2 = o.cloneNode(true); document.getElementById("a-grupo").appendChild(o2);
+  });
+
+  function renderPlatos(){
+    const q = fBuscar.value.trim().toLowerCase();
+    const m = fMomento.value, g = fGrupo.value;
+    const lista = platos().filter(p=>{
+      if(m && p.m !== m) return false;
+      if(g && !p.g.includes(g)) return false;
+      if(q){
+        const hay = (p.n + " " + p.d + " " + p.t + " " + p.i.join(" ")).toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    tbody.textContent = "";
+    if(!lista.length){
+      const tr = document.createElement("tr");
+      const td = document.createElement("td");
+      td.colSpan = 4; td.style.padding = "26px 14px"; td.style.color = "var(--ink-3)";
+      td.textContent = "Ningún plato coincide con el filtro.";
+      tr.appendChild(td); tbody.appendChild(tr);
+    }
+    for(const p of lista){
+      const tr = document.createElement("tr");
+
+      const td1 = document.createElement("td");
+      const nm = document.createElement("div"); nm.className = "dish-name"; nm.textContent = p.n;
+      if(p.custom){
+        const fl = document.createElement("span"); fl.className = "custom-flag"; fl.textContent = "  añadido";
+        nm.appendChild(fl);
+      }
+      const ds = document.createElement("div"); ds.className = "dish-desc"; ds.textContent = p.d;
+      td1.append(nm, ds);
+
+      const td2 = document.createElement("td");
+      const tp = document.createElement("div"); tp.className = "tipo"; tp.textContent = p.t;
+      td2.appendChild(tp);
+
+      const td3 = document.createElement("td");
+      const ch = document.createElement("span");
+      ch.className = "chip chip-" + p.m;
+      ch.textContent = MOMENTO_LBL[p.m] + (p.mn ? " · " + p.mn : "");
+      td3.appendChild(ch);
+
+      const td4 = document.createElement("td");
+      const box = document.createElement("div"); box.className = "ings";
+      p.i.forEach(ing=>{
+        const c = document.createElement("span"); c.className = "chip chip-ing"; c.textContent = ing;
+        box.appendChild(c);
+      });
+      td4.appendChild(box);
+
+      tr.append(td1, td2, td3, td4);
+      tbody.appendChild(tr);
+    }
+    document.getElementById("n-platos").textContent = String(platos().length);
+  }
+
+  [fBuscar, fMomento, fGrupo].forEach(el => el.addEventListener("input", renderPlatos));
+
+  document.getElementById("a-guardar").addEventListener("click", ()=>{
+    const n = document.getElementById("a-nombre").value.trim();
+    const ings = document.getElementById("a-ings").value.split(",").map(s=>s.trim().toLowerCase()).filter(Boolean);
+    if(!n){ toast("Ponle nombre al plato"); return; }
+    if(!ings.length){ toast("Añade al menos un ingrediente"); return; }
+    if(platoPorNombre(n)){ toast("Ya existe un plato con ese nombre"); return; }
+    state.extra.push({
+      n,
+      d: document.getElementById("a-desc").value.trim() || "Plato añadido a mano.",
+      t: document.getElementById("a-tipo").value.trim() || "Sin clasificar",
+      m: document.getElementById("a-momento").value,
+      g: [document.getElementById("a-grupo").value],
+      i: ings,
+      custom: true
+    });
+    save();
+    ["a-nombre","a-desc","a-tipo","a-ings"].forEach(id => document.getElementById(id).value = "");
+    renderPlatos(); renderCompra();
+    toast("Plato añadido al repertorio");
+  });
+
+  /* ====================== Render: semana ====================== */
+  const weekEl = document.getElementById("week");
+  const metersEl = document.getElementById("meters");
+
+  function renderSemana(){
+    const plan = state.plan || new Array(14).fill(null);
+
+    // Contadores de equilibrio
+    const cuenta = {}; Object.keys(GRUPOS).forEach(k => cuenta[k] = 0);
+    plan.forEach(n=>{
+      const p = n && platoPorNombre(n);
+      if(p) p.g.forEach(g => { if(g in cuenta) cuenta[g]++; });
+    });
+    metersEl.textContent = "";
+    Object.entries(GRUPOS).forEach(([k,meta])=>{
+      const c = cuenta[k];
+      const cls = c < meta.min ? "low" : (c > meta.max ? "high" : "ok");
+      const d = document.createElement("div"); d.className = "meter " + cls;
+      const l = document.createElement("span"); l.className = "lbl"; l.textContent = meta.lbl;
+      const v = document.createElement("span"); v.className = "val"; v.textContent = String(c);
+      const r = document.createElement("span"); r.className = "rng"; r.textContent = "/ " + meta.min + "–" + meta.max;
+      d.append(l, v, r);
+      metersEl.appendChild(d);
+    });
+
+    weekEl.textContent = "";
+    for(let d=0; d<7; d++){
+      const card = document.createElement("article"); card.className = "day";
+      const h = document.createElement("header");
+      const h3 = document.createElement("h3"); h3.textContent = DIAS[d];
+      const num = document.createElement("span"); num.className = "dnum"; num.textContent = "día " + (d+1);
+      h.append(h3, num); card.appendChild(h);
+
+      ["comida","cena"].forEach((mom, j)=>{
+        const idx = d*2 + j;
+        const nombre = plan[idx];
+        const p = nombre && platoPorNombre(nombre);
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "slot " + mom + (p ? "" : " empty");
+        b.setAttribute("aria-label", "Cambiar el plato de " + DIAS[d] + ", " + MOMENTO_LBL[mom]);
+        const lbl = document.createElement("span"); lbl.className = "slot-lbl"; lbl.textContent = MOMENTO_LBL[mom];
+        const dish = document.createElement("div"); dish.className = "slot-dish";
+        dish.textContent = p ? p.n : "Sin asignar";
+        b.append(lbl, dish);
+        if(p){
+          const meta = document.createElement("div"); meta.className = "slot-meta"; meta.textContent = p.t;
+          b.appendChild(meta);
+        }
+        b.addEventListener("click", ()=> abrirPicker(d, mom, idx));
+        card.appendChild(b);
+      });
+      weekEl.appendChild(card);
+    }
+
+    const llenos = plan.filter(Boolean).length;
+    document.getElementById("n-semana").textContent = llenos + "/14";
+  }
+
+  document.getElementById("btn-generar").addEventListener("click", ()=>{
+    generar(); renderSemana(); renderCompra(); toast("Semana generada");
+  });
+  document.getElementById("btn-vaciar").addEventListener("click", ()=>{
+    state.plan = new Array(14).fill(null); save(); renderSemana(); renderCompra();
+  });
+
+  /* ====================== Selector de plato ====================== */
+  let overlayEl = null;
+  function cerrarPicker(){
+    if(overlayEl){ overlayEl.remove(); overlayEl = null; document.removeEventListener("keydown", escCierra); }
+  }
+  function escCierra(e){ if(e.key === "Escape") cerrarPicker(); }
+
+  function abrirPicker(dia, momento, idx){
+    cerrarPicker();
+    const plan = state.plan || new Array(14).fill(null);
+    overlayEl = document.createElement("div");
+    overlayEl.className = "overlay";
+    overlayEl.addEventListener("click", e => { if(e.target === overlayEl) cerrarPicker(); });
+
+    const box = document.createElement("div"); box.className = "picker"; box.setAttribute("role","dialog");
+    box.setAttribute("aria-modal","true"); box.setAttribute("aria-label","Elegir plato");
+
+    const head = document.createElement("header");
+    const h3 = document.createElement("h3");
+    h3.textContent = DIAS[dia] + " · " + MOMENTO_LBL[momento];
+    const buscar = document.createElement("input");
+    buscar.type = "search"; buscar.placeholder = "Buscar plato o ingrediente…"; buscar.id = "picker-buscar";
+    head.append(h3, buscar);
+
+    const list = document.createElement("div"); list.className = "picker-list";
+
+    function pinta(){
+      const q = buscar.value.trim().toLowerCase();
+      const usados = new Set(plan.filter(Boolean));
+      const items = platos()
+        .filter(p => !q || (p.n + " " + p.i.join(" ")).toLowerCase().includes(q))
+        .map(p => ({p, rec: elegible(p, momento)}))
+        .sort((a,b) => (b.rec - a.rec) || a.p.n.localeCompare(b.p.n, "es"));
+      list.textContent = "";
+      items.forEach(({p, rec})=>{
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt" + (rec ? " rec" : "") + (usados.has(p.n) && p.n !== plan[idx] ? " used" : "");
+        const txt = document.createElement("div");
+        const on = document.createElement("div"); on.className = "on"; on.textContent = p.n;
+        const om = document.createElement("div"); om.className = "om";
+        om.textContent = p.t + (usados.has(p.n) && p.n !== plan[idx] ? " · ya está esta semana" : "");
+        txt.append(on, om);
+        b.appendChild(txt);
+        b.addEventListener("click", ()=>{
+          const pl = state.plan || new Array(14).fill(null);
+          pl[idx] = p.n; state.plan = pl; save();
+          cerrarPicker(); renderSemana(); renderCompra();
+        });
+        list.appendChild(b);
+      });
+      if(!items.length){
+        const e = document.createElement("div");
+        e.style.padding = "22px 16px"; e.style.color = "var(--ink-3)";
+        e.textContent = "Ningún plato coincide.";
+        list.appendChild(e);
+      }
+    }
+    buscar.addEventListener("input", pinta);
+    pinta();
+
+    const foot = document.createElement("footer");
+    const quitar = document.createElement("button");
+    quitar.className = "btn btn-ghost"; quitar.textContent = "Dejar el hueco vacío";
+    quitar.addEventListener("click", ()=>{
+      const pl = state.plan || new Array(14).fill(null);
+      pl[idx] = null; state.plan = pl; save();
+      cerrarPicker(); renderSemana(); renderCompra();
+    });
+    const cerrar = document.createElement("button");
+    cerrar.className = "btn"; cerrar.textContent = "Cancelar";
+    cerrar.addEventListener("click", cerrarPicker);
+    foot.append(quitar, cerrar);
+
+    box.append(head, list, foot);
+    overlayEl.appendChild(box);
+    document.body.appendChild(overlayEl);
+    document.addEventListener("keydown", escCierra);
+    buscar.focus();
+  }
+
+  /* ====================== Render: compra ====================== */
+  const secsEl = document.getElementById("secs");
+
+  function ingredientesDeLaSemana(){
+    const plan = state.plan || [];
+    const mapa = new Map(); // ingrediente -> Set de platos
+    plan.forEach(n=>{
+      const p = n && platoPorNombre(n);
+      if(!p) return;
+      p.i.forEach(ing=>{
+        if(!mapa.has(ing)) mapa.set(ing, new Set());
+        mapa.get(ing).add(p.n);
+      });
+    });
+    return mapa;
+  }
+
+  function renderCompra(){
+    const mapa = ingredientesDeLaSemana();
+    const platosSemana = new Set((state.plan || []).filter(Boolean));
+    document.getElementById("c-dishes").textContent = String(platosSemana.size);
+
+    secsEl.textContent = "";
+    if(!mapa.size){
+      const e = document.createElement("div"); e.className = "empty-state";
+      e.textContent = "Todavía no hay platos en la semana. Genera un reparto en la pestaña Semana y la lista aparecerá aquí.";
+      secsEl.appendChild(e);
+      document.getElementById("c-buy").textContent = "0";
+      document.getElementById("c-have").textContent = "0";
+      document.getElementById("n-compra").textContent = "0";
+      return;
+    }
+
+    let buy = 0, have = 0;
+    const porSeccion = {};
+    SECCIONES.forEach(([k]) => porSeccion[k] = []);
+    [...mapa.keys()].sort((a,b)=>a.localeCompare(b,"es")).forEach(ing=>{
+      const sec = SECCION[ing] || "otros";
+      porSeccion[sec].push(ing);
+      if(state.despensa[ing]) have++; else buy++;
+    });
+
+    SECCIONES.forEach(([k, titulo])=>{
+      const items = porSeccion[k];
+      if(!items.length) return;
+      const sec = document.createElement("section"); sec.className = "sec";
+      const h = document.createElement("header");
+      const h3 = document.createElement("h3"); h3.textContent = titulo;
+      const n = document.createElement("span"); n.className = "sec-n";
+      const faltan = items.filter(i => !state.despensa[i]).length;
+      n.textContent = faltan + " de " + items.length;
+      h.append(h3, n); sec.appendChild(h);
+
+      items.forEach(ing=>{
+        const row = document.createElement("label");
+        row.className = "item" + (state.despensa[ing] ? " have" : "");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = "ing-" + ing.replace(/[^a-z0-9]+/gi, "-");
+        cb.checked = !!state.despensa[ing];
+        cb.addEventListener("change", ()=>{
+          if(cb.checked) state.despensa[ing] = true; else delete state.despensa[ing];
+          save(); renderCompra();
+        });
+        const txt = document.createElement("div"); txt.className = "txt";
+        const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = ing;
+        const why = document.createElement("div"); why.className = "why";
+        const usos = [...mapa.get(ing)];
+        why.textContent = usos.length === 1 ? usos[0] : usos.length + " platos: " + usos.join(", ");
+        txt.append(nm, why);
+        row.append(cb, txt);
+        sec.appendChild(row);
+      });
+      secsEl.appendChild(sec);
+    });
+
+    document.getElementById("c-buy").textContent = String(buy);
+    document.getElementById("c-have").textContent = String(have);
+    document.getElementById("n-compra").textContent = String(buy);
+  }
+
+  document.getElementById("btn-reset-despensa").addEventListener("click", ()=>{
+    state.despensa = {}; save(); renderCompra();
+  });
+
+  document.getElementById("btn-copiar").addEventListener("click", async ()=>{
+    const mapa = ingredientesDeLaSemana();
+    const lineas = ["Lista de la compra — Mesa Semanal", ""];
+    SECCIONES.forEach(([k, titulo])=>{
+      const items = [...mapa.keys()].filter(i => (SECCION[i] || "otros") === k && !state.despensa[i]).sort((a,b)=>a.localeCompare(b,"es"));
+      if(!items.length) return;
+      lineas.push(titulo.toUpperCase());
+      items.forEach(i => lineas.push("  - " + i));
+      lineas.push("");
+    });
+    const texto = lineas.join("\n");
+    try{
+      await navigator.clipboard.writeText(texto);
+      toast("Lista copiada al portapapeles");
+    }catch(e){
+      toast("Este navegador no deja copiar desde aquí");
+    }
+  });
+
+  /* ====================== Pestañas ====================== */
+  const paneles = {
+    platos: document.getElementById("panel-platos"),
+    semana: document.getElementById("panel-semana"),
+    compra: document.getElementById("panel-compra")
+  };
+  function verTab(name){
+    state.tab = name; save();
+    Object.entries(paneles).forEach(([k, el]) => { el.hidden = (k !== name); });
+    document.querySelectorAll(".tab").forEach(b=>{
+      b.setAttribute("aria-selected", String(b.dataset.panel === name));
+    });
+  }
+  document.querySelectorAll(".tab").forEach(b=>{
+    b.addEventListener("click", ()=> verTab(b.dataset.panel));
+  });
+
+  /* ====================== Avisos ====================== */
+  let toastTimer = null;
+  function toast(msg){
+    const prev = document.querySelector(".toast");
+    if(prev) prev.remove();
+    const t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status");
+    t.textContent = msg;
+    document.body.appendChild(t);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=> t.remove(), 2400);
+  }
+
+  /* ====================== Arranque ====================== */
+  load();
+  if(!state.plan || !state.plan.filter(Boolean).length) generar();
+  renderPlatos();
+  renderSemana();
+  renderCompra();
+  verTab(state.tab in paneles ? state.tab : "platos");
+})();
+</script>
