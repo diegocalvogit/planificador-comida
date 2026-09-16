@@ -1,0 +1,24 @@
+nombre;descripcion;tipo;momento;nota;grupos;ingredientes
+Ensaladilla rusa casera;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Tubérculo y verdura / Proteína ligera;comida;;verdura;patata|zanahoria|guisantes|atún en conserva|huevos|mayonesa
+Paella de marisco y carne;Arroz con gambas, calamares, pimiento y pollo.;Cereal (arroz) + Proteína mixta;comida;;arroz|marisco|blanca;arroz|gambas|calamares|pimiento rojo|pechuga de pollo|caldo de pescado|azafrán|aceite de oliva
+Garbanzos fritos;Salteado tradicional de garbanzos.;Legumbre;comida;;legumbre;garbanzos cocidos|ajo|cebolla|pimentón|aceite de oliva
+Lentejas con verduras y pollo;Cocinadas con zanahoria, calabacín, patata, pimiento y pollo.;Legumbre + Proteína magra;comida;;legumbre|blanca|verdura;lentejas|zanahoria|calabacín|patata|pimiento verde|pechuga de pollo|cebolla|aceite de oliva
+Judías blancas con verduras y gambas;Guiso suave de judías blancas con marisco y vegetales.;Legumbre + Pescado/Marisco;comida;;legumbre|marisco|verdura;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
+Arroz con huevo y carne;Plato combinado de arroz, huevo a la plancha y carne.;Cereal (arroz) + Proteína (huevo/carne);comida;;arroz|huevo|roja;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
+Ensalada de garbanzos;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre + Proteína ligera;comida;;legumbre|verdura;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
+Gulas salteadas con gambas y ajo;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Pescado / Marisco;ambos;ideal cena;marisco;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;Acompañados de una salsa ligera de pimientos o tomate.;Verdura + Pescado/Marisco;ambos;;marisco|verdura;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Sepia a la plancha con ajo y perejil;Acompañada de tomate con mozzarella.;Pescado / Marisco + Verdura/Lácteo;cena;;marisco|verdura;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
+Tostas de tacos de salmón;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul + Cereal;cena;;azul;pan para tostas|salmón ahumado|queso crema|limón|eneldo
+Gambas al ajillo tradicionales;Gambas salteadas con ajo y guindilla.;Pescado / Marisco;cena;;marisco;gambas|ajo|guindilla|aceite de oliva|perejil|pan
+Fajitas de pollo y pimientos;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca + Verdura + Cereal;ambos;;blanca|verdura;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas marineras;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul + Verdura/Grasa saludable;cena;;azul|verdura;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
+Tomate con mozzarella y aceite de oliva;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura + Lácteo;cena;;verdura;tomate|mozzarella|aceite de oliva|albahaca
+Fajitas de pavo, queso, lechuga y tomate;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca + Verdura + Lácteo;cena;;blanca|verdura;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
+Pechugas de pollo a la plancha;Acompañadas de ensalada variada.;Carne blanca + Verdura;cena;;blanca|verdura;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;Con guarnición de champiñones o guisantes.;Carne roja / magra + Verdura;ambos;;roja|verdura;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;En plato con ensalada o en pan con tomate fresco.;Carne blanca + Lácteo + Verdura;ambos;;blanca;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;Con calabacín, zanahoria y pimientos en juliana.;Carne magra + Verdura;ambos;;roja|verdura;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Revuelto de gulas, gambas y huevo;Plato rápido y sabroso de sartén.;Huevo + Pescado/Marisco;cena;;huevo|marisco;huevos|gulas|gambas|ajo|aceite de oliva|perejil
+Tortilla de patata y calabacín;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo + Tubérculo + Verdura;cena;;huevo|verdura;tortilla de patata y calabacín|pan|tomate
+Salmón con verduras;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul + Verdura;ambos;ideal cena;azul|verdura;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
