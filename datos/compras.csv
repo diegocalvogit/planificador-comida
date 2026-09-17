@@ -17,7 +17,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);harina;si
 2026-09-14;3ª semana de septiembre (14-20);huevos;no
 2026-09-14;3ª semana de septiembre (14-20);jamón cocido;no
-2026-09-14;3ª semana de septiembre (14-20);lechuga;no
 2026-09-14;3ª semana de septiembre (14-20);lentejas;no
 2026-09-14;3ª semana de septiembre (14-20);limón;no
 2026-09-14;3ª semana de septiembre (14-20);lomo de cerdo;no
@@ -58,6 +57,7 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);filetes de ternera;no
 2026-09-21;4ª semana de septiembre (21-27);gambas;no
 2026-09-21;4ª semana de septiembre (21-27);garbanzos cocidos;no
+2026-09-21;4ª semana de septiembre (21-27);guindilla;si
 2026-09-21;4ª semana de septiembre (21-27);guisantes;no
 2026-09-21;4ª semana de septiembre (21-27);gulas;no
 2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
@@ -66,14 +66,16 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
 2026-09-21;4ª semana de septiembre (21-27);judías blancas cocidas;no
 2026-09-21;4ª semana de septiembre (21-27);lechuga;no
+2026-09-21;4ª semana de septiembre (21-27);lomo de cerdo;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de salmón;no
+2026-09-21;4ª semana de septiembre (21-27);macarrones;no
 2026-09-21;4ª semana de septiembre (21-27);mayonesa;si
-2026-09-21;4ª semana de septiembre (21-27);merluza;no
 2026-09-21;4ª semana de septiembre (21-27);mozzarella;no
 2026-09-21;4ª semana de septiembre (21-27);nata para cocinar;no
 2026-09-21;4ª semana de septiembre (21-27);pan;no
 2026-09-21;4ª semana de septiembre (21-27);pan de hamburguesa;no
 2026-09-21;4ª semana de septiembre (21-27);patata;no
+2026-09-21;4ª semana de septiembre (21-27);patatas paja;no
 2026-09-21;4ª semana de septiembre (21-27);pechuga de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);perejil;no
 2026-09-21;4ª semana de septiembre (21-27);pimentón;si
@@ -81,6 +83,10 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);pimiento verde;no
 2026-09-21;4ª semana de septiembre (21-27);pimientos del piquillo;no
 2026-09-21;4ª semana de septiembre (21-27);puerro;no
+2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
+2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
+2026-09-21;4ª semana de septiembre (21-27);queso rallado;no
+2026-09-21;4ª semana de septiembre (21-27);salchichas;no
 2026-09-21;4ª semana de septiembre (21-27);tomate;no
 2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
 2026-09-21;4ª semana de septiembre (21-27);tomate triturado;no
