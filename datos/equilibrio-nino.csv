@@ -1,12 +1,14 @@
-grupo;etiqueta;minimo;maximo
-verdura;Verdura;3;5
-marisco;Pescado y marisco;2;3
-blanca;Carne blanca;2;3
-huevo;Huevo;1;2
-legumbre;Legumbre;1;2
-congelado;Congelados;1;2
-arroz;Arroz y pasta;1;2
-azul;Pescado azul;0;2
-roja;Carne roja;0;2
-guarde;Guardería;0;5
-fuera;Fuera de casa;0;2
+objetivo;tipos;minimo;maximo
+Verduras;Verdura;5;10
+Patatas y tubérculos;Tubérculo;2;5
+Legumbres;Legumbre;1;3
+Arroz, pasta y cereales;Arroz|Pasta|Pan y cereales;3;8
+Pescado y marisco;Pescado blanco|Pescado azul|Marisco;2;3
+Pescado azul;Pescado azul;0;2
+Carne blanca;Carne blanca;2;4
+Carne roja;Carne roja;0;1
+Embutido y fiambre;Embutido y fiambre;0;1
+Huevo;Huevo;2;3
+Preparado o congelado;Preparado o congelado;0;2
+Guardería;Guardería;0;5
+Fuera de casa;Fuera de casa;0;2

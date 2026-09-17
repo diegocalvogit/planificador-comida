@@ -9,9 +9,9 @@ Página web de una sola pieza, sin dependencias ni build, para organizar las com
 ```
 index.html                     la aplicación entera
 datos/platos.csv               el repertorio entero, con una marca por menú
-datos/tipos.csv                catálogo cerrado de tipos de alimento
+datos/tipos.csv                catálogo cerrado de tipos de alimento, con su clave de color
 datos/ingredientes.csv         catálogo cerrado de ingredientes, con su sección del súper
-datos/equilibrio.csv           objetivos semanales de los adultos (editables desde la web)
+datos/equilibrio.csv           objetivos semanales de los adultos, sobre esos tipos
 datos/equilibrio-nino.csv      objetivos semanales del niño
 datos/semanas.csv              histórico de semanas de los adultos, una fila por plato
 datos/semanas-nino.csv         histórico de semanas del niño, una fila por plato
@@ -26,7 +26,7 @@ Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` pa
 
 ## Las seis pestañas
 
-**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…), momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente.
+**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente.
 
 Todo plato es **editable por completo** desde su botón *Editar*, venga del CSV o lo hayas añadido tú: todos los campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. Un plato editado se marca como *modificado* y tiene un *Deshacer cambios* que lo devuelve a lo que dice el CSV; también se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
 
@@ -36,30 +36,34 @@ La columna **Menús** lleva una casilla por menú, marcable desde la propia tabl
 
 **Semana adultos** — Reparto de lunes a domingo con comida y cena, 14 huecos. Cada comida y cada cena admiten **dos platos**, el 1º y el 2º, y el segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
-Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**, y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer grupo de su columna `grupos` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
+Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**, y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer tipo de su columna `tipo` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
 
 *Generar semana* propone un reparto que:
 
 - respeta el momento de cada plato y no repite plato dentro de la semana;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
+- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
-- persigue estos objetivos, que salen de `datos/equilibrio.csv`:
+- persigue estos objetivos, que salen de `datos/equilibrio.csv`. Se cuentan **veces por semana**, es decir comidas y no platos: una comida con lentejas y pollo suma una vez en legumbres y una en carne blanca, no dos veces en nada:
 
-| Grupo | Objetivo semanal |
-| --- | --- |
-| Legumbres | 2–3 |
-| Arroces | 1–2 |
-| Pescado blanco y marisco | 3–4 |
-| Pescado azul | 1–2 |
-| Carne blanca | 3–4 |
-| Carne roja o magra | 1–2 |
-| Huevo | 2–3 |
-| Congelados | 0–2 |
-| Fuera de casa | 0–2 |
+| Objetivo | Tipos que cuenta | Veces por semana |
+| --- | --- | --- |
+| Verduras | Verdura | 7–14 |
+| Patatas y tubérculos | Tubérculo | 2–5 |
+| Legumbres | Legumbre | 2–4 |
+| Arroz, pasta y cereales | Arroz, Pasta, Pan y cereales | 7–14 |
+| Pescado y marisco | Pescado blanco, Pescado azul, Marisco | 3–4 |
+| Pescado azul | Pescado azul | 1–2 |
+| Carne blanca | Carne blanca | 2–4 |
+| Carne roja | Carne roja | 0–1 |
+| Embutido y fiambre | Embutido y fiambre | 0–1 |
+| Huevo | Huevo | 2 |
+| Preparado o congelado | Preparado o congelado | 0–2 |
+| Fuera de casa | Fuera de casa | 0–2 |
 
-Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
+Los objetivos se cumplen si el repertorio da para ello. Con 35 platos de adultos, de los que 10 llevan carne blanca y solo 9 arroz, pasta o pan, pedir *7 a 14 comidas con cereales* y *como mucho 4 con carne blanca* en la misma semana deja alguno en ámbar: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 Cualquier hueco se cambia a mano pulsando sobre él.
 

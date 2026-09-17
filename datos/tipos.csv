@@ -1,22 +1,23 @@
-tipo
-Verdura
-Tubérculo
-Fruta
-Legumbre
-Arroz
-Pasta
-Pan y cereales
-Pescado blanco
-Pescado azul
-Marisco
-Carne blanca
-Carne roja
-Embutido y fiambre
-Huevo
-Lácteo
-Queso
-Fruto seco
-Grasa saludable
-Salsa y aliño
-Preparado o congelado
-Fuera de casa
+clave;tipo
+verdura;Verdura
+tuberculo;Tubérculo
+fruta;Fruta
+legumbre;Legumbre
+arroz;Arroz
+pasta;Pasta
+cereal;Pan y cereales
+blanco;Pescado blanco
+azul;Pescado azul
+marisco;Marisco
+blanca;Carne blanca
+roja;Carne roja
+embutido;Embutido y fiambre
+huevo;Huevo
+lacteo;Lácteo
+queso;Queso
+frutoseco;Fruto seco
+grasa;Grasa saludable
+salsa;Salsa y aliño
+congelado;Preparado o congelado
+guarde;Guardería
+fuera;Fuera de casa
