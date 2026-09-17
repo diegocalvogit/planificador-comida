@@ -2,7 +2,8 @@ objetivo;tipos;minimo;maximo
 Verduras;Verdura;7;14
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;2;4
-Arroz, pasta y cereales;Arroz|Pasta|Pan y cereales;7;14
+Arroz;Arroz;2;4
+Pasta;Pasta;2;4
 Pescado y marisco;Pescado blanco|Pescado azul|Marisco;3;4
 Pescado azul;Pescado azul;1;2
 Carne blanca;Carne blanca;2;4

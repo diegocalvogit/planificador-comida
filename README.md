@@ -53,7 +53,8 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 | Verduras | Verdura | 7–14 |
 | Patatas y tubérculos | Tubérculo | 2–5 |
 | Legumbres | Legumbre | 2–4 |
-| Arroz, pasta y cereales | Arroz, Pasta, Pan y cereales | 7–14 |
+| Arroz | Arroz | 2–4 |
+| Pasta | Pasta | 2–4 |
 | Pescado y marisco | Pescado blanco, Pescado azul, Marisco | 3–4 |
 | Pescado azul | Pescado azul | 1–2 |
 | Carne blanca | Carne blanca | 2–4 |
@@ -63,9 +64,9 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 | Preparado o congelado | Preparado o congelado | 0–2 |
 | Fuera de casa | Fuera de casa | 0–2 |
 
-Los objetivos se cumplen si el repertorio da para ello. Con 35 platos de adultos, de los que 10 llevan carne blanca y solo 9 arroz, pasta o pan, pedir *7 a 14 comidas con cereales* y *como mucho 4 con carne blanca* en la misma semana deja alguno en ámbar: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
+Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con 35 platos de adultos, de los que solo uno lleva pasta, pedir *2 a 4 comidas con pasta* deja ese objetivo siempre en rojo: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
-Cualquier hueco se cambia a mano pulsando sobre él.
+Cualquier hueco se cambia a mano pulsando sobre él. El botón **Guardar** de la propia pestaña sube los cambios a GitHub sin pasar por el Histórico, y dice cuántos ficheros hay pendientes.
 
 **Semana niño** — **La misma estructura que la de adultos**: catorce huecos, comida y cena, dos platos cada uno. Que coma entre semana en la guardería no es un caso especial del programa, sino un plato más: **Menú guarde**, que el generador coloca en la comida de lunes a viernes. Es plato único, no tiene ingredientes y por tanto no suma nada a la compra, y su repetición es *nunca*, así que no aparece en ningún otro hueco por su cuenta.
 

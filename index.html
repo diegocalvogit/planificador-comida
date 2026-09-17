@@ -246,10 +246,10 @@
   .meter .rng{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
   .meter.ok{border-color:color-mix(in srgb, var(--ok) 45%, var(--line))}
   .meter.ok .val{color:var(--ok)}
-  .meter.low{border-color:color-mix(in srgb, var(--warn) 45%, var(--line))}
-  .meter.low .val{color:var(--warn)}
-  .meter.high{border-color:color-mix(in srgb, var(--pimenton) 45%, var(--line))}
-  .meter.high .val{color:var(--pimenton)}
+  .meter.fuera{background:var(--pimenton-soft);border-color:color-mix(in srgb, var(--pimenton) 55%, transparent)}
+  .meter.fuera .lbl,.meter.fuera .val,.meter.fuera .rng{color:var(--pimenton)}
+  .meter.fuera .val{font-weight:700}
+  .meter .flecha{font-size:11px;color:var(--pimenton);margin-left:-4px}
 
   details.obj{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
   details.obj > summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--accent-ink);list-style:none;display:flex;align-items:center;gap:7px}
@@ -670,7 +670,8 @@ objetivo;tipos;minimo;maximo
 Verduras;Verdura;7;14
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;2;4
-Arroz, pasta y cereales;Arroz|Pasta|Pan y cereales;7;14
+Arroz;Arroz;2;4
+Pasta;Pasta;2;4
 Pescado y marisco;Pescado blanco|Pescado azul|Marisco;3;4
 Pescado azul;Pescado azul;1;2
 Carne blanca;Carne blanca;2;4
@@ -685,7 +686,8 @@ objetivo;tipos;minimo;maximo
 Verduras;Verdura;5;10
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;1;3
-Arroz, pasta y cereales;Arroz|Pasta|Pan y cereales;3;8
+Arroz;Arroz;2;4
+Pasta;Pasta;2;4
 Pescado y marisco;Pescado blanco|Pescado azul|Marisco;2;3
 Pescado azul;Pescado azul;0;2
 Carne blanca;Carne blanca;2;4
@@ -1971,7 +1973,8 @@ fuera;Fuera de casa
         }}),
         el("button", {class:"btn", text:"Vaciar", onclick:function(){
           fijarHuecos(s, semanaActual(), {}); pintarTodo();
-        }})
+        }}),
+        el("button", {class:"btn", id:"guardar-" + s, text:"Guardar", onclick:guardarEnGitHub})
       ])
     ]));
 
@@ -2067,11 +2070,15 @@ fuera;Fuera de casa
 
     const metros = $("meters-" + s); metros.textContent = "";
     metas.forEach(function(o){
-      const c = cuenta[o.n];
-      metros.appendChild(el("div", {class:"meter " + (c < o.min ? "low" : (c > o.max ? "high" : "ok"))}, [
+      const c = cuenta[o.n], corto = c < o.min, pasado = c > o.max;
+      metros.appendChild(el("div", {
+        class:"meter " + (corto || pasado ? "fuera" : "ok"),
+        title: corto ? "Faltan " + (o.min - c) : (pasado ? "Se pasa en " + (c - o.max) : "Dentro del objetivo")
+      }, [
         el("span", {class:"swatch", style:"background:" + colorDe(claveDe(o.tipos[0]))}),
         el("span", {class:"lbl", text:o.n}),
         el("span", {class:"val", text:String(c)}),
+        corto ? el("span", {class:"flecha", text:"↓"}) : (pasado ? el("span", {class:"flecha", text:"↑"}) : null),
         el("span", {class:"rng", text:"/ " + o.min + "–" + o.max})
       ]));
     });
@@ -2139,6 +2146,16 @@ fuera;Fuera de casa
     });
 
     $("n-semana-" + s).textContent = llenos(s, id) + "/" + slotsDe().length;
+
+    // El mismo guardado que el del Histórico, sin salir de la semana.
+    const bg = $("guardar-" + s), pend = sucios().length;
+    if(bg){
+      bg.textContent = pend ? "Guardar (" + pend + ")" : "Guardado";
+      bg.className = "btn" + (pend ? " btn-primary" : "");
+      bg.disabled = !pend;
+      bg.style.opacity = pend ? "" : ".55";
+      bg.title = pend ? "Sube a GitHub los " + pend + " ficheros con cambios" : "No hay cambios sin guardar";
+    }
   }
 
   /* ============ Selector de plato ============ */
