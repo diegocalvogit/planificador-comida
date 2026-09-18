@@ -30,7 +30,7 @@ Puré de verduras con pescado;si;si;La misma base de verduras con merluza.;Verdu
 Puré de verduras con carne;si;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
 Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;empanadillas congeladas
 Croquetas congeladas;si;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;croquetas congeladas
-Sopa de pollo;no;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;caldo de pollo|fideos
+Sopa de pollo;si;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;caldo de pollo|fideos
 Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevos|patata|aceite de oliva
 Guisantes con jamón;no;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;guisantes|jamón cocido|aceite de oliva
 Calamares;si;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;calamares|harina|aceite de oliva
