@@ -288,6 +288,11 @@
   .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px}
   .slot .slot-meta{font-size:12.5px;color:var(--ink-2);margin-top:2px}
   .slot.empty .slot-dish{color:var(--ink-3);font-weight:500;font-style:italic}
+  .slot.ajeno{box-shadow:inset 3px 0 0 var(--pimenton)}
+  .slot.roto{background-color:var(--pimenton-soft)}
+  .slot.roto .slot-dish{color:var(--pimenton);text-decoration:line-through}
+  .marca-ajeno{margin-left:7px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
+    text-transform:uppercase;color:var(--pimenton);background:var(--pimenton-soft);border-radius:20px;padding:1px 7px}
   .slot-add{display:flex;gap:9px;align-items:center;width:100%;text-align:left;border:0;
     border-top:1px dashed var(--line-strong);background:transparent;padding:6px 14px;cursor:pointer;
     font-size:12.5px;color:var(--ink-3)}
@@ -562,7 +567,7 @@ Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con
 Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
 Revuelto de gulas, gambas y huevo;si;no;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevos|gulas|gambas|ajo|aceite de oliva|perejil
 Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura;ambos;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;ambos;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;
 Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
@@ -571,21 +576,23 @@ Puré de verduras con pescado;si;si;La misma base de verduras con merluza.;Verdu
 Puré de verduras con carne;si;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
 Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;empanadillas congeladas
 Croquetas congeladas;si;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;croquetas congeladas
-Sopa de pollo;no;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;caldo de pollo|fideos
+Sopa de pollo;si;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;caldo de pollo|fideos
 Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevos|patata|aceite de oliva
-Guisantes con jamón;no;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;guisantes|jamón cocido|aceite de oliva
+Guisantes con jamón;si;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;guisantes|jamón cocido|aceite de oliva
 Calamares;si;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;calamares|harina|aceite de oliva
 Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;hamburguesa de pollo|pan de hamburguesa|tomate
 Macarrones con salchichas;no;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;macarrones|salchichas|tomate frito|queso rallado
 Rollitos de la Yaya;no;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;jamón cocido|queso en lonchas
 Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
 Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Guardería;comida;bajo;nunca;si;
-Lomo con queso;no;si;Sin descripción.;Carne roja|Queso;ambos;bajo;media;no;lomo de cerdo|queso en lonchas
+Lomo con queso;si;si;Sin descripción.;Carne roja|Queso;ambos;bajo;media;no;lomo de cerdo|queso en lonchas
 Queso fresco;no;si;Sin descripción.;Queso;ambos;medio;media;no;queso fresco
 Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;ambos;medio;media;no;arroz|huevos
 Berenjenas rellenas;si;si;Sin descripción.;Verdura|Carne blanca|Queso;ambos;alto;baja;no;berenjena|carne picada de pollo|tomate frito|queso rallado|cebolla
 Brocoli;si;si;Sin descripción.;Verdura;ambos;medio;baja;no;brócoli|aceite de oliva
 Nuggets de pollo conjelados;si;si;Sin descripción.;Carne blanca|Preparado o congelado;ambos;bajo;media;no;nuggets de pollo
+Melón con Jamón;si;si;Sin descripción.;Carne roja;ambos;bajo;baja;no;jamón serrano
+Patatas fritas;si;si;Guarnición de patatas fritas;Tubérculo;ambos;medio;media;no;patata
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -603,6 +610,7 @@ guisantes;Frutería y verdulería
 huevo;Frutería y verdulería
 lechuga;Frutería y verdulería
 limón;Frutería y verdulería
+melón;Frutería y verdulería
 patata;Frutería y verdulería
 perejil;Frutería y verdulería
 pimiento rojo;Frutería y verdulería
@@ -619,6 +627,7 @@ gambas;Carnicería y pescadería
 gulas;Carnicería y pescadería
 hamburguesa de pollo;Carnicería y pescadería
 jamón cocido;Carnicería y pescadería
+jamón serrano;Carnicería y pescadería
 lomo de cerdo;Carnicería y pescadería
 lomo de salmón;Carnicería y pescadería
 merluza;Carnicería y pescadería
@@ -703,12 +712,15 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Salmón con verduras
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Calamares
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Parrillada de verduras
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;1;Hamburguesas caseras de pollo con queso
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;2;Parrillada de verduras
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Nuggets de pollo conjelados
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;2;Croquetas congeladas
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Macarrones con queso y pollo
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Puré de verduras con pescado
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;2;Gulas salteadas con gambas y ajo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Restaurante
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Calamares
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;2;Patatas fritas
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Brocoli
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;2;Tiras de lomo salteadas con verduras al wok
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Lentejas con verduras y pollo
@@ -720,13 +732,18 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Sopa de pollo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Tortilla de patata y calabacín
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas, gambas y huevo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Guisantes con jamón
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;2;Salmón con verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Lomo con queso
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Arroz con huevo y carne
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Pimientos rellenos de bacalao y gambas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Tortilla de patata y calabacín
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Croquetas congeladas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Parrillada de verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Salmón con verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Hamburguesas caseras de pollo con queso
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;2;Tomate con mozzarella y aceite de oliva
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Arroz con huevo y carne
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Restaurante
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Salmón con verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Judías blancas con verduras y gambas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Macarrones con queso y pollo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Pechugas de pollo a la plancha
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Garbanzos fritos
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;2;Ensaladilla rusa casera
@@ -808,6 +825,7 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);harina;si
 2026-09-14;3ª semana de septiembre (14-20);huevos;no
 2026-09-14;3ª semana de septiembre (14-20);jamón cocido;no
+2026-09-14;3ª semana de septiembre (14-20);lechuga;no
 2026-09-14;3ª semana de septiembre (14-20);lentejas;no
 2026-09-14;3ª semana de septiembre (14-20);limón;no
 2026-09-14;3ª semana de septiembre (14-20);lomo de cerdo;no
@@ -838,11 +856,13 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);albahaca;no
 2026-09-21;4ª semana de septiembre (21-27);arroz;no
 2026-09-21;4ª semana de septiembre (21-27);atún en conserva;no
-2026-09-21;4ª semana de septiembre (21-27);bacalao;no
+2026-09-21;4ª semana de septiembre (21-27);berenjena;no
 2026-09-21;4ª semana de septiembre (21-27);calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);caldo de pollo;no
+2026-09-21;4ª semana de septiembre (21-27);carne picada de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);cebolla;no
 2026-09-21;4ª semana de septiembre (21-27);croquetas congeladas;no
+2026-09-21;4ª semana de septiembre (21-27);espárragos trigueros;no
 2026-09-21;4ª semana de septiembre (21-27);especias para fajitas;no
 2026-09-21;4ª semana de septiembre (21-27);fideos;no
 2026-09-21;4ª semana de septiembre (21-27);filetes de ternera;no
@@ -852,10 +872,8 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);guisantes;no
 2026-09-21;4ª semana de septiembre (21-27);gulas;no
 2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);harina;si
 2026-09-21;4ª semana de septiembre (21-27);huevos;no
 2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
-2026-09-21;4ª semana de septiembre (21-27);judías blancas cocidas;no
 2026-09-21;4ª semana de septiembre (21-27);lechuga;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de cerdo;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de salmón;no
@@ -872,7 +890,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);pimentón;si
 2026-09-21;4ª semana de septiembre (21-27);pimiento rojo;no
 2026-09-21;4ª semana de septiembre (21-27);pimiento verde;no
-2026-09-21;4ª semana de septiembre (21-27);pimientos del piquillo;no
 2026-09-21;4ª semana de septiembre (21-27);puerro;no
 2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
 2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
@@ -880,7 +897,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);salchichas;no
 2026-09-21;4ª semana de septiembre (21-27);tomate;no
 2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
-2026-09-21;4ª semana de septiembre (21-27);tomate triturado;no
 2026-09-21;4ª semana de septiembre (21-27);tortilla de patata y calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);tortillas de trigo;no
 2026-09-21;4ª semana de septiembre (21-27);zanahoria;no
@@ -1230,6 +1246,12 @@ fuera;Fuera de casa
     const todos = platos(pid);
     for(let i = 0; i < todos.length; i++) if(todos[i].n === n) return todos[i];
     return null;
+  }
+  // En una semana puede haber quedado un plato que ya no está en ese menú
+  // (lo desmarcaste después, o venía del otro). Sigue estando servido, así que
+  // se pinta y se compra igual; lo que hay que hacer es avisar.
+  function platoEnSemana(pid, n){
+    return plato(pid, n) || platoPorNombre(n);
   }
   function platoPorNombre(n){
     const todos = repertorio();
@@ -2060,7 +2082,7 @@ fuera;Fuera de casa
     metas.forEach(function(o){ cuenta[o.n] = 0; });
     slotsDe().forEach(function(slot){
       const dentro = ORDENES.map(function(o){ return h[slot + "|" + o]; })
-                            .map(function(n){ return n ? plato(s, n) : null; })
+                            .map(function(n){ return n ? platoEnSemana(s, n) : null; })
                             .filter(Boolean);
       if(!dentro.length) return;
       metas.forEach(function(o){
@@ -2098,10 +2120,12 @@ fuera;Fuera de casa
                                     text:MOMENTO_LBL[momento]}));
 
         const primero = h[dia + "|" + momento + "|1"];
-        const pPrim = primero ? plato(s, primero) : null;
+        const pPrim = primero ? platoEnSemana(s, primero) : null;
         ORDENES.forEach(function(o){
           const clave = dia + "|" + momento + "|" + o;
-          const p = h[clave] ? plato(s, h[clave]) : null;
+          const p = h[clave] ? platoEnSemana(s, h[clave]) : null;
+          const ajeno = !!(p && !(p.menus && p.menus[s]));
+          const roto = !!(h[clave] && !p);
           // El segundo plato solo ocupa sitio si lo hay; si no, una línea para añadirlo.
           if(!p && !h[clave] && o === "2"){
             const basta = pPrim && pPrim.unico;
@@ -2116,9 +2140,18 @@ fuera;Fuera de casa
             return;
           }
           const cuerpo = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
-          if(p) cuerpo.push(el("div", {class:"slot-meta", text:tipoTexto(p)}));
+          if(p){
+            const meta = el("div", {class:"slot-meta", text:tipoTexto(p)});
+            if(ajeno) meta.appendChild(el("span", {class:"marca-ajeno", text:"fuera de este menú"}));
+            cuerpo.push(meta);
+          }else if(roto){
+            cuerpo.push(el("div", {class:"slot-meta"}, [
+              el("span", {class:"marca-ajeno", text:"este plato ya no existe"})
+            ]));
+          }
           card.appendChild(el("button", {
-            type:"button", class:"slot" + (p ? " g-" + base(p) : " empty"),
+            type:"button",
+            class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) + (ajeno ? " ajeno" : ""),
             "aria-label": ORDEN_LBL[o] + " plato de la " + MOMENTO_LBL[momento].toLowerCase() + " del " + dia +
                           ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiarlo.",
             onclick:function(){ abrirSelector(s, dia, momento, o); }
@@ -2134,7 +2167,7 @@ fuera;Fuera de casa
     const ley = $("legend-" + s); ley.textContent = "";
     const bases = [];
     clavesDe().forEach(function(k){
-      const p = h[k] && plato(s, h[k]);
+      const p = h[k] && platoEnSemana(s, h[k]);
       const t = p ? tiposDe(p)[0] : null;
       if(t && bases.indexOf(t) === -1) bases.push(t);
     });
@@ -2530,7 +2563,7 @@ fuera;Fuera de casa
     PERFILES.forEach(function(pf){
       const h = huecos(pf.id, id);
       clavesDe().forEach(function(k){
-        const p = h[k] && plato(pf.id, h[k]);
+        const p = h[k] && platoEnSemana(pf.id, h[k]);
         if(!p) return;
         p.i.forEach(function(ing){
           if(!mapa[ing]) mapa[ing] = [];
