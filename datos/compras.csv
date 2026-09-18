@@ -48,11 +48,13 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);albahaca;no
 2026-09-21;4ª semana de septiembre (21-27);arroz;no
 2026-09-21;4ª semana de septiembre (21-27);atún en conserva;no
-2026-09-21;4ª semana de septiembre (21-27);bacalao;no
+2026-09-21;4ª semana de septiembre (21-27);berenjena;no
 2026-09-21;4ª semana de septiembre (21-27);calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);caldo de pollo;no
+2026-09-21;4ª semana de septiembre (21-27);carne picada de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);cebolla;no
 2026-09-21;4ª semana de septiembre (21-27);croquetas congeladas;no
+2026-09-21;4ª semana de septiembre (21-27);espárragos trigueros;no
 2026-09-21;4ª semana de septiembre (21-27);especias para fajitas;no
 2026-09-21;4ª semana de septiembre (21-27);fideos;no
 2026-09-21;4ª semana de septiembre (21-27);filetes de ternera;no
@@ -62,10 +64,8 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);guisantes;no
 2026-09-21;4ª semana de septiembre (21-27);gulas;no
 2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
-2026-09-21;4ª semana de septiembre (21-27);harina;si
 2026-09-21;4ª semana de septiembre (21-27);huevos;no
 2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
-2026-09-21;4ª semana de septiembre (21-27);judías blancas cocidas;no
 2026-09-21;4ª semana de septiembre (21-27);lechuga;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de cerdo;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de salmón;no
@@ -82,7 +82,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);pimentón;si
 2026-09-21;4ª semana de septiembre (21-27);pimiento rojo;no
 2026-09-21;4ª semana de septiembre (21-27);pimiento verde;no
-2026-09-21;4ª semana de septiembre (21-27);pimientos del piquillo;no
 2026-09-21;4ª semana de septiembre (21-27);puerro;no
 2026-09-21;4ª semana de septiembre (21-27);queso en lonchas;no
 2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
@@ -90,7 +89,6 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);salchichas;no
 2026-09-21;4ª semana de septiembre (21-27);tomate;no
 2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
-2026-09-21;4ª semana de septiembre (21-27);tomate triturado;no
 2026-09-21;4ª semana de septiembre (21-27);tortilla de patata y calabacín;no
 2026-09-21;4ª semana de septiembre (21-27);tortillas de trigo;no
 2026-09-21;4ª semana de septiembre (21-27);zanahoria;no
