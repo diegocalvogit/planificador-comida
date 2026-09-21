@@ -2,15 +2,12 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Salmón con verduras
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Calamares
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Parrillada de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;1;Hamburguesas caseras de pollo con queso
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;2;Parrillada de verduras
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Nuggets de pollo conjelados
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;2;Croquetas congeladas
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Macarrones con queso y pollo
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Puré de verduras con pescado
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;2;Gulas salteadas con gambas y ajo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Calamares
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;2;Patatas fritas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Restaurante
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Brocoli
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;2;Tiras de lomo salteadas con verduras al wok
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Lentejas con verduras y pollo
@@ -20,22 +17,19 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Restaurante
 2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Restaurante
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;1;Sopa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Rollitos de la Yaya
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Tortilla de patata y calabacín
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas, gambas y huevo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Guisantes con jamón
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;2;Salmón con verduras
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Lomo con queso
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Arroz con huevo y carne
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Croquetas congeladas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Parrillada de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Salmón con verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Fajitas de pavo, queso, lechuga y tomate
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Tortilla de patata y calabacín
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Hamburguesas caseras de pollo con queso
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;2;Tomate con mozzarella y aceite de oliva
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Restaurante
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Lomo con queso
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Tomate con mozzarella y aceite de oliva
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Queso fresco
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;comida;1;Macarrones con queso y pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Gulas salteadas con gambas y ajo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Garbanzos fritos
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;2;Ensaladilla rusa casera
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Fajitas de pollo y pimientos
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;sábado;cena;1;Pechugas de pollo a la plancha
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Macarrones con salchichas
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Restaurante
