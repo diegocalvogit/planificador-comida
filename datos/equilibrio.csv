@@ -1,5 +1,8 @@
 objetivo;tipos;minimo;maximo
-Verduras;Verdura;7;14
+Verduras;Verdura;8;16
+Fruta;Fruta;7;14
+Lácteos;Lácteo|Queso;7;14
+Pan y cereales;Pan y cereales;7;14
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;2;4
 Arroz;Arroz;2;4
@@ -8,7 +11,8 @@ Pescado y marisco;Pescado blanco|Pescado azul|Marisco;3;4
 Pescado azul;Pescado azul;1;2
 Carne blanca;Carne blanca;2;4
 Carne roja;Carne roja;0;1
-Embutido y fiambre;Embutido y fiambre;0;1
-Huevo;Huevo;2;2
+Embutido y fiambre;Embutido y fiambre;0;3
+Huevo;Huevo;2;4
+Fruto seco;Fruto seco;0;4
 Preparado o congelado;Preparado o congelado;0;2
 Fuera de casa;Fuera de casa;0;2

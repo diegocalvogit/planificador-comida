@@ -24,9 +24,9 @@ Hay **un solo repertorio de platos** y dos menús, adultos y niño. Cada plato l
 
 Los CSV usan **`;` como separador** (el que espera Excel en español) y **`|` para las listas** dentro de una celda. Ningún valor puede contener `;`.
 
-## Las seis pestañas
+## Las siete pestañas
 
-**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: momento (comida, cena o ambos), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente.
+**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: **momentos** en que se come (desayuno, almuerzo, comida, merienda y cena; un bizcocho puede ser desayuno y merienda a la vez), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente.
 
 **Exportar a Excel** baja un `.xlsx` con lo que se ve en ese momento: respeta los filtros y el orden, y el botón dice cuántos platos saldrán cuando hay algo filtrado. La hoja lleva la cabecera fija y en negrita, autofiltro y anchos de columna. El fichero se construye a mano en `index.html` —un xlsx no es más que un ZIP de XML— para no meter ninguna librería externa en una página que no tiene ninguna.
 
@@ -36,23 +36,37 @@ Los ingredientes **solo se eligen del catálogo**: el editor los ofrece con auto
 
 La columna **Menús** lleva una casilla por menú, marcable desde la propia tabla: así se pasa un plato de un menú a otro sin duplicarlo. Desmarcar la última casilla no borra el plato, solo lo deja fuera de los dos menús; para eliminarlo del repertorio está el botón del editor. Al sacarlo de un menú, se quita también de las semanas de ese menú.
 
-**Semana adultos** — Reparto de lunes a domingo con comida y cena, 14 huecos. Cada comida y cada cena admiten **dos platos**, el 1º y el 2º, y el segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
+**Desayunos y meriendas** — La misma tabla que *Platos*, con los mismos filtros, el mismo editor y el mismo
+exportador a Excel, pero enseñando lo que se come fuera de la mesa grande: **desayuno**, **almuerzo** de media
+mañana y **merienda**. Sale del mismo `datos/platos.csv`; lo único que separa las dos pestañas es la columna
+`momento`, que es una lista. Un plato que vale para varios momentos aparece en las dos.
 
-Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**, y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer tipo de su columna `tipo` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
+**Semana adultos** — Reparto de lunes a domingo con los **cinco momentos del día**: desayuno, almuerzo,
+comida, merienda y cena. Son **35 huecos** por semana. Todos admiten dos platos, el 1º y el 2º, salvo el
+almuerzo de media mañana, que tiene uno solo. El segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
+
+Dentro de cada día, cada momento abre con su banda de color — melocotón el desayuno, verde el almuerzo,
+ámbar la comida, lila la merienda y azul la cena — y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer tipo de su columna `tipo` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
 
 *Generar semana* propone un reparto que:
 
-- respeta el momento de cada plato y no repite plato dentro de la semana;
+- respeta los momentos de cada plato y no repite plato dentro de la semana, **salvo en desayuno, almuerzo y
+  merienda**, donde repetir es lo normal: ahí manda la columna `repeticion` y un café con leche sale los siete días;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
 - y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
-- persigue estos objetivos, que salen de `datos/equilibrio.csv`. Se cuentan **veces por semana**, es decir comidas y no platos: una comida con lentejas y pollo suma una vez en legumbres y una en carne blanca, no dos veces en nada:
+- persigue estos objetivos, que salen de `datos/equilibrio.csv`. Se cuentan **veces por semana**, es decir
+  comidas y no platos: una comida con lentejas y pollo suma una vez en legumbres y una en carne blanca, no dos
+  veces en nada. Miden **los 35 huecos**, desayunos y meriendas incluidos:
 
 | Objetivo | Tipos que cuenta | Veces por semana |
 | --- | --- | --- |
-| Verduras | Verdura | 7–14 |
+| Verduras | Verdura | 8–16 |
+| Fruta | Fruta | 7–14 |
+| Lácteos | Lácteo, Queso | 7–14 |
+| Pan y cereales | Pan y cereales | 7–14 |
 | Patatas y tubérculos | Tubérculo | 2–5 |
 | Legumbres | Legumbre | 2–4 |
 | Arroz | Arroz | 2–4 |
@@ -61,20 +75,22 @@ Dentro de cada día, una banda ámbar abre la **comida** y una azul la **cena**,
 | Pescado azul | Pescado azul | 1–2 |
 | Carne blanca | Carne blanca | 2–4 |
 | Carne roja | Carne roja | 0–1 |
-| Embutido y fiambre | Embutido y fiambre | 0–1 |
-| Huevo | Huevo | 2 |
+| Embutido y fiambre | Embutido y fiambre | 0–3 |
+| Huevo | Huevo | 2–4 |
+| Fruto seco | Fruto seco | 0–4 |
 | Preparado o congelado | Preparado o congelado | 0–2 |
 | Fuera de casa | Fuera de casa | 0–2 |
 
-Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con 35 platos de adultos, de los que solo uno lleva pasta, pedir *2 a 4 comidas con pasta* deja ese objetivo siempre en rojo: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
+Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con un solo plato de pasta en el menú de adultos, pedir *2 a 4 comidas con pasta* deja ese objetivo en rojo de
+vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 Cualquier hueco se cambia a mano pulsando sobre él. El botón **Guardar** de la propia pestaña sube los cambios a GitHub sin pasar por el Histórico, y dice cuántos ficheros hay pendientes.
 
-**Semana niño** — **La misma estructura que la de adultos**: catorce huecos, comida y cena, dos platos cada uno. Que coma entre semana en la guardería no es un caso especial del programa, sino un plato más: **Menú guarde**, que el generador coloca en la comida de lunes a viernes. Es plato único, no tiene ingredientes y por tanto no suma nada a la compra, y su repetición es *nunca*, así que no aparece en ningún otro hueco por su cuenta.
+**Semana niño** — **La misma estructura que la de adultos**: treinta y cinco huecos, los cinco momentos del día. Que coma entre semana en la guardería no es un caso especial del programa, sino un plato más: **Menú guarde**, que el generador coloca en la comida de lunes a viernes. Es plato único, no tiene ingredientes y por tanto no suma nada a la compra, y su repetición es *nunca*, así que no aparece en ningún otro hueco por su cuenta.
 
 Si un día no va a la guardería, se sustituye ese Menú guarde por uno o dos platos normales, igual que en el menú de los adultos. No hay nada que habilitar.
 
-Su equilibrio sale de `equilibrio-nino.csv` y persigue otros objetivos: verdura 3-5, pescado 2-3, carne blanca 2-3, huevo 1-2, legumbre 1-2, congelados 1-2, arroz o pasta 1-2, y pescado azul y carne roja 0-2. La guardería lleva su propio contador, 0-5, separado del de comer fuera.
+Su equilibrio sale de `equilibrio-nino.csv` y persigue los mismos objetivos que el de adultos con valores algo más bajos: verduras 5-12, pan y cereales 5-12, legumbres 1-3, pescado y marisco 2-3, frutos secos 0-2 y embutido 0-2; fruta y lácteos van igual, 7-14. La guardería lleva su propio contador, 0-5, separado del de comer fuera.
 
 **Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden en que esas secciones aparecen en `ingredientes.csv`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, está en `platos.csv`. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en `compras.csv` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de `despensa.csv`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 

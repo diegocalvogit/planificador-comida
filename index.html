@@ -31,6 +31,12 @@
     --warn:#9A6A10;
     --warn-soft:#F7EBD2;
     --veil:rgba(19,30,45,.05);
+    /* Franjas de los cinco momentos del día */
+    --m-desayuno:#FBE7D6; --m-desayuno-ink:#A0561F;
+    --m-almuerzo:#E2EFDC; --m-almuerzo-ink:#3D7347;
+    --m-comida:#F7EBD2;   --m-comida-ink:#9A6A10;
+    --m-merienda:#EAE2F4; --m-merienda-ink:#64509C;
+    --m-cena:#DFE8F8;     --m-cena-ink:#1D3F79;
     --shadow:0 1px 2px rgba(19,30,45,.06), 0 8px 24px -16px rgba(19,30,45,.30);
     --radius:10px;
     /* Fondo por base del plato */
@@ -67,6 +73,11 @@
       --ok:#63C79A; --ok-soft:#14301F;
       --warn:#D9A64A; --warn-soft:#332714;
       --veil:rgba(255,255,255,.06);
+      --m-desayuno:#2F2016; --m-desayuno-ink:#E0A273;
+      --m-almuerzo:#17281B; --m-almuerzo-ink:#8CC79A;
+      --m-comida:#332714;   --m-comida-ink:#D9A64A;
+      --m-merienda:#231C33; --m-merienda-ink:#B5A3E0;
+      --m-cena:#1B2A43;     --m-cena-ink:#B3CBF4;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.8);
       --g-verdura:#1B2C1F; --g-tuberculo:#2A2419; --g-fruta:#33202A; --g-legumbre:#2F2A15;
       --g-arroz:#272319; --g-pasta:#2B2619; --g-cereal:#262119; --g-blanco:#14272C;
@@ -145,9 +156,11 @@
 
   .chip{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:2px 9px;font-size:12px;
     font-weight:600;white-space:nowrap;background:var(--surface-2);color:var(--ink-2)}
-  .chip-comida{background:var(--warn-soft);color:var(--warn)}
-  .chip-cena{background:var(--accent-soft);color:var(--accent-ink)}
-  .chip-ambos{background:var(--ok-soft);color:var(--ok)}
+  .chip-desayuno{background:var(--m-desayuno);color:var(--m-desayuno-ink)}
+  .chip-almuerzo{background:var(--m-almuerzo);color:var(--m-almuerzo-ink)}
+  .chip-comida{background:var(--m-comida);color:var(--m-comida-ink)}
+  .chip-merienda{background:var(--m-merienda);color:var(--m-merienda-ink)}
+  .chip-cena{background:var(--m-cena);color:var(--m-cena-ink)}
   .chip-ing{background:transparent;border:1px solid var(--line);color:var(--ink-2);font-weight:400;font-size:12px;padding:1px 8px}
   .chip-bajo{background:var(--ok-soft);color:var(--ok)}
   .chip-medio{background:var(--warn-soft);color:var(--warn)}
@@ -275,10 +288,16 @@
   .momento-head{display:flex;align-items:center;gap:7px;padding:5px 14px;border-top:1px solid var(--line);
     font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;font-weight:500}
   .momento-head::before{content:"";width:3px;height:11px;border-radius:2px;flex:none}
-  .momento-head.comida{background:var(--warn-soft);color:var(--warn)}
-  .momento-head.comida::before{background:var(--warn)}
-  .momento-head.cena{background:var(--accent-soft);color:var(--accent-ink)}
-  .momento-head.cena::before{background:var(--accent)}
+  .momento-head.desayuno{background:var(--m-desayuno);color:var(--m-desayuno-ink)}
+  .momento-head.desayuno::before{background:var(--m-desayuno-ink)}
+  .momento-head.almuerzo{background:var(--m-almuerzo);color:var(--m-almuerzo-ink)}
+  .momento-head.almuerzo::before{background:var(--m-almuerzo-ink)}
+  .momento-head.comida{background:var(--m-comida);color:var(--m-comida-ink)}
+  .momento-head.comida::before{background:var(--m-comida-ink)}
+  .momento-head.merienda{background:var(--m-merienda);color:var(--m-merienda-ink)}
+  .momento-head.merienda::before{background:var(--m-merienda-ink)}
+  .momento-head.cena{background:var(--m-cena);color:var(--m-cena-ink)}
+  .momento-head.cena::before{background:var(--m-cena-ink)}
 
   .slot{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
     border-top:1px solid var(--line);background-color:var(--surface);padding:10px 14px;cursor:pointer;min-height:56px}
@@ -471,6 +490,7 @@
 
 <main>
   <section id="panel-platos" role="tabpanel" aria-labelledby="tab-platos" hidden></section>
+  <section id="panel-desayunos" role="tabpanel" aria-labelledby="tab-desayunos" hidden></section>
   <section id="panel-semana-adultos" role="tabpanel" aria-labelledby="tab-semana-adultos"></section>
   <section id="panel-semana-nino" role="tabpanel" aria-labelledby="tab-semana-nino" hidden></section>
 
@@ -552,48 +572,70 @@ Lentejas con verduras y pollo;si;si;Cocinadas con zanahoria, calabacín, patata,
 Judías blancas con verduras y gambas;si;no;Guiso suave de judías blancas con marisco y vegetales.;Legumbre|Verdura|Marisco;comida;medio;media;si;judías blancas cocidas|gambas|cebolla|pimiento verde|zanahoria|tomate triturado|ajo
 Arroz con huevo y carne;si;si;Plato combinado de arroz, huevo a la plancha y carne.;Arroz|Huevo|Carne roja;comida;medio;alta;si;arroz|huevos|filetes de ternera|tomate frito|aceite de oliva
 Ensalada de garbanzos;si;no;Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.;Legumbre|Tubérculo|Verdura|Pescado azul|Huevo;comida;medio;media;si;garbanzos cocidos|patata|zanahoria|atún en conserva|huevos|mayonesa
-Gulas salteadas con gambas y ajo;si;si;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;ambos;bajo;media;no;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
-Pimientos rellenos de bacalao y gambas;si;no;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;ambos;alto;baja;si;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
+Gulas salteadas con gambas y ajo;si;si;Servidas solas, sobre una cama de patatas paja o en un revuelto.;Marisco;comida|cena;bajo;media;no;gulas|gambas|ajo|guindilla|aceite de oliva|patatas paja
+Pimientos rellenos de bacalao y gambas;si;no;Acompañados de una salsa ligera de pimientos o tomate.;Verdura|Pescado blanco|Marisco;comida|cena;alto;baja;si;pimientos del piquillo|bacalao|gambas|cebolla|nata para cocinar|tomate triturado|harina
 Sepia a la plancha con ajo y perejil;si;no;Acompañada de tomate con mozzarella.;Marisco|Verdura|Queso;cena;bajo;media;si;sepia|ajo|perejil|aceite de oliva|tomate|mozzarella
 Tostas de tacos de salmón;si;no;Tostadas con tacos de salmón fresco o ahumado.;Pescado azul|Pan y cereales|Queso;cena;bajo;media;no;pan para tostas|salmón ahumado|queso crema|limón|eneldo
 Gambas al ajillo tradicionales;si;no;Gambas salteadas con ajo y guindilla.;Marisco|Pan y cereales;cena;bajo;baja;no;gambas|ajo|guindilla|aceite de oliva|perejil|pan
-Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;ambos;medio;alta;si;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
+Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.;Carne blanca|Verdura|Pan y cereales;comida|cena;medio;alta;si;tortillas de trigo|pechuga de pollo|pimiento rojo|pimiento verde|cebolla|especias para fajitas
 Fajitas marineras;si;no;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
 Tomate con mozzarella y aceite de oliva;si;no;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;tomate|mozzarella|aceite de oliva|albahaca
 Fajitas de pavo, queso, lechuga y tomate;si;no;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
 Pechugas de pollo a la plancha;si;no;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
-Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;ambos;medio;media;si;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
-Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;ambos;medio;media;si;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
-Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;ambos;medio;alta;si;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
+Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;comida|cena;medio;media;si;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
+Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;comida|cena;medio;media;si;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
+Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;comida|cena;medio;alta;si;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
 Revuelto de gulas, gambas y huevo;si;si;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevos|gulas|gambas|ajo|aceite de oliva|perejil
 Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;ambos;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
-Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;ambos;bajo;nunca;si;
-Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;ambos;medio;alta;no;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
+Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;comida|cena;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;comida|cena;bajo;nunca;si;
+Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;comida|cena;medio;alta;no;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
-Puré o crema de verduras;si;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;ambos;medio;alta;no;zanahoria|patata|puerro|calabacín|aceite de oliva
-Puré de verduras con pescado;si;si;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;ambos;medio;alta;si;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
-Puré de verduras con carne;si;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;ambos;medio;alta;si;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
-Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;empanadillas congeladas
-Croquetas congeladas;si;si;Al horno o en freidora de aire.;Preparado o congelado;ambos;bajo;media;no;croquetas congeladas
-Sopa de pollo;si;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;ambos;bajo;alta;no;caldo de pollo|fideos
-Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;ambos;bajo;siempre;no;huevos|patata|aceite de oliva
-Guisantes con jamón;si;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;ambos;bajo;media;no;guisantes|jamón cocido|aceite de oliva
-Calamares;si;si;Anillas a la plancha o rebozadas.;Marisco;ambos;bajo;media;no;calamares|harina|aceite de oliva
-Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;ambos;bajo;media;si;hamburguesa de pollo|pan de hamburguesa|tomate
-Macarrones con salchichas;si;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;ambos;bajo;alta;si;macarrones|salchichas|tomate frito|queso rallado
-Rollitos de la Yaya;si;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;ambos;bajo;media;no;jamón cocido|queso en lonchas
-Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;ambos;medio;alta;si;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Puré o crema de verduras;si;si;Zanahoria, patata, puerro y calabacín triturados.;Verdura|Tubérculo;comida|cena;medio;alta;no;zanahoria|patata|puerro|calabacín|aceite de oliva
+Puré de verduras con pescado;si;si;La misma base de verduras con merluza.;Verdura|Tubérculo|Pescado blanco;comida|cena;medio;alta;si;zanahoria|patata|puerro|calabacín|merluza|aceite de oliva
+Puré de verduras con carne;si;si;La misma base de verduras con pollo.;Verdura|Tubérculo|Carne blanca;comida|cena;medio;alta;si;zanahoria|patata|puerro|calabacín|pechuga de pollo|aceite de oliva
+Empanadillas congeladas;no;si;Al horno o en freidora de aire.;Preparado o congelado;comida|cena;bajo;media;no;empanadillas congeladas
+Croquetas congeladas;si;si;Al horno o en freidora de aire.;Preparado o congelado;comida|cena;bajo;media;no;croquetas congeladas
+Sopa de pollo;si;si;Brick de caldo con fideos finos.;Carne blanca|Pasta;comida|cena;bajo;alta;no;caldo de pollo|fideos
+Tortilla;no;si;Tortilla de patata, jugosa.;Huevo|Tubérculo;comida|cena;bajo;siempre;no;huevos|patata|aceite de oliva
+Guisantes con jamón;si;si;Guisantes salteados con taquitos de jamón.;Legumbre|Embutido y fiambre;comida|cena;bajo;media;no;guisantes|jamón cocido|aceite de oliva
+Calamares;si;si;Anillas a la plancha o rebozadas.;Marisco;comida|cena;bajo;media;no;calamares|harina|aceite de oliva
+Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y cereales;comida|cena;bajo;media;si;hamburguesa de pollo|pan de hamburguesa|tomate
+Macarrones con salchichas;si;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;comida|cena;bajo;alta;si;macarrones|salchichas|tomate frito|queso rallado
+Rollitos de la Yaya;si;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;comida|cena;bajo;media;no;jamón cocido|queso en lonchas
+Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;comida|cena;medio;alta;si;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
 Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Guardería;comida;bajo;nunca;si;
-Lomo con queso;si;si;Sin descripción.;Carne roja|Queso;ambos;bajo;media;no;lomo de cerdo|queso en lonchas
-Queso fresco;si;si;Sin descripción.;Queso;ambos;medio;media;no;queso fresco
-Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;ambos;medio;media;no;arroz|huevos
-Berenjenas rellenas;si;si;Sin descripción.;Verdura|Carne blanca|Queso;ambos;alto;baja;no;berenjena|carne picada de pollo|tomate frito|queso rallado|cebolla
-Brocoli;si;si;Sin descripción.;Verdura;ambos;medio;baja;no;brócoli|aceite de oliva
-Nuggets de pollo conjelados;si;si;Sin descripción.;Carne blanca|Preparado o congelado;ambos;bajo;media;no;nuggets de pollo
-Melón con Jamón;si;si;Sin descripción.;Carne roja;ambos;bajo;baja;no;jamón serrano
-Patatas fritas;si;si;Guarnición de patatas fritas;Tubérculo;ambos;medio;media;no;patata
-Ensalada preparada;si;si;Sin descripción.;Verdura|Carne blanca;ambos;bajo;media;no;
+Lomo con queso;si;si;Sin descripción.;Carne roja|Queso;comida|cena;bajo;media;no;lomo de cerdo|queso en lonchas
+Queso fresco;si;si;Sin descripción.;Queso;comida|cena;medio;media;no;queso fresco
+Niguiri de tortilla;si;si;Sin descripción.;Arroz|Huevo;comida|cena;medio;media;no;arroz|huevos
+Berenjenas rellenas;si;si;Sin descripción.;Verdura|Carne blanca|Queso;comida|cena;alto;baja;no;berenjena|carne picada de pollo|tomate frito|queso rallado|cebolla
+Brocoli;si;si;Sin descripción.;Verdura;comida|cena;medio;baja;no;brócoli|aceite de oliva
+Nuggets de pollo conjelados;si;si;Sin descripción.;Carne blanca|Preparado o congelado;comida|cena;bajo;media;no;nuggets de pollo
+Melón con Jamón;si;si;Sin descripción.;Carne roja;comida|cena;bajo;baja;no;jamón serrano
+Patatas fritas;si;si;Guarnición de patatas fritas;Tubérculo;comida|cena;medio;media;no;patata
+Ensalada preparada;si;si;Sin descripción.;Verdura|Carne blanca;comida|cena;bajo;media;no;
+Tostada de pan integral con tomate y aceite;si;si;El desayuno de siempre, con pan integral.;Pan y cereales|Verdura|Grasa saludable;desayuno;bajo;siempre;no;pan integral|tomate|aceite de oliva
+Tostada con aceite y jamón serrano;si;no;Pan integral con un hilo de aceite y jamón.;Pan y cereales|Embutido y fiambre|Grasa saludable;desayuno;bajo;alta;no;pan integral|aceite de oliva|jamón serrano
+Café con leche;si;no;Café solo o cortado, según el día.;Lácteo;desayuno;bajo;siempre;no;leche|café
+Vaso de leche con cacao;no;si;Leche templada con una cucharada de cacao.;Lácteo;desayuno|merienda;bajo;siempre;no;leche|cacao soluble
+Yogur natural con fruta;si;si;Yogur sin azucarar con fruta troceada.;Lácteo|Fruta;desayuno|almuerzo|merienda;bajo;alta;si;yogur natural|plátano
+Cereales integrales con leche;si;si;Copos integrales sin azúcares añadidos.;Pan y cereales|Lácteo;desayuno;bajo;alta;si;cereales integrales|leche
+Avena con leche y plátano;si;si;Copos de avena remojados, con plátano en rodajas.;Pan y cereales|Lácteo|Fruta;desayuno;bajo;media;si;copos de avena|leche|plátano
+Tostada con queso fresco y nueces;si;si;Pan integral con queso fresco y un puñado de nueces.;Pan y cereales|Queso|Fruto seco;desayuno|merienda;bajo;media;no;pan integral|queso fresco|nueces
+Huevos revueltos con tostada;si;si;Revuelto suave con pan integral.;Huevo|Pan y cereales;desayuno;bajo;baja;si;huevos|pan integral|aceite de oliva
+Bizcocho casero de yogur;si;si;El de toda la vida, para el finde.;Pan y cereales|Lácteo;desayuno|merienda;alto;baja;no;harina|huevos|yogur natural|aceite de oliva|azúcar
+Zumo de naranja natural;si;si;Recién exprimido.;Fruta;desayuno|almuerzo;bajo;media;no;naranja
+Fruta de temporada;si;si;Una pieza entera, lo que haya.;Fruta;desayuno|almuerzo|merienda;bajo;siempre;si;manzana
+Puñado de frutos secos;si;no;Almendras o nueces sin sal.;Fruto seco;almuerzo|merienda;bajo;alta;si;almendras
+Yogur bebible;no;si;Para llevar, sin cuchara.;Lácteo;almuerzo|merienda;bajo;media;si;yogur bebible
+Mini bocadillo de pavo;si;si;Pan pequeño con pechuga de pavo.;Pan y cereales|Embutido y fiambre;almuerzo|merienda;bajo;media;si;pan|pechuga de pavo en lonchas
+Tortitas de maíz con queso;si;si;Crujientes, con una loncha de queso.;Pan y cereales|Queso;almuerzo|merienda;bajo;media;si;tortitas de maíz|queso en lonchas
+Bocadillo de jamón serrano;si;no;Pan con tomate y jamón.;Pan y cereales|Embutido y fiambre|Verdura;merienda;bajo;media;si;pan|jamón serrano|tomate
+Batido de plátano y leche;si;si;Batido casero, sin azúcar añadido.;Lácteo|Fruta;merienda;bajo;media;si;leche|plátano
+Macedonia de frutas;si;si;Varias frutas troceadas.;Fruta;almuerzo|merienda;bajo;media;si;manzana|plátano|naranja|kiwi
+Galletas integrales con leche;no;si;Un par de galletas mojadas en leche.;Pan y cereales|Lácteo;merienda;bajo;baja;si;galletas integrales|leche
+Yogur griego con miel y nueces;si;no;Yogur espeso con miel y nueces picadas.;Lácteo|Fruto seco;merienda;bajo;baja;si;yogur griego|miel|nueces
+Pan con chocolate;no;si;Para los días de capricho.;Pan y cereales;merienda;bajo;baja;si;pan|crema de cacao
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -609,13 +651,17 @@ eneldo;Frutería y verdulería
 espárragos trigueros;Frutería y verdulería
 guisantes;Frutería y verdulería
 huevo;Frutería y verdulería
+kiwi;Frutería y verdulería
 lechuga;Frutería y verdulería
 limón;Frutería y verdulería
+manzana;Frutería y verdulería
 melón;Frutería y verdulería
+naranja;Frutería y verdulería
 patata;Frutería y verdulería
 perejil;Frutería y verdulería
 pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
+plátano;Frutería y verdulería
 puerro;Frutería y verdulería
 sopa;Frutería y verdulería
 tomate;Frutería y verdulería
@@ -641,6 +687,7 @@ salmón preparado;Carnicería y pescadería
 sepia;Carnicería y pescadería
 solomillo de cerdo;Carnicería y pescadería
 huevos;Huevos, lácteos y refrigerados
+leche;Huevos, lácteos y refrigerados
 mozzarella;Huevos, lácteos y refrigerados
 nata para cocinar;Huevos, lácteos y refrigerados
 queso crema;Huevos, lácteos y refrigerados
@@ -648,16 +695,27 @@ queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 queso rallado;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
+yogur bebible;Huevos, lácteos y refrigerados
+yogur griego;Huevos, lácteos y refrigerados
+yogur natural;Huevos, lácteos y refrigerados
 croquetas congeladas;Congelados
 empanadillas congeladas;Congelados
 aceite de oliva;Despensa
+almendras;Despensa
 arroz;Despensa
 atún en conserva;Despensa
 azafrán;Despensa
+azúcar;Despensa
+cacao soluble;Despensa
+café;Despensa
 caldo de pescado;Despensa
 caldo de pollo;Despensa
+cereales integrales;Despensa
+copos de avena;Despensa
+crema de cacao;Despensa
 especias para fajitas;Despensa
 fideos;Despensa
+galletas integrales;Despensa
 garbanzos cocidos;Despensa
 guindilla;Despensa
 harina;Despensa
@@ -665,6 +723,8 @@ judías blancas cocidas;Despensa
 lentejas;Despensa
 macarrones;Despensa
 mayonesa;Despensa
+miel;Despensa
+nueces;Despensa
 patatas paja;Despensa
 pimentón;Despensa
 pimientos del piquillo;Despensa
@@ -672,13 +732,18 @@ salsa de soja;Despensa
 tomate frito;Despensa
 tomate triturado;Despensa
 tortillas de trigo;Despensa
+tortitas de maíz;Despensa
 pan;Panadería
 pan de hamburguesa;Panadería
+pan integral;Panadería
 pan para tostas;Panadería
 </script>
 <script type="text/csv" id="csv-equilibrio">
 objetivo;tipos;minimo;maximo
-Verduras;Verdura;7;14
+Verduras;Verdura;8;16
+Fruta;Fruta;7;14
+Lácteos;Lácteo|Queso;7;14
+Pan y cereales;Pan y cereales;7;14
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;2;4
 Arroz;Arroz;2;4
@@ -687,14 +752,18 @@ Pescado y marisco;Pescado blanco|Pescado azul|Marisco;3;4
 Pescado azul;Pescado azul;1;2
 Carne blanca;Carne blanca;2;4
 Carne roja;Carne roja;0;1
-Embutido y fiambre;Embutido y fiambre;0;1
-Huevo;Huevo;2;2
+Embutido y fiambre;Embutido y fiambre;0;3
+Huevo;Huevo;2;4
+Fruto seco;Fruto seco;0;4
 Preparado o congelado;Preparado o congelado;0;2
 Fuera de casa;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-equilibrio-nino">
 objetivo;tipos;minimo;maximo
-Verduras;Verdura;5;10
+Verduras;Verdura;5;12
+Fruta;Fruta;7;14
+Lácteos;Lácteo|Queso;7;14
+Pan y cereales;Pan y cereales;5;12
 Patatas y tubérculos;Tubérculo;2;5
 Legumbres;Legumbre;1;3
 Arroz;Arroz;2;4
@@ -703,8 +772,9 @@ Pescado y marisco;Pescado blanco|Pescado azul|Marisco;2;3
 Pescado azul;Pescado azul;0;2
 Carne blanca;Carne blanca;2;4
 Carne roja;Carne roja;0;1
-Embutido y fiambre;Embutido y fiambre;0;1
-Huevo;Huevo;2;3
+Embutido y fiambre;Embutido y fiambre;0;2
+Huevo;Huevo;2;4
+Fruto seco;Fruto seco;0;2
 Preparado o congelado;Preparado o congelado;0;2
 Guardería;Guardería;0;5
 Fuera de casa;Fuera de casa;0;2
@@ -896,10 +966,27 @@ fuera;Fuera de casa
   const DIAS = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
   const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
   const MESES_CORTOS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
-  const MOMENTOS = ["comida","cena"];
-  const MOMENTO_LBL = {comida:"Comida", cena:"Cena", ambos:"Ambos"};
-  // Cada comida y cada cena admite dos platos; el segundo no siempre hace falta.
-  const ORDENES = ["1","2"];
+  // Los cinco momentos del día, en el orden en que se comen. "platos" dice
+  // cuántos huecos tiene cada uno: el almuerzo de media mañana es uno solo.
+  const MOMENTOS = [
+    {id:"desayuno", lbl:"Desayuno", platos:2},
+    {id:"almuerzo", lbl:"Almuerzo", platos:1},
+    {id:"comida",   lbl:"Comida",   platos:2},
+    {id:"merienda", lbl:"Merienda", platos:2},
+    {id:"cena",     lbl:"Cena",     platos:2}
+  ];
+  const MOMENTO_LBL = {};
+  MOMENTOS.forEach(function(m){ MOMENTO_LBL[m.id] = m.lbl; });
+  const IDS_MOMENTO = MOMENTOS.map(function(m){ return m.id; });
+  // Desayuno, almuerzo y merienda se repiten de una semana a otra sin problema;
+  // comida y cena son las que conviene variar.
+  const LIGEROS = {desayuno:1, almuerzo:1, merienda:1};
+  function momento(id){ return MOMENTOS.filter(function(m){ return m.id === id; })[0]; }
+  function ordenesDe(id){
+    const m = momento(id), n = m ? m.platos : 2, salida = [];
+    for(let i = 1; i <= n; i++) salida.push(String(i));
+    return salida;
+  }
   const ORDEN_LBL = {"1":"1º", "2":"2º"};
   const DIA_MS = 86400000;
   const FINDE = {"sábado":1, "domingo":1};
@@ -916,6 +1003,11 @@ fuera;Fuera de casa
               dias:["lunes","martes","miércoles","jueves","viernes"]}}
   ];
   function perfil(id){ return PERFILES.filter(function(p){ return p.id === id; })[0]; }
+  // "de la comida", "del desayuno": el artículo cambia con el momento.
+  function deMomento(id){
+    const l = (MOMENTO_LBL[id] || id).toLowerCase();
+    return (id === "comida" || id === "cena" || id === "merienda" ? "de la " : "del ") + l;
+  }
 
   /* ============ Fechas ============ */
   function aDia(f){ return new Date(f.getFullYear(), f.getMonth(), f.getDate()); }
@@ -1124,7 +1216,7 @@ fuera;Fuera de casa
   function construir(){
     const si = function(v){ return /^(si|sí|1|true|x)$/i.test(v || ""); };
     PLATOS = (datos.platos || []).map(function(x){
-      return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:lista(x.tipo), m:x.momento,
+      return { orig:x.nombre, n:x.nombre, d:x.descripcion, t:lista(x.tipo), m:lista(x.momento),
                tiempo:x.tiempo || "medio", rep:x.repeticion || "media",
                unico: si(x.plato_unico), menus:{adultos: si(x.adultos), nino: si(x.nino)},
                i:lista(x.ingredientes) };
@@ -1221,6 +1313,24 @@ fuera;Fuera de casa
   }
   // El color del plato lo pone su primer tipo.
   function claveDe(tipo){ return CLAVE_TIPO[tipo] || ""; }
+
+  // El momento de un plato es una lista. Se admite lo que haya guardado el
+  // navegador de antes, cuando era una sola palabra y existía "ambos".
+  function momentosDe(p){
+    const v = p ? p.m : null;
+    if(!v) return [];
+    const crudo = Array.isArray(v) ? v : String(v).split("|");
+    const salida = [];
+    crudo.forEach(function(x){
+      const k = String(x).trim();
+      if(k === "ambos"){ salida.push("comida"); salida.push("cena"); }
+      else if(k) salida.push(k);
+    });
+    return salida.filter(function(x, i){
+      return MOMENTO_LBL[x] && salida.indexOf(x) === i;
+    });
+  }
+  function momentoTexto(p){ return momentosDe(p).map(function(m){ return MOMENTO_LBL[m]; }).join(" · "); }
   function base(p){ const t = tiposDe(p); return t.length ? claveDe(t[0]) : ""; }
   // Cuántas veces cubre un plato un objetivo: o una o ninguna.
   function cumple(p, obj){
@@ -1304,13 +1414,22 @@ fuera;Fuera de casa
   // Un "slot" es una comida o una cena; dentro caben dos platos, el 1º y el 2º.
   function slotsDe(){
     const salida = [];
-    DIAS.forEach(function(d){ MOMENTOS.forEach(function(m){ salida.push(d + "|" + m); }); });
+    DIAS.forEach(function(d){ MOMENTOS.forEach(function(m){ salida.push(d + "|" + m.id); }); });
     return salida;
   }
   function clavesDe(){
     const salida = [];
-    slotsDe().forEach(function(s){ ORDENES.forEach(function(o){ salida.push(s + "|" + o); }); });
+    slotsDe().forEach(function(x){
+      ordenesDe(x.split("|")[1]).forEach(function(o){ salida.push(x + "|" + o); });
+    });
     return salida;
+  }
+  // Los platos de un hueco, ya resueltos contra el repertorio del menú.
+  function platosDe(pid, h, slot){
+    return ordenesDe(slot.split("|")[1])
+      .map(function(o){ return h[slot + "|" + o]; })
+      .map(function(n){ return n ? platoEnSemana(pid, n) : null; })
+      .filter(Boolean);
   }
   // Se cuentan las comidas resueltas, no los platos: un plato único ya cubre la suya.
   function llenos(pid, id){
@@ -1386,12 +1505,25 @@ fuera;Fuera de casa
   }
 
   /* ============ Generador ============ */
-  function elegible(p, momento){ return p.m === momento || p.m === "ambos"; }
+  function elegible(p, mom){ return momentosDe(p).indexOf(mom) !== -1; }
 
   function generar(pid, id){
     const todos = platos(pid), metas = objetivos(pid), pf = perfil(pid);
     const h = {}, usados = {}, cuenta = {};
     metas.forEach(function(o){ cuenta[o.n] = 0; });
+
+    // El repaso recorre el reparto miles de veces: todo lo que no cambia se
+    // calcula aquí una vez y luego sólo se consulta.
+    const SLOTS = slotsDe(), CLAVES = clavesDe();
+    const ORD = {}, APTOS = {}, PORNOMBRE = {}, CUBRE = {};
+    SLOTS.forEach(function(x){ ORD[x] = ordenesDe(x.split("|")[1]); });
+    IDS_MOMENTO.forEach(function(m){
+      APTOS[m] = todos.filter(function(p){ return elegible(p, m); });
+    });
+    todos.forEach(function(p){
+      PORNOMBRE[p.n] = p;
+      CUBRE[p.n] = metas.map(function(o){ return cumple(p, o) ? 1 : 0; });
+    });
 
     // Lo que ya está decidido de antemano: el niño come entre semana en la guardería.
     const fijados = {};
@@ -1404,8 +1536,8 @@ fuera;Fuera de casa
         metas.forEach(function(o){ cuenta[o.n] += cumple(p, o); });
       });
     }
-    const orden = slotsDe().filter(function(x){ return !fijados[x]; })
-                           .sort(function(){ return Math.random() - 0.5; });
+    const orden = SLOTS.filter(function(x){ return !fijados[x]; })
+                       .sort(function(){ return Math.random() - 0.5; });
 
     function puntua(p, dia, momento){
       let punt = Math.random() * 0.9;
@@ -1419,10 +1551,12 @@ fuera;Fuera de casa
       if(p.tiempo === "alto") punt += FINDE[dia] ? 1 : (momento === "cena" ? -2 : -0.8);
       else if(p.tiempo === "medio" && !FINDE[dia] && momento === "cena") punt -= 0.4;
       // No repetir la misma base en la comida y la cena del mismo día.
-      const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida") + "|1"];
-      if(hermano){
-        const otro = plato(pid, hermano);
-        if(otro && base(otro) && base(otro) === base(p)) punt -= 3;
+      if(momento === "comida" || momento === "cena"){
+        const hermano = h[dia + "|" + (momento === "comida" ? "cena" : "comida") + "|1"];
+        if(hermano){
+          const otro = plato(pid, hermano);
+          if(otro && base(otro) && base(otro) === base(p)) punt -= 3;
+        }
       }
       return punt;
     }
@@ -1448,66 +1582,66 @@ fuera;Fuera de casa
 
     orden.forEach(function(slot){
       const partes = slot.split("|"), dia = partes[0], momento = partes[1];
-      const aptos = todos.filter(function(p){ return elegible(p, momento); });
+      const aptos = APTOS[momento] || [];
       if(!aptos.length) return;
 
-      // Primer plato: se prefiere no repetir, pero antes que dejar el hueco vacío se repite.
-      let cands = aptos.filter(function(p){ return !usados[p.n]; });
+      // Primer plato: se prefiere no repetir, pero antes que dejar el hueco vacío se
+      // repite. En desayunos, almuerzos y meriendas repetir es lo normal.
+      const vario = !LIGEROS[momento];
+      let cands = vario ? aptos.filter(function(p){ return !usados[p.n]; }) : aptos;
       const primero = elige(cands.length ? cands : aptos, dia, momento);
       if(!primero) return;
       apunta(slot, "1", primero);
 
       // Un plato único basta. Si no lo es, se le busca otro plato que tampoco lo sea.
-      if(primero.unico) return;
+      if(primero.unico || ordenesDe(momento).length < 2) return;
       const parejas = aptos.filter(function(p){ return !p.unico && p.n !== primero.n; });
       if(!parejas.length) return;
-      const libres = parejas.filter(function(p){ return !usados[p.n]; });
+      const libres = vario ? parejas.filter(function(p){ return !usados[p.n]; }) : parejas;
       const segundo = elige(libres.length ? libres : parejas, dia, momento);
       if(segundo) apunta(slot, "2", segundo);
     });
 
     // Colocar de una pasada deja objetivos fuera de rango: el reparto se repasa
     // cambiando platos sueltos mientras eso acerque la semana a los objetivos.
-    function cuentaDe(hh){
-      const c = {};
-      metas.forEach(function(o){ c[o.n] = 0; });
-      slotsDe().forEach(function(slot){
-        const dentro = ORDENES.map(function(o){ return hh[slot + "|" + o]; })
-                              .map(function(n){ return n ? plato(pid, n) : null; })
-                              .filter(Boolean);
-        if(!dentro.length) return;
-        metas.forEach(function(o){
-          if(dentro.some(function(p){ return cumple(p, o); })) c[o.n]++;
-        });
-      });
-      return c;
-    }
+    // Un objetivo cuenta una vez por comida, aunque lo cubran sus dos platos.
     function desvio(hh){
-      const c = cuentaDe(hh);
+      const c = new Array(metas.length).fill(0);
+      for(let si = 0; si < SLOTS.length; si++){
+        const slot = SLOTS[si], ords = ORD[slot], aquí = new Array(metas.length).fill(0);
+        for(let oi = 0; oi < ords.length; oi++){
+          const v = CUBRE[hh[slot + "|" + ords[oi]]];
+          if(!v) continue;
+          for(let i = 0; i < v.length; i++) if(v[i]) aquí[i] = 1;
+        }
+        for(let i = 0; i < c.length; i++) c[i] += aquí[i];
+      }
       let t = 0;
-      metas.forEach(function(o){
-        t += Math.max(0, o.min - c[o.n]) + Math.max(0, c[o.n] - o.max);
-      });
+      for(let i = 0; i < metas.length; i++){
+        t += Math.max(0, metas[i].min - c[i]) + Math.max(0, c[i] - metas[i].max);
+      }
       return t;
     }
     function repasa(){
       let mejor = desvio(h);
-      const claves = clavesDe().filter(function(k){ return h[k]; });
-      for(let vuelta = 0; vuelta < 400 && mejor > 0; vuelta++){
+      const claves = CLAVES.filter(function(k){ return h[k]; });
+      // Con 35 huecos y 17 objetivos hace falta rebuscar bastante más que antes.
+      const vueltas = Math.max(600, claves.length * 60);
+      for(let vuelta = 0; vuelta < vueltas && mejor > 0; vuelta++){
         const k = claves[Math.floor(Math.random() * claves.length)];
         if(!k) break;
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
         if(pf.relleno && fijados[slot] && orden === "1") continue;   // el menú de guarde no se toca
-        const actual = plato(pid, h[k]);
+        const actual = PORNOMBRE[h[k]];
         if(!actual) continue;
         const hermano = h[slot + "|" + (orden === "1" ? "2" : "1")];
         const enUso = {};
-        clavesDe().forEach(function(x){ if(h[x] && x !== k) enUso[h[x]] = 1; });
+        CLAVES.forEach(function(x){ if(h[x] && x !== k) enUso[h[x]] = 1; });
 
-        const cands = todos.filter(function(c){
-          if(c.n === actual.n || enUso[c.n] || c.n === hermano) return false;
-          if(!elegible(c, momento)) return false;
+        const cands = (APTOS[momento] || []).filter(function(c){
+          if(c.n === actual.n || c.n === hermano) return false;
+          if(enUso[c.n] && !LIGEROS[momento]) return false;
           // no cambiar la estructura: si había segundo plato, el primero sigue sin ser único
           return orden === "1" ? !!c.unico === !!actual.unico : !c.unico;
         });
@@ -1528,6 +1662,7 @@ fuera;Fuera de casa
   /* ============ Pestañas ============ */
   const PESTANAS = [
     {id:"platos",         lbl:"Platos"},
+    {id:"desayunos",      lbl:"Desayunos", quien:"y meriendas"},
     {id:"semana-adultos", lbl:"Semana", quien:"adultos"},
     {id:"semana-nino",    lbl:"Semana", quien:"niño"},
     {id:"compra",         lbl:"Compra"},
@@ -1556,54 +1691,88 @@ fuera;Fuera de casa
   }
 
   /* ============ Panel: platos ============ */
-  function montarPanelPlatos(){
-    const p = $("panel-platos");
+  // Dos pestañas comparten la misma tabla y el mismo datos/platos.csv; lo único
+  // que cambia es qué momentos del día enseña cada una.
+  const AMBITOS = [
+    {id:"platos", titulo:"Repertorio de platos", hoja:"Platos", nuevo:"Nuevo plato",
+     moms:["comida","cena"],
+     lead:"Las comidas y las cenas de casa, en una sola lista. Las casillas de cada fila dicen en qué " +
+          "menús entra: márcalas o desmárcalas ahí mismo. El resto se edita entero desde su botón Editar.",
+     vacio:"Ningún plato coincide con el filtro."},
+    {id:"desayunos", titulo:"Desayunos, almuerzos y meriendas", hoja:"Desayunos", nuevo:"Nuevo desayuno",
+     moms:["desayuno","almuerzo","merienda"],
+     lead:"Lo que se come fuera de la mesa grande: el desayuno, el almuerzo de media mañana y la merienda. " +
+          "Sale del mismo fichero que los platos, filtrado por su momento, y cuenta igual para el equilibrio de la semana.",
+     vacio:"Nada coincide con el filtro."}
+  ];
+  function ambito(id){ return AMBITOS.filter(function(a){ return a.id === id; })[0]; }
+  // Un plato cae en la pestaña si se come en alguno de sus momentos.
+  function delAmbito(a, p){
+    const l = momentosDe(p);
+    return a.moms.some(function(m){ return l.indexOf(m) !== -1; });
+  }
+
+  // El orden de cada tabla, al estilo de una hoja de cálculo.
+  const ORDEN = {};
+  AMBITOS.forEach(function(a){ ORDEN[a.id] = {col:0, asc:true, cols:[]}; });
+  function ordenarPor(a, i){
+    const o = ORDEN[a.id];
+    if(o.col === i) o.asc = !o.asc;
+    else { o.col = i; o.asc = true; }
+    pintarAmbito(a);
+  }
+
+  function montarPanelAmbito(a){
+    const p = $("panel-" + a.id);
+    const ide = function(b){ return b + "-" + a.id; };
+    const repinta = function(){ pintarAmbito(a); };
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", null, [
         el("div", {class:"eyebrow", text:"datos/platos.csv"}),
-        el("h2", {text:"Repertorio de platos"})
+        el("h2", {text:a.titulo})
       ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
-        el("button", {class:"btn", id:"excel-platos", onclick:exportarPlatos,
-                      title:"Descarga un .xlsx con los platos que se ven ahora, con sus filtros y su orden",
+        el("button", {class:"btn", id:ide("excel"), onclick:function(){ exportarPlatos(a); },
+                      title:"Descarga un .xlsx con lo que se ve ahora, con sus filtros y su orden",
                       text:"Exportar a Excel"}),
-        el("button", {class:"btn btn-primary", id:"nuevo-plato",
-                      onclick:function(){ abrirEditor(null); }, text:"Nuevo plato"})
+        el("button", {class:"btn btn-primary", id:ide("nuevo"),
+                      onclick:function(){ abrirEditor(null, a); }, text:a.nuevo})
       ])
     ]));
-    p.appendChild(el("p", {class:"lead", text:
-      "Todos los platos de casa en una sola lista. Las casillas de cada fila dicen en qué menús entra: " +
-      "márcalas o desmárcalas ahí mismo. El resto se edita entero desde su botón Editar."}));
+    p.appendChild(el("p", {class:"lead", text:a.lead}));
 
-    function filtro(id, etiqueta, opciones){
-      const sel = el("select", {id:id, oninput:pintarPlatos});
+    function filtro(base, etiqueta, opciones){
+      const sel = el("select", {id:ide(base), oninput:repinta});
       opciones.forEach(function(o){ sel.appendChild(el("option", {value:o[0], text:o[1]})); });
-      return el("div", {class:"field"}, [el("label", {for:id, text:etiqueta}), sel]);
+      return el("div", {class:"field"}, [el("label", {for:ide(base), text:etiqueta}), sel]);
     }
-    const buscar = el("input", {type:"search", id:"f-buscar", placeholder:"Plato o ingrediente…",
-                                oninput:pintarPlatos});
-    const fTipo = el("select", {id:"f-tipo", oninput:pintarPlatos}, [
+    const buscar = el("input", {type:"search", id:ide("f-buscar"), placeholder:"Plato o ingrediente…",
+                                oninput:repinta});
+    const fTipo = el("select", {id:ide("f-tipo"), oninput:repinta}, [
       el("option", {value:"", text:"Todos"})
     ]);
     TIPOS.forEach(function(t){ fTipo.appendChild(el("option", {value:t, text:t})); });
 
+    const opMom = [["","Todos"]].concat(a.moms.map(function(m){ return [m, MOMENTO_LBL[m]]; }));
     p.appendChild(el("div", {class:"filters"}, [
-      el("div", {class:"field grow"}, [el("label", {for:"f-buscar", text:"Buscar"}), buscar]),
+      el("div", {class:"field grow"}, [el("label", {for:ide("f-buscar"), text:"Buscar"}), buscar]),
       filtro("f-menu", "Menú", [["","Todos"],["adultos","Adultos"],["nino","Niño"],
                                 ["ambos","En los dos"],["ninguno","En ninguno"]]),
-      filtro("f-momento", "Momento", [["","Todos"],["comida","Comida"],["cena","Cena"],["ambos","Ambos"]]),
+      filtro("f-momento", "Momento", opMom),
       filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
       filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"],["nunca","Nunca"]]),
       filtro("f-unico", "Plato único", [["","Todos"],["si","Sí"],["no","No"]]),
-      el("div", {class:"field"}, [el("label", {for:"f-tipo", text:"Tipo de alimento"}), fTipo])
+      el("div", {class:"field"}, [el("label", {for:ide("f-tipo"), text:"Tipo de alimento"}), fTipo])
     ]));
 
     const COLS = [
       {t:"Plato",            k:function(p){ return p.n.toLowerCase(); }},
       {t:"Menús",            k:function(p){ return (p.menus && p.menus.adultos ? "1" : "0") + (p.menus && p.menus.nino ? "1" : "0"); }},
       {t:"Tipo de alimento", k:function(p){ return tipoTexto(p).toLowerCase(); }},
-      {t:"Momento",          k:function(p){ return ["comida","cena","ambos"].indexOf(p.m); }},
+      {t:"Momento",          k:function(p){
+         const l = momentosDe(p).map(function(m){ return IDS_MOMENTO.indexOf(m); });
+         return l.length ? Math.min.apply(null, l) : 99; }},
       {t:"Preparación",      k:function(p){ return ["bajo","medio","alto"].indexOf(p.tiempo); }},
       {t:"Repetición",       k:function(p){ return ["siempre","alta","media","baja","ocasional","nunca"].indexOf(p.rep); }},
       {t:"Plato único",      k:function(p){ return p.unico ? 1 : 0; }},
@@ -1612,17 +1781,17 @@ fuera;Fuera de casa
     const cabecera = COLS.map(function(c, i){
       return el("th", {scope:"col", class:"orden-col", "data-col":String(i),
                        "aria-sort":"none", tabindex:"0",
-                       onclick:function(){ ordenarPor(i); },
-                       onkeydown:function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ordenarPor(i); } }}, [
+                       onclick:function(){ ordenarPor(a, i); },
+                       onkeydown:function(e){ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); ordenarPor(a, i); } }}, [
         el("span", {text:c.t}), el("span", {class:"flecha"})
       ]);
     });
-    ORDEN.cols = COLS;
+    ORDEN[a.id].cols = COLS;
     cabecera.push(el("th", {scope:"col", class:"col-acc"}));
     p.appendChild(el("div", {class:"table-wrap"}, [
       el("table", null, [
         el("thead", null, [el("tr", null, cabecera)]),
-        el("tbody", {id:"tbody-platos"})
+        el("tbody", {id:ide("tbody")})
       ])
     ]));
     p.appendChild(el("p", {class:"hint", style:"margin-top:12px", text:
@@ -1630,10 +1799,10 @@ fuera;Fuera de casa
   }
 
   // Las casillas que dicen en qué menús entra el plato.
-  function celdaMenus(p){
+  function celdaMenus(p, a){
     const caja = el("div", {class:"menus"});
     PERFILES.forEach(function(pf){
-      const cb = el("input", {type:"checkbox", id:"m-" + pf.id + "-" + (p.uid || p.orig),
+      const cb = el("input", {type:"checkbox", id:"m-" + a.id + "-" + pf.id + "-" + (p.uid || p.orig),
                               "aria-label":p.n + " en el menú " + pf.quien});
       cb.checked = !!(p.menus && p.menus[pf.id]);
       cb.addEventListener("change", function(){ marcarMenu(p, pf.id, cb.checked); });
@@ -1660,17 +1829,9 @@ fuera;Fuera de casa
     aviso("«" + p.n + "» " + (valor ? "entra en" : "sale de") + " el menú " + perfil(pid).quien);
   }
   function camposDe(p){
-    return { n:p.n, d:p.d, t:tiposDe(p), m:p.m, tiempo:p.tiempo, rep:p.rep, unico:!!p.unico,
+    return { n:p.n, d:p.d, t:tiposDe(p), m:momentosDe(p), tiempo:p.tiempo, rep:p.rep, unico:!!p.unico,
              menus:{adultos:!!(p.menus && p.menus.adultos), nino:!!(p.menus && p.menus.nino)},
              i:p.i.slice() };
-  }
-
-  // Orden de la tabla de platos, al estilo de una hoja de cálculo.
-  const ORDEN = {col:0, asc:true, cols:[]};
-  function ordenarPor(i){
-    if(ORDEN.col === i) ORDEN.asc = !ORDEN.asc;
-    else { ORDEN.col = i; ORDEN.asc = true; }
-    pintarPlatos();
   }
 
   function celdaTipos(p){
@@ -1681,18 +1842,19 @@ fuera;Fuera de casa
 
   // Lo mismo que se ve en la tabla, filtrado y ordenado. Lo usa también el
   // exportador, para que el Excel salga con lo que tienes delante.
-  function platosFiltrados(){
-    const q = $("f-buscar").value.trim().toLowerCase();
-    const mm = $("f-menu").value, m = $("f-momento").value;
-    const ti = $("f-tiempo").value, re2 = $("f-repeticion").value;
-    const un = $("f-unico").value, tp = $("f-tipo").value;
-    const filas = repertorio().filter(function(p){
+  function platosFiltrados(a){
+    const ide = function(b){ return $(b + "-" + a.id); };
+    const q = ide("f-buscar").value.trim().toLowerCase();
+    const mm = ide("f-menu").value, m = ide("f-momento").value;
+    const ti = ide("f-tiempo").value, re2 = ide("f-repeticion").value;
+    const un = ide("f-unico").value, tp = ide("f-tipo").value;
+    const filas = repertorio().filter(function(p){ return delAmbito(a, p); }).filter(function(p){
       const en = p.menus || {};
       if(mm === "adultos" && !en.adultos) return false;
       if(mm === "nino" && !en.nino) return false;
       if(mm === "ambos" && !(en.adultos && en.nino)) return false;
       if(mm === "ninguno" && (en.adultos || en.nino)) return false;
-      if(m && p.m !== m) return false;
+      if(m && momentosDe(p).indexOf(m) === -1) return false;
       if(ti && p.tiempo !== ti) return false;
       if(re2 && p.rep !== re2) return false;
       if(un && (un === "si") !== !!p.unico) return false;
@@ -1701,30 +1863,33 @@ fuera;Fuera de casa
       return true;
     });
 
-    const col = ORDEN.cols[ORDEN.col];
+    const o = ORDEN[a.id], col = o.cols[o.col];
     if(col){
-      filas.sort(function(a, b){
-        const x = col.k(a), y = col.k(b);
-        const c = x < y ? -1 : (x > y ? 1 : a.n.localeCompare(b.n, "es"));
-        return ORDEN.asc ? c : -c;
+      filas.sort(function(x, y){
+        const vx = col.k(x), vy = col.k(y);
+        const c = vx < vy ? -1 : (vx > vy ? 1 : x.n.localeCompare(y.n, "es"));
+        return o.asc ? c : -c;
       });
     }
     return filas;
   }
 
-  function pintarPlatos(){
-    const cuerpo = $("tbody-platos"), filas = platosFiltrados();
-    const ths = document.querySelectorAll("#panel-platos th.orden-col");
+  function pintarPlatos(){ AMBITOS.forEach(pintarAmbito); }
+
+  function pintarAmbito(a){
+    const cuerpo = $("tbody-" + a.id), filas = platosFiltrados(a);
+    const o = ORDEN[a.id];
+    const ths = document.querySelectorAll("#panel-" + a.id + " th.orden-col");
     for(let i = 0; i < ths.length; i++){
-      const activa = i === ORDEN.col;
-      ths[i].setAttribute("aria-sort", activa ? (ORDEN.asc ? "ascending" : "descending") : "none");
-      ths[i].querySelector(".flecha").textContent = activa ? (ORDEN.asc ? "▲" : "▼") : "";
+      const activa = i === o.col;
+      ths[i].setAttribute("aria-sort", activa ? (o.asc ? "ascending" : "descending") : "none");
+      ths[i].querySelector(".flecha").textContent = activa ? (o.asc ? "▲" : "▼") : "";
     }
 
     cuerpo.textContent = "";
     if(!filas.length){
       cuerpo.appendChild(el("tr", null, [
-        el("td", {colspan:"9", style:"padding:26px 14px;color:var(--ink-3)", text:"Ningún plato coincide con el filtro."})
+        el("td", {colspan:"9", style:"padding:26px 14px;color:var(--ink-3)", text:a.vacio})
       ]));
     }
     filas.forEach(function(p){
@@ -1734,12 +1899,16 @@ fuera;Fuera de casa
       }
       const ings = el("div", {class:"ings"});
       p.i.forEach(function(x){ ings.appendChild(el("span", {class:"chip chip-ing", text:x})); });
+      const moms = el("div", {class:"tipos"});
+      momentosDe(p).forEach(function(m){
+        moms.appendChild(el("span", {class:"chip chip-" + m, text:MOMENTO_LBL[m]}));
+      });
 
       cuerpo.appendChild(el("tr", null, [
         el("td", null, [nombre, el("div", {class:"dish-desc", text:p.d})]),
-        el("td", null, [celdaMenus(p)]),
+        el("td", null, [celdaMenus(p, a)]),
         el("td", null, [celdaTipos(p)]),
-        el("td", null, [el("span", {class:"chip chip-" + p.m, text:MOMENTO_LBL[p.m] || p.m})]),
+        el("td", null, [moms]),
         el("td", null, [el("span", {class:"chip chip-" + p.tiempo, text:mayus(p.tiempo)})]),
         el("td", null, [el("span", {class:"chip chip-" + p.rep, text:mayus(p.rep)})]),
         el("td", null, [el("span", {class:"chip " + (p.unico ? "chip-unico" : "chip-doble"),
@@ -1747,13 +1916,15 @@ fuera;Fuera de casa
         el("td", null, [ings]),
         el("td", {class:"col-acc"}, [
           el("button", {class:"btn btn-sm", text:"Editar", "aria-label":"Editar " + p.n,
-            onclick:function(){ abrirEditor(p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}); }})
+            onclick:function(){ abrirEditor(p.custom ? {tipo:"extra", uid:p.uid} : {tipo:"base", orig:p.orig}, a); }})
         ])
       ]));
     });
-    $("n-platos").textContent = String(repertorio().length);
-    const bx = $("excel-platos");
-    if(bx) bx.textContent = filas.length === repertorio().length
+
+    const total = repertorio().filter(function(p){ return delAmbito(a, p); }).length;
+    $("n-" + a.id).textContent = String(total);
+    const bx = $("excel-" + a.id);
+    if(bx) bx.textContent = filas.length === total
       ? "Exportar a Excel"
       : "Exportar a Excel (" + filas.length + ")";
   }
@@ -1901,9 +2072,9 @@ fuera;Fuera de casa
   }
 
   // Exporta lo que se está viendo: respeta los filtros y el orden de la tabla.
-  function exportarPlatos(){
-    const filas = platosFiltrados();
-    if(!filas.length){ aviso("No hay platos que exportar con esos filtros"); return; }
+  function exportarPlatos(a){
+    const filas = platosFiltrados(a);
+    if(!filas.length){ aviso("No hay nada que exportar con esos filtros"); return; }
     const cabecera = ["Plato","Adultos","Niño","Descripción","Tipo de alimento","Base",
                       "Momento","Preparación","Repetición","Plato único","Ingredientes","Nº ingredientes"];
     const anchos =   [38, 9, 8, 52, 34, 18, 11, 13, 12, 12, 60, 15];
@@ -1912,13 +2083,13 @@ fuera;Fuera de casa
               p.menus && p.menus.adultos ? "Sí" : "No",
               p.menus && p.menus.nino ? "Sí" : "No",
               p.d, tiposDe(p).join(" · "), tiposDe(p)[0] || "",
-              MOMENTO_LBL[p.m] || p.m, mayus(p.tiempo), mayus(p.rep),
+              momentoTexto(p), mayus(p.tiempo), mayus(p.rep),
               p.unico ? "Sí" : "No",
               p.i.join(", "), p.i.length];
     });
-    const bytes = aExcel(cabecera, datos, anchos, "Platos");
+    const bytes = aExcel(cabecera, datos, anchos, a.hoja);
     const hoy = iso(new Date());
-    descargarBinario("platos-" + hoy + ".xlsx", bytes,
+    descargarBinario(a.id + "-" + hoy + ".xlsx", bytes,
                      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     aviso("Exportados " + filas.length + " platos a Excel");
   }
@@ -2233,9 +2404,7 @@ fuera;Fuera de casa
     const metas = objetivos(s), cuenta = {};
     metas.forEach(function(o){ cuenta[o.n] = 0; });
     slotsDe().forEach(function(slot){
-      const dentro = ORDENES.map(function(o){ return h[slot + "|" + o]; })
-                            .map(function(n){ return n ? platoEnSemana(s, n) : null; })
-                            .filter(Boolean);
+      const dentro = platosDe(s, h, slot);
       if(!dentro.length) return;
       metas.forEach(function(o){
         if(dentro.some(function(p){ return cumple(p, o); })) cuenta[o.n]++;
@@ -2267,13 +2436,13 @@ fuera;Fuera de casa
 
       const card = el("article", {class:"day" + (iso(fecha) === hoy ? " hoy" : "")}, [el("header", null, cab)]);
 
-      MOMENTOS.forEach(function(momento){
-        card.appendChild(el("div", {class:"momento-head " + momento,
-                                    text:MOMENTO_LBL[momento]}));
+      MOMENTOS.forEach(function(mo){
+        const momento = mo.id;
+        card.appendChild(el("div", {class:"momento-head " + momento, text:mo.lbl}));
 
         const primero = h[dia + "|" + momento + "|1"];
         const pPrim = primero ? platoEnSemana(s, primero) : null;
-        ORDENES.forEach(function(o){
+        ordenesDe(momento).forEach(function(o){
           const clave = dia + "|" + momento + "|" + o;
           const p = h[clave] ? platoEnSemana(s, h[clave]) : null;
           const ajeno = !!(p && !(p.menus && p.menus[s]));
@@ -2283,7 +2452,7 @@ fuera;Fuera de casa
             const basta = pPrim && pPrim.unico;
             card.appendChild(el("button", {
               type:"button", class:"slot-add",
-              "aria-label":"Añadir segundo plato a la " + MOMENTO_LBL[momento].toLowerCase() + " del " + dia,
+              "aria-label":"Añadir segundo plato " + deMomento(momento) + " del " + dia,
               onclick:function(){ abrirSelector(s, dia, momento, o); }
             }, [
               el("span", {class:"orden", text:ORDEN_LBL[o]}),
@@ -2304,7 +2473,7 @@ fuera;Fuera de casa
           card.appendChild(el("button", {
             type:"button",
             class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) + (ajeno ? " ajeno" : ""),
-            "aria-label": ORDEN_LBL[o] + " plato de la " + MOMENTO_LBL[momento].toLowerCase() + " del " + dia +
+            "aria-label": ORDEN_LBL[o] + " plato " + deMomento(momento) + " del " + dia +
                           ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiarlo.",
             onclick:function(){ abrirSelector(s, dia, momento, o); }
           }, [
@@ -2455,7 +2624,8 @@ fuera;Fuera de casa
   }
 
   // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
-  function abrirEditor(ref){
+  // "a" es la pestaña desde la que se abre: decide el momento por defecto.
+  function abrirEditor(ref, a){
     cerrarEditor();
     const nuevo = !ref;
     let p = null;
@@ -2485,7 +2655,19 @@ fuera;Fuera de casa
         el("span", {class:"nm", text:t})
       ]));
     });
-    const eMom    = selectDe("e-momento", ["comida","cena","ambos"], p ? p.m : "ambos");
+    // El momento es una lista: un bizcocho vale para desayunar y para merendar.
+    const mActuales = p ? momentosDe(p) : (a && a.moms ? a.moms.slice(0, 1) : ["comida"]);
+    const momGrid = el("div", {class:"tipos-grid"});
+    MOMENTOS.forEach(function(mo){
+      const cb = el("input", {type:"checkbox", id:"e-m-" + mo.id, "aria-label":"Se come " + deMomento(mo.id)});
+      cb.checked = mActuales.indexOf(mo.id) !== -1;
+      cb.dataset.momento = mo.id;
+      momGrid.appendChild(el("label", {class:"tipo-row"}, [
+        cb,
+        el("span", {class:"sw", style:"background:var(--m-" + mo.id + ")"}),
+        el("span", {class:"nm", text:mo.lbl})
+      ]));
+    });
     const eMenus = {};
     const menusGrid = el("div", {class:"menus-grid"});
     PERFILES.forEach(function(pf){
@@ -2635,6 +2817,12 @@ fuera;Fuera de casa
           if(cb.checked) tiposMarcados.push(cb.dataset.tipo);
         });
         if(!tiposMarcados.length){ aviso("Marca al menos un tipo de alimento"); return; }
+
+        const momsMarcados = [];
+        momGrid.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
+          if(cb.checked) momsMarcados.push(cb.dataset.momento);
+        });
+        if(!momsMarcados.length){ aviso("Marca al menos un momento del día"); return; }
         // El primero de la lista es la base y decide el color.
         const radio = document.querySelector('input[name="e-base"]:checked');
         const baseSel = radio && tiposMarcados.indexOf(radio.value) !== -1 ? radio.value : tiposMarcados[0];
@@ -2642,7 +2830,7 @@ fuera;Fuera de casa
 
         const campos = {
           n:n, d: eDesc.value.trim() || "Sin descripción.", t: tiposOrdenados,
-          m: eMom.value, tiempo: eTiempo.value, rep: eRep.value, unico: eUnico.value === "si",
+          m: momsMarcados, tiempo: eTiempo.value, rep: eRep.value, unico: eUnico.value === "si",
           menus: menus, i: ings
         };
         if(nuevo){
@@ -2662,7 +2850,7 @@ fuera;Fuera de casa
       }})
     ]));
 
-    const cabeza = [el("h3", {text: nuevo ? "Nuevo plato" : "Editar plato"})];
+    const cabeza = [el("h3", {text: nuevo ? ((a && a.nuevo) || "Nuevo plato") : "Editar plato"})];
     if(!nuevo){
       cabeza.push(el("span", {
         class:"badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo")),
@@ -2687,7 +2875,11 @@ fuera;Fuera de casa
           ]),
           tGrid
         ]),
-        campo("Momento", eMom), campo("Preparación", eTiempo), campo("Repetición", eRep),
+        el("div", {class:"full"}, [
+          el("label", {class:"bloque-lbl", text:"Momentos en que se come"}),
+          momGrid
+        ]),
+        campo("Preparación", eTiempo), campo("Repetición", eRep),
         campo("Plato único", eUnico, true),
         el("div", {class:"full"}, [
           el("label", {class:"bloque-lbl", text:"Ingredientes"}),
@@ -2879,7 +3071,7 @@ fuera;Fuera de casa
         return { nombre:p.n,
                  adultos: p.menus && p.menus.adultos ? "si" : "no",
                  nino: p.menus && p.menus.nino ? "si" : "no",
-                 descripcion:p.d, tipo:tiposDe(p).join("|"), momento:p.m, tiempo:p.tiempo,
+                 descripcion:p.d, tipo:tiposDe(p).join("|"), momento:momentosDe(p).join("|"), tiempo:p.tiempo,
                  repeticion:p.rep, plato_unico: p.unico ? "si" : "no",
                  ingredientes:p.i.join("|") };
       }));
@@ -2890,8 +3082,9 @@ fuera;Fuera de casa
       const lunes = desdeIso(id), h = huecos(pid, id);
       const et = etiquetaSemana(lunes), fin = iso(sumaDias(lunes, 6));
       DIAS.forEach(function(dia){
-        MOMENTOS.forEach(function(momento){
-          ORDENES.forEach(function(orden){
+        MOMENTOS.forEach(function(mo){
+          const momento = mo.id;
+          ordenesDe(momento).forEach(function(orden){
             const p = h[dia + "|" + momento + "|" + orden];
             if(!p) return;
             filas.push({semana_id:id, etiqueta:et, inicio:id, fin:fin,
@@ -3281,7 +3474,7 @@ fuera;Fuera de casa
     construir();
     cargarEstado();
     montarPestanas();
-    montarPanelPlatos();
+    AMBITOS.forEach(montarPanelAmbito);
     montarPanelIngredientes();
     PERFILES.forEach(function(pf){
       montarPanelSemana(pf);

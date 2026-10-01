@@ -11,13 +11,17 @@ eneldo;Frutería y verdulería
 espárragos trigueros;Frutería y verdulería
 guisantes;Frutería y verdulería
 huevo;Frutería y verdulería
+kiwi;Frutería y verdulería
 lechuga;Frutería y verdulería
 limón;Frutería y verdulería
+manzana;Frutería y verdulería
 melón;Frutería y verdulería
+naranja;Frutería y verdulería
 patata;Frutería y verdulería
 perejil;Frutería y verdulería
 pimiento rojo;Frutería y verdulería
 pimiento verde;Frutería y verdulería
+plátano;Frutería y verdulería
 puerro;Frutería y verdulería
 sopa;Frutería y verdulería
 tomate;Frutería y verdulería
@@ -43,6 +47,7 @@ salmón preparado;Carnicería y pescadería
 sepia;Carnicería y pescadería
 solomillo de cerdo;Carnicería y pescadería
 huevos;Huevos, lácteos y refrigerados
+leche;Huevos, lácteos y refrigerados
 mozzarella;Huevos, lácteos y refrigerados
 nata para cocinar;Huevos, lácteos y refrigerados
 queso crema;Huevos, lácteos y refrigerados
@@ -50,16 +55,27 @@ queso en lonchas;Huevos, lácteos y refrigerados
 queso fresco;Huevos, lácteos y refrigerados
 queso rallado;Huevos, lácteos y refrigerados
 tortilla de patata y calabacín;Huevos, lácteos y refrigerados
+yogur bebible;Huevos, lácteos y refrigerados
+yogur griego;Huevos, lácteos y refrigerados
+yogur natural;Huevos, lácteos y refrigerados
 croquetas congeladas;Congelados
 empanadillas congeladas;Congelados
 aceite de oliva;Despensa
+almendras;Despensa
 arroz;Despensa
 atún en conserva;Despensa
 azafrán;Despensa
+azúcar;Despensa
+cacao soluble;Despensa
+café;Despensa
 caldo de pescado;Despensa
 caldo de pollo;Despensa
+cereales integrales;Despensa
+copos de avena;Despensa
+crema de cacao;Despensa
 especias para fajitas;Despensa
 fideos;Despensa
+galletas integrales;Despensa
 garbanzos cocidos;Despensa
 guindilla;Despensa
 harina;Despensa
@@ -67,6 +83,8 @@ judías blancas cocidas;Despensa
 lentejas;Despensa
 macarrones;Despensa
 mayonesa;Despensa
+miel;Despensa
+nueces;Despensa
 patatas paja;Despensa
 pimentón;Despensa
 pimientos del piquillo;Despensa
@@ -74,6 +92,8 @@ salsa de soja;Despensa
 tomate frito;Despensa
 tomate triturado;Despensa
 tortillas de trigo;Despensa
+tortitas de maíz;Despensa
 pan;Panadería
 pan de hamburguesa;Panadería
+pan integral;Panadería
 pan para tostas;Panadería
