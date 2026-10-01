@@ -607,6 +607,8 @@ Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y 
 Macarrones con salchichas;si;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;comida|cena;bajo;alta;si;macarrones|salchichas|tomate frito|queso rallado
 Rollitos de la Yaya;si;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;comida|cena;bajo;media;no;jamón cocido|queso en lonchas
 Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;comida|cena;medio;alta;si;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Desayuno guarde;no;si;Ese día desayuna en la guardería: no entra en la lista de la compra.;Guardería;desayuno;bajo;nunca;si;
+Almuerzo guarde;no;si;El almuerzo de media mañana es el de la guardería: no entra en la lista de la compra.;Guardería;almuerzo;bajo;nunca;si;
 Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Guardería;comida;bajo;nunca;si;
 Lomo con queso;si;si;Sin descripción.;Carne roja|Queso;comida|cena;bajo;media;no;lomo de cerdo|queso en lonchas
 Queso fresco;si;si;Sin descripción.;Queso;comida|cena;medio;media;no;queso fresco
@@ -775,7 +777,7 @@ Embutido y fiambre;Embutido y fiambre;0;2
 Huevo;Huevo;2;4
 Fruto seco;Fruto seco;0;2
 Preparado o congelado;Preparado o congelado;0;2
-Guardería;Guardería;0;5
+Guardería;Guardería;0;15
 Fuera de casa;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
@@ -1105,8 +1107,13 @@ fuera;Fuera de casa
      semanas:"semanas", equilibrio:"equilibrio"},
     {id:"nino", lbl:"Niño", quien:"del niño",
      semanas:"semanas_nino", equilibrio:"equilibrio_nino",
-     relleno:{plato:"Menú guarde", momento:"comida",
-              dias:["lunes","martes","miércoles","jueves","viernes"]}}
+     // Lo que cubre la guardería de lunes a viernes. En la semana "corta" solo
+     // come allí; en la "larga" desayuna y almuerza allí también.
+     guarde:{dias:["lunes","martes","miércoles","jueves","viernes"],
+             corto:[{plato:"Menú guarde", momento:"comida"}],
+             largo:[{plato:"Desayuno guarde", momento:"desayuno"},
+                    {plato:"Almuerzo guarde", momento:"almuerzo"},
+                    {plato:"Menú guarde",     momento:"comida"}]}}
   ];
   function perfil(id){ return PERFILES.filter(function(p){ return p.id === id; })[0]; }
   // "de la comida", "del desayuno": el artículo cambia con el momento.
@@ -1613,7 +1620,7 @@ fuera;Fuera de casa
   /* ============ Generador ============ */
   function elegible(p, mom){ return momentosDe(p).indexOf(mom) !== -1; }
 
-  function generar(pid, id){
+  function generar(pid, id, modo){
     const todos = platos(pid), metas = objetivos(pid), pf = perfil(pid);
     const h = {}, usados = {}, cuenta = {};
     metas.forEach(function(o){ cuenta[o.n] = 0; });
@@ -1631,15 +1638,18 @@ fuera;Fuera de casa
       CUBRE[p.n] = metas.map(function(o){ return cumple(p, o) ? 1 : 0; });
     });
 
-    // Lo que ya está decidido de antemano: el niño come entre semana en la guardería.
+    // Lo que ya está decidido de antemano: lo que el niño come en la guardería.
     const fijados = {};
-    if(pf.relleno){
-      const p = plato(pid, pf.relleno.plato);
-      if(p) pf.relleno.dias.forEach(function(dia){
-        const slot = dia + "|" + pf.relleno.momento;
-        h[slot + "|1"] = p.n;
-        fijados[slot] = 1;
-        metas.forEach(function(o){ cuenta[o.n] += cumple(p, o); });
+    if(pf.guarde){
+      (pf.guarde[modo === "largo" ? "largo" : "corto"] || []).forEach(function(r){
+        const p = plato(pid, r.plato);
+        if(!p) return;
+        pf.guarde.dias.forEach(function(dia){
+          const slot = dia + "|" + r.momento;
+          h[slot + "|1"] = p.n;
+          fijados[slot] = 1;
+          metas.forEach(function(o){ cuenta[o.n] += cumple(p, o); });
+        });
       });
     }
     const orden = SLOTS.filter(function(x){ return !fijados[x]; })
@@ -1711,7 +1721,7 @@ fuera;Fuera de casa
     // Colocar de una pasada deja objetivos fuera de rango: el reparto se repasa
     // cambiando platos sueltos mientras eso acerque la semana a los objetivos.
     // Un objetivo cuenta una vez por comida, aunque lo cubran sus dos platos.
-    function desvio(hh){
+    function conteo(hh){
       const c = new Array(metas.length).fill(0);
       for(let si = 0; si < SLOTS.length; si++){
         const slot = SLOTS[si], ords = ORD[slot], aquí = new Array(metas.length).fill(0);
@@ -1722,6 +1732,9 @@ fuera;Fuera de casa
         }
         for(let i = 0; i < c.length; i++) c[i] += aquí[i];
       }
+      return c;
+    }
+    function desvioDe(c){
       let t = 0;
       for(let i = 0; i < metas.length; i++){
         t += Math.max(0, metas[i].min - c[i]) + Math.max(0, c[i] - metas[i].max);
@@ -1729,7 +1742,7 @@ fuera;Fuera de casa
       return t;
     }
     function repasa(){
-      let mejor = desvio(h);
+      let cuentas = conteo(h), mejor = desvioDe(cuentas);
       const claves = CLAVES.filter(function(k){ return h[k]; });
       // Con 35 huecos y 17 objetivos hace falta rebuscar bastante más que antes.
       const vueltas = Math.max(600, claves.length * 60);
@@ -1738,7 +1751,7 @@ fuera;Fuera de casa
         if(!k) break;
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
-        if(pf.relleno && fijados[slot] && orden === "1") continue;   // el menú de guarde no se toca
+        if(fijados[slot] && orden === "1") continue;   // lo de la guardería no se toca
         const actual = PORNOMBRE[h[k]];
         if(!actual) continue;
         const hermano = h[slot + "|" + (orden === "1" ? "2" : "1")];
@@ -1747,17 +1760,37 @@ fuera;Fuera de casa
 
         const cands = (APTOS[momento] || []).filter(function(c){
           if(c.n === actual.n || c.n === hermano) return false;
+          // Lo marcado como "nunca" (guarde, restaurante) solo se pone a mano.
+          if(c.rep === "nunca") return false;
           if(enUso[c.n] && !LIGEROS[momento]) return false;
-          // no cambiar la estructura: si había segundo plato, el primero sigue sin ser único
-          return orden === "1" ? !!c.unico === !!actual.unico : !c.unico;
+          // De primero vale cualquiera: si es único, el segundo se retira abajo.
+          // De segundo, nunca uno que se baste solo.
+          return orden === "1" ? true : !c.unico;
         });
         if(!cands.length) continue;
 
-        const cand = cands[Math.floor(Math.random() * cands.length)];
+        // Probar al azar entre cuarenta platos tarda mucho en dar con el único que
+        // tapa un hueco: si algún objetivo va corto, se prueba antes con los suyos.
+        let urna = cands;
+        const cortos = [];
+        for(let i = 0; i < metas.length; i++) if(cuentas[i] < metas[i].min) cortos.push(i);
+        if(cortos.length){
+          const tapan = cands.filter(function(c){
+            const v = CUBRE[c.n];
+            return v && cortos.some(function(i){ return v[i]; });
+          });
+          if(tapan.length) urna = tapan;
+        }
+
+        const cand = urna[Math.floor(Math.random() * urna.length)];
         const previo = h[k];
+        // Un plato único resuelve la comida él solo: el segundo que hubiera sobra.
+        const sobraSegundo = orden === "1" && cand.unico && hermano;
         h[k] = cand.n;
-        const ahora = desvio(h);
-        if(ahora < mejor) mejor = ahora; else h[k] = previo;
+        if(sobraSegundo) delete h[slot + "|2"];
+        const ahora = conteo(h), d = desvioDe(ahora);
+        if(d < mejor){ mejor = d; cuentas = ahora; }
+        else { h[k] = previo; if(sobraSegundo) h[slot + "|2"] = hermano; }
       }
     }
     repasa();
@@ -2422,10 +2455,18 @@ fuera;Fuera de casa
         el("h2", {text:"Reparto " + pf.quien})
       ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
-        el("button", {class:"btn btn-primary", text:"Generar semana", onclick:function(){
-          generar(s, semanaActual()); pintarTodo();
-          aviso("Semana generada" + (objetivosTocados(s) ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
-        }}),
+        el("button", {class:"btn btn-primary", text:"Generar semana",
+          title: pf.guarde ? "La guardería cubre solo la comida, de lunes a viernes" : null,
+          onclick:function(){
+            generar(s, semanaActual()); pintarTodo();
+            aviso("Semana generada" + (objetivosTocados(s) ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
+          }}),
+        pf.guarde ? el("button", {class:"btn", text:"Generar con guarde",
+          title:"La guardería cubre el desayuno, el almuerzo y la comida, de lunes a viernes",
+          onclick:function(){
+            generar(s, semanaActual(), "largo"); pintarTodo();
+            aviso("Semana generada con desayuno, almuerzo y comida en la guardería: " + etiquetaSemana(desdeIso(semanaActual())));
+          }}) : null,
         el("button", {class:"btn", text:"Vaciar", onclick:function(){
           fijarHuecos(s, semanaActual(), {}); pintarTodo();
         }}),

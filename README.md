@@ -54,7 +54,7 @@ Dentro de cada día, cada momento abre con su banda de color — melocotón el d
   merienda**, donde repetir es lo normal: ahí manda la columna `repeticion` y un café con leche sale los siete días;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
-- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango;
+- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca* — el restaurante y los platos de guardería se ponen a mano o con su botón;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
 - persigue estos objetivos, que salen de `datos/equilibrio.csv`. Se cuentan **veces por semana**, es decir
@@ -86,7 +86,14 @@ vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. L
 
 Cualquier hueco se cambia a mano pulsando sobre él. El selector ofrece **solo los platos de ese momento**: en una cena no aparecen los desayunos. Una casilla, *Ver también los platos de otros momentos*, abre la puerta al resto para el día que quieras merendar un plato de cena, y dice cuántos hay detrás. El plato que ya ocupa el hueco se enseña siempre, aunque sus momentos hayan cambiado después, con una nota que lo avisa. El botón **Guardar** de la propia pestaña sube los cambios a GitHub sin pasar por el Histórico, y dice cuántos ficheros hay pendientes.
 
-**Semana niño** — **La misma estructura que la de adultos**: treinta y cinco huecos, los cinco momentos del día. Que coma entre semana en la guardería no es un caso especial del programa, sino un plato más: **Menú guarde**, que el generador coloca en la comida de lunes a viernes. Es plato único, no tiene ingredientes y por tanto no suma nada a la compra, y su repetición es *nunca*, así que no aparece en ningún otro hueco por su cuenta.
+**Semana niño** — **La misma estructura que la de adultos**: treinta y cinco huecos, los cinco momentos del día. Que coma en la guardería no es un caso especial del programa, sino tres platos más: **Desayuno guarde**, **Almuerzo guarde** y **Menú guarde**. Son platos únicos, no tienen ingredientes y por tanto no suman nada a la compra, y su repetición es *nunca*, así que no aparecen en ningún hueco por su cuenta.
+
+Esa pestaña tiene **dos botones de generar**, porque hay dos clases de semana:
+
+- *Generar semana* — la guardería cubre **solo la comida** de lunes a viernes. Cinco huecos fijos.
+- *Generar con guarde* — la guardería cubre **el desayuno, el almuerzo y la comida** de lunes a viernes. Quince huecos fijos, y en casa quedan las meriendas, las cenas y el fin de semana entero.
+
+Por eso el objetivo *Guardería* llega hasta 15: cubre las dos.
 
 Si un día no va a la guardería, se sustituye ese Menú guarde por uno o dos platos normales, igual que en el menú de los adultos. No hay nada que habilitar.
 

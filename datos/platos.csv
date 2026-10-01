@@ -38,6 +38,8 @@ Hamburguesa de pollo;no;si;A la plancha, con pan o en plato.;Carne blanca|Pan y 
 Macarrones con salchichas;si;si;Macarrones con tomate y salchichas en rodajas.;Pasta|Embutido y fiambre|Queso;comida|cena;bajo;alta;si;macarrones|salchichas|tomate frito|queso rallado
 Rollitos de la Yaya;si;si;Lonchas de jamón de york enrolladas con queso, receta de la yaya.;Embutido y fiambre|Queso;comida|cena;bajo;media;no;jamón cocido|queso en lonchas
 Arroz con pollo;no;si;Arroz meloso con taquitos de pechuga.;Arroz|Carne blanca;comida|cena;medio;alta;si;arroz|pechuga de pollo|caldo de pollo|cebolla|aceite de oliva
+Desayuno guarde;no;si;Ese día desayuna en la guardería: no entra en la lista de la compra.;Guardería;desayuno;bajo;nunca;si;
+Almuerzo guarde;no;si;El almuerzo de media mañana es el de la guardería: no entra en la lista de la compra.;Guardería;almuerzo;bajo;nunca;si;
 Menú guarde;no;si;Ese día come en la guardería: no entra en la lista de la compra.;Guardería;comida;bajo;nunca;si;
 Lomo con queso;si;si;Sin descripción.;Carne roja|Queso;comida|cena;bajo;media;no;lomo de cerdo|queso en lonchas
 Queso fresco;si;si;Sin descripción.;Queso;comida|cena;medio;media;no;queso fresco
