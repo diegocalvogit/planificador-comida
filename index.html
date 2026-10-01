@@ -449,6 +449,9 @@
   .picker > header{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
   .picker h3{font-size:16px;font-weight:700}
   .picker-list{overflow-y:auto;padding:6px 0}
+  .picker-filtro{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .picker-filtro input{margin:0;flex:none}
+  .picker-filtro .om{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
   .opt{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;
     padding:10px 16px;cursor:pointer;border-bottom:1px solid var(--line)}
   .opt:hover{background:var(--surface-2)}
@@ -1694,18 +1697,22 @@ fuera;Fuera de casa
   // Dos pestañas comparten la misma tabla y el mismo datos/platos.csv; lo único
   // que cambia es qué momentos del día enseña cada una.
   const AMBITOS = [
-    {id:"platos", titulo:"Repertorio de platos", hoja:"Platos", nuevo:"Nuevo plato",
+    {id:"platos", lbl:"Platos", titulo:"Repertorio de platos", hoja:"Platos", nuevo:"Nuevo plato",
      moms:["comida","cena"],
      lead:"Las comidas y las cenas de casa, en una sola lista. Las casillas de cada fila dicen en qué " +
           "menús entra: márcalas o desmárcalas ahí mismo. El resto se edita entero desde su botón Editar.",
      vacio:"Ningún plato coincide con el filtro."},
-    {id:"desayunos", titulo:"Desayunos, almuerzos y meriendas", hoja:"Desayunos", nuevo:"Nuevo desayuno",
+    {id:"desayunos", lbl:"Desayunos y meriendas", titulo:"Desayunos, almuerzos y meriendas", hoja:"Desayunos", nuevo:"Nuevo desayuno",
      moms:["desayuno","almuerzo","merienda"],
      lead:"Lo que se come fuera de la mesa grande: el desayuno, el almuerzo de media mañana y la merienda. " +
           "Sale del mismo fichero que los platos, filtrado por su momento, y cuenta igual para el equilibrio de la semana.",
      vacio:"Nada coincide con el filtro."}
   ];
   function ambito(id){ return AMBITOS.filter(function(a){ return a.id === id; })[0]; }
+  // La pestaña en la que se crean los platos de un momento dado.
+  function ambitoDe(mom){
+    return AMBITOS.filter(function(a){ return a.moms.indexOf(mom) !== -1; })[0] || AMBITOS[0];
+  }
   // Un plato cae en la pestaña si se come en alguno de sus momentos.
   function delAmbito(a, p){
     const l = momentosDe(p);
@@ -2308,7 +2315,7 @@ fuera;Fuera de casa
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", null, [
-        el("div", {class:"eyebrow", text:"Lunes a domingo · comida y cena"}),
+        el("div", {class:"eyebrow", text:"Lunes a domingo · " + MOMENTOS.map(function(m){ return m.lbl.toLowerCase(); }).join(", ")}),
         el("h2", {text:"Reparto " + pf.quien})
       ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
@@ -2529,20 +2536,44 @@ fuera;Fuera de casa
     const buscar = el("input", {type:"search", id:"picker-buscar", placeholder:"Buscar plato o ingrediente…"});
     const lst = el("div", {class:"picker-list"});
 
+    // Por defecto solo se ofrece lo que se come en ese momento: en una cena no
+    // pintan nada los desayunos. La casilla abre la puerta a los demás para el
+    // día que quieras merendar un plato de cena, sin tener que editarlo antes.
+    const verTodos = el("input", {type:"checkbox", id:"picker-todos"});
+    const cuantosFuera = el("span", {class:"om"});
+    verTodos.addEventListener("change", function(){ pinta(); });
+    const filtroMom = el("label", {class:"picker-filtro", for:"picker-todos"}, [
+      verTodos,
+      el("span", {text:"Ver también los platos de otros momentos"}),
+      cuantosFuera
+    ]);
+
     function pinta(){
       const q = sinTildes(buscar.value.trim()), usados = {};
       Object.keys(h).forEach(function(k){ if(h[k]) usados[h[k]] = 1; });
 
-      const coinciden = repertorio()
+      // El plato que ya ocupa el hueco se enseña siempre, aunque sea de otro
+      // momento: si no, desaparecería del selector en cuanto le cambiaras los suyos.
+      const puesto = h[clave] || "";
+      function propio(p){ return elegible(p, momento) || p.n === puesto; }
+
+      const buscados = repertorio()
         .filter(function(p){ return p.n !== otroEnSlot; })
         .filter(function(p){ return !q || sinTildes(p.n + " " + p.i.join(" ")).indexOf(q) !== -1; });
+      const fuera = buscados.filter(function(p){ return !propio(p); });
+      const coinciden = verTodos.checked ? buscados : buscados.filter(propio);
       const aqui = coinciden.filter(function(p){ return p.menus && p.menus[pid]; });
       const otros = coinciden.filter(function(p){ return !(p.menus && p.menus[pid]); });
 
+      cuantosFuera.textContent = fuera.length ? "(" + fuera.length + ")" : "";
+      filtroMom.hidden = !fuera.length && !verTodos.checked;
+
       function opcion(p, ajeno){
         const repetido = usados[p.n] && h[clave] !== p.n;
-        const rec = !ajeno && elegible(p, momento) && (orden === "1" || !p.unico);
+        const deAqui = elegible(p, momento);
+        const rec = !ajeno && deAqui && (orden === "1" || !p.unico);
         const notas = [tipoTexto(p), p.unico ? "plato único" : "necesita acompañante"];
+        if(!deAqui) notas.push("es de " + momentoTexto(p).toLowerCase());
         if(repetido) notas.push("ya está esta semana");
         if(ajeno) notas.push("se añadirá al menú " + perfil(pid).quien);
         return el("button", {
@@ -2563,20 +2594,26 @@ fuera;Fuera de casa
 
       lst.textContent = "";
       aqui.sort(function(a, b){
-        const ra = elegible(a, momento) && (orden === "1" || !a.unico) ? 1 : 0;
-        const rb = elegible(b, momento) && (orden === "1" || !b.unico) ? 1 : 0;
+        const ra = (elegible(a, momento) ? 2 : 0) + (orden === "1" || !a.unico ? 1 : 0);
+        const rb = (elegible(b, momento) ? 2 : 0) + (orden === "1" || !b.unico ? 1 : 0);
         return (rb - ra) || a.n.localeCompare(b.n, "es");
       }).forEach(function(p){ lst.appendChild(opcion(p, false)); });
 
       if(otros.length){
         lst.appendChild(el("div", {class:"opt-sep",
           text:"En el menú " + perfil(otroPerfil(pid)).quien + " · pulsa para traerlo también a este"}));
-        otros.sort(function(a, b){ return a.n.localeCompare(b.n, "es"); })
-             .forEach(function(p){ lst.appendChild(opcion(p, true)); });
+        otros.sort(function(a, b){
+          const ra = elegible(a, momento) ? 1 : 0, rb = elegible(b, momento) ? 1 : 0;
+          return (rb - ra) || a.n.localeCompare(b.n, "es");
+        }).forEach(function(p){ lst.appendChild(opcion(p, true)); });
       }
       if(!coinciden.length){
-        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)",
-          text:"Ningún plato del repertorio coincide. Créalo en la pestaña Platos."}));
+        const nada = fuera.length
+          ? "Ningún plato de " + MOMENTO_LBL[momento].toLowerCase() + " coincide, pero sí " +
+            fuera.length + " de otros momentos. Márcalos arriba para verlos, o crea el plato en la pestaña " +
+            (ambitoDe(momento).lbl) + "."
+          : "Ningún plato del repertorio coincide. Créalo en la pestaña " + ambitoDe(momento).lbl + ".";
+        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)", text:nada}));
       }
     }
     buscar.addEventListener("input", pinta);
@@ -2586,7 +2623,8 @@ fuera;Fuera de casa
                             "aria-label":"Elegir plato para " + dia + ", " + MOMENTO_LBL[momento]}, [
       el("header", null, [
         el("h3", {text:mayus(dia) + " · " + MOMENTO_LBL[momento] + " · " + ORDEN_LBL[orden] + " plato"}),
-        buscar
+        buscar,
+        filtroMom
       ]),
       lst,
       el("footer", null, [
