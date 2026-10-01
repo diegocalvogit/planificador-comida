@@ -54,19 +54,15 @@ Café con leche;si;no;Café solo o cortado, según el día.;Lácteo;desayuno;baj
 Vaso de leche con cacao;no;si;Leche templada con una cucharada de cacao.;Lácteo;desayuno|merienda;bajo;siempre;no;leche|cacao soluble
 Yogur natural con fruta;si;si;Yogur sin azucarar con fruta troceada.;Lácteo|Fruta;desayuno|almuerzo|merienda;bajo;alta;si;yogur natural|plátano
 Cereales integrales con leche;si;si;Copos integrales sin azúcares añadidos.;Pan y cereales|Lácteo;desayuno;bajo;alta;si;cereales integrales|leche
-Avena con leche y plátano;si;si;Copos de avena remojados, con plátano en rodajas.;Pan y cereales|Lácteo|Fruta;desayuno;bajo;media;si;copos de avena|leche|plátano
 Tostada con queso fresco y nueces;si;si;Pan integral con queso fresco y un puñado de nueces.;Pan y cereales|Queso|Fruto seco;desayuno|merienda;bajo;media;no;pan integral|queso fresco|nueces
-Huevos revueltos con tostada;si;si;Revuelto suave con pan integral.;Huevo|Pan y cereales;desayuno;bajo;baja;si;huevos|pan integral|aceite de oliva
+Tostada de tomate aguacate y pavo;si;si;Revuelto suave con pan integral.;Huevo|Fruta|Pan y cereales|Embutido y fiambre;desayuno;bajo;baja;si;huevos|pan integral|aceite de oliva|aguacate|pechuga de pavo en lonchas
 Bizcocho casero de yogur;si;si;El de toda la vida, para el finde.;Pan y cereales|Lácteo;desayuno|merienda;alto;baja;no;harina|huevos|yogur natural|aceite de oliva|azúcar
 Zumo de naranja natural;si;si;Recién exprimido.;Fruta;desayuno|almuerzo;bajo;media;no;naranja
 Fruta de temporada;si;si;Una pieza entera, lo que haya.;Fruta;desayuno|almuerzo|merienda;bajo;siempre;si;manzana
 Puñado de frutos secos;si;no;Almendras o nueces sin sal.;Fruto seco;almuerzo|merienda;bajo;alta;si;almendras
 Yogur bebible;no;si;Para llevar, sin cuchara.;Lácteo;almuerzo|merienda;bajo;media;si;yogur bebible
 Mini bocadillo de pavo;si;si;Pan pequeño con pechuga de pavo.;Pan y cereales|Embutido y fiambre;almuerzo|merienda;bajo;media;si;pan|pechuga de pavo en lonchas
-Tortitas de maíz con queso;si;si;Crujientes, con una loncha de queso.;Pan y cereales|Queso;almuerzo|merienda;bajo;media;si;tortitas de maíz|queso en lonchas
 Bocadillo de jamón serrano;si;no;Pan con tomate y jamón.;Pan y cereales|Embutido y fiambre|Verdura;merienda;bajo;media;si;pan|jamón serrano|tomate
-Batido de plátano y leche;si;si;Batido casero, sin azúcar añadido.;Lácteo|Fruta;merienda;bajo;media;si;leche|plátano
 Macedonia de frutas;si;si;Varias frutas troceadas.;Fruta;almuerzo|merienda;bajo;media;si;manzana|plátano|naranja|kiwi
 Galletas integrales con leche;no;si;Un par de galletas mojadas en leche.;Pan y cereales|Lácteo;merienda;bajo;baja;si;galletas integrales|leche
 Yogur griego con miel y nueces;si;no;Yogur espeso con miel y nueces picadas.;Lácteo|Fruto seco;merienda;bajo;baja;si;yogur griego|miel|nueces
-Pan con chocolate;no;si;Para los días de capricho.;Pan y cereales;merienda;bajo;baja;si;pan|crema de cacao
