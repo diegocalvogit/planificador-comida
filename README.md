@@ -50,11 +50,16 @@ Dentro de cada día, cada momento abre con su banda de color — melocotón el d
 
 *Generar semana* propone un reparto que:
 
+- **copia del otro menú todo lo que se pueda compartir**: si la semana del niño ya tiene puesta una comida o una
+  cena que también está en el menú de los adultos y no es de guardería, el reparto de adultos pone ese mismo plato
+  en ese mismo hueco, y al revés. Así se cocina una vez para toda la casa. En la práctica salen iguales el 94-97 %
+  de las comidas y cenas compartibles, y el aviso al generar dice cuántas son. Desayunos y meriendas quedan fuera
+  a propósito: ahí cada uno come lo suyo;
 - respeta los momentos de cada plato y no repite plato dentro de la semana, **salvo en desayuno, almuerzo y
   merienda**, donde repetir es lo normal: ahí manda la columna `repeticion` y un café con leche sale los siete días;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
-- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca* — el restaurante y los platos de guardería se ponen a mano o con su botón;
+- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. **El equilibrio manda sobre el parecido con el otro menú**: el repaso solo rompe un plato compartido cuando con eso endereza un objetivo, y entre dos repartos igual de equilibrados se queda con el más parecido. Nunca coloca lo marcado como *nunca* — el restaurante y los platos de guardería se ponen a mano o con su botón;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
 - persigue estos objetivos, que salen de `datos/equilibrio.csv`. Se cuentan **veces por semana**, es decir

@@ -1343,6 +1343,27 @@ fuera;Fuera de casa
     return obj.tipos.some(function(x){ return t.indexOf(x) !== -1; }) ? 1 : 0;
   }
   function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
+
+  // Los momentos que se cocinan para toda la casa. El desayuno y la merienda
+  // quedan fuera a propósito: ahí cada uno come lo suyo.
+  const COMPARTIDOS = ["comida", "cena"];
+  // Lo que ya tiene el otro menú esa semana y se podría poner igual en este:
+  // devuelve clave de hueco -> nombre del plato. Lo de la guardería no entra,
+  // porque eso no se cocina en casa.
+  function espejoDe(pid, id){
+    const salida = {}, otro = otroPerfil(pid);
+    const suyos = huecos(otro, id);
+    if(!suyos) return salida;
+    Object.keys(suyos).forEach(function(k){
+      const nombre = suyos[k];
+      if(!nombre || COMPARTIDOS.indexOf(k.split("|")[1]) === -1) return;
+      const p = plato(pid, nombre);        // tiene que estar también en este menú
+      if(!p) return;
+      if(tiposDe(p).some(function(t){ return claveDe(t) === "guarde"; })) return;
+      salida[k] = p.n;
+    });
+    return salida;
+  }
   // El tipo es una lista; los platos guardados antes del catálogo traían texto suelto.
   function tiposDe(p){ return p ? (Array.isArray(p.t) ? p.t.slice() : lista(p.t)) : []; }
   function tipoTexto(p){ return tiposDe(p).join(" · "); }
@@ -1530,6 +1551,22 @@ fuera;Fuera de casa
       CUBRE[p.n] = metas.map(function(o){ return cumple(p, o) ? 1 : 0; });
     });
 
+    // Lo que ya tiene puesto el otro menú y se cocina para todos: se copia si se
+    // puede, para no hacer dos comidas distintas el mismo día.
+    const ESPEJO = espejoDe(pid, id);
+    const ESPEJO_CLAVES = Object.keys(ESPEJO);
+    function copiable(k, primero){
+      const n = ESPEJO[k];
+      if(!n) return null;
+      const p = PORNOMBRE[n];
+      if(!p) return null;
+      const mom = k.split("|")[1];
+      if(!elegible(p, mom)) return null;
+      if(!primero && p.unico) return null;          // de segundo nunca uno que se basta solo
+      if(usados[p.n] && !LIGEROS[mom]) return null; // ya está en otro hueco de la semana
+      return p;
+    }
+
     // Lo que ya está decidido de antemano: lo que el niño come en la guardería.
     const fijados = {};
     if(pf.guarde){
@@ -1544,8 +1581,11 @@ fuera;Fuera de casa
         });
       });
     }
+    // Los huecos que se pueden compartir van primero: si los dejas para el final,
+    // el plato que tocaba copiar puede haberse gastado ya en otro día.
     const orden = SLOTS.filter(function(x){ return !fijados[x]; })
-                       .sort(function(){ return Math.random() - 0.5; });
+                       .sort(function(){ return Math.random() - 0.5; })
+                       .sort(function(a, b){ return (ESPEJO[b + "|1"] ? 1 : 0) - (ESPEJO[a + "|1"] ? 1 : 0); });
 
     function puntua(p, dia, momento){
       let punt = Math.random() * 0.9;
@@ -1593,11 +1633,12 @@ fuera;Fuera de casa
       const aptos = APTOS[momento] || [];
       if(!aptos.length) return;
 
-      // Primer plato: se prefiere no repetir, pero antes que dejar el hueco vacío se
-      // repite. En desayunos, almuerzos y meriendas repetir es lo normal.
+      // Primer plato: si el otro menú ya tiene algo ahí que valga, se repite tal cual.
+      // Si no, se prefiere no repetir dentro de la semana, pero antes que dejar el
+      // hueco vacío se repite. En desayunos, almuerzos y meriendas repetir es lo normal.
       const vario = !LIGEROS[momento];
       let cands = vario ? aptos.filter(function(p){ return !usados[p.n]; }) : aptos;
-      const primero = elige(cands.length ? cands : aptos, dia, momento);
+      const primero = copiable(slot + "|1", true) || elige(cands.length ? cands : aptos, dia, momento);
       if(!primero) return;
       apunta(slot, "1", primero);
 
@@ -1605,6 +1646,8 @@ fuera;Fuera de casa
       if(primero.unico || ordenesDe(momento).length < 2) return;
       const parejas = aptos.filter(function(p){ return !p.unico && p.n !== primero.n; });
       if(!parejas.length) return;
+      const copia2 = copiable(slot + "|2", false);
+      if(copia2 && copia2.n !== primero.n){ apunta(slot, "2", copia2); return; }
       const libres = vario ? parejas.filter(function(p){ return !usados[p.n]; }) : parejas;
       const segundo = elige(libres.length ? libres : parejas, dia, momento);
       if(segundo) apunta(slot, "2", segundo);
@@ -1633,12 +1676,25 @@ fuera;Fuera de casa
       }
       return t;
     }
+    // Huecos que se podían compartir con el otro menú y no se están compartiendo.
+    // No se suma al desvío: sumarlos saldría caro, porque entonces el repaso
+    // aceptaría dejar un objetivo en rojo a cambio de alinear tres huecos. El
+    // equilibrio va primero y el parecido solo desempata entre repartos igual
+    // de equilibrados — que es casi siempre, porque el reparto inicial ya copia
+    // del otro menú todo lo que puede.
+    function sueltos(hh){
+      let n = 0;
+      for(let i = 0; i < ESPEJO_CLAVES.length; i++){
+        if(hh[ESPEJO_CLAVES[i]] !== ESPEJO[ESPEJO_CLAVES[i]]) n++;
+      }
+      return n;
+    }
     function repasa(){
-      let cuentas = conteo(h), mejor = desvioDe(cuentas);
+      let cuentas = conteo(h), mejor = desvioDe(cuentas), sueltas = sueltos(h);
       const claves = CLAVES.filter(function(k){ return h[k]; });
       // Con 35 huecos y 17 objetivos hace falta rebuscar bastante más que antes.
       const vueltas = Math.max(600, claves.length * 60);
-      for(let vuelta = 0; vuelta < vueltas && mejor > 0; vuelta++){
+      for(let vuelta = 0; vuelta < vueltas && (mejor > 0 || sueltas > 0); vuelta++){
         const k = claves[Math.floor(Math.random() * claves.length)];
         if(!k) break;
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
@@ -1672,6 +1728,11 @@ fuera;Fuera de casa
             return v && cortos.some(function(i){ return v[i]; });
           });
           if(tapan.length) urna = tapan;
+        }else if(ESPEJO[k] && h[k] !== ESPEJO[k]){
+          // Si el equilibrio ya está, se intenta devolver el hueco al plato del
+          // otro menú, que es el que ahorra cocinar dos veces.
+          const vuelve = cands.filter(function(c){ return c.n === ESPEJO[k]; });
+          if(vuelve.length) urna = vuelve;
         }
 
         const cand = urna[Math.floor(Math.random() * urna.length)];
@@ -1680,14 +1741,28 @@ fuera;Fuera de casa
         const sobraSegundo = orden === "1" && cand.unico && hermano;
         h[k] = cand.n;
         if(sobraSegundo) delete h[slot + "|2"];
-        const ahora = conteo(h), d = desvioDe(ahora);
-        if(d < mejor){ mejor = d; cuentas = ahora; }
+        // Se acepta lo que mejore el equilibrio, y a igualdad de equilibrio lo que
+        // deje la semana más parecida a la del otro menú. Nunca al revés.
+        const ahora = conteo(h), d = desvioDe(ahora), su = sueltos(h);
+        if(d < mejor || (d === mejor && su < sueltas)){ mejor = d; sueltas = su; cuentas = ahora; }
         else { h[k] = previo; if(sobraSegundo) h[slot + "|2"] = hermano; }
       }
     }
     repasa();
 
     fijarHuecos(pid, id, h);
+
+    // Cuántas comidas se cocinan una sola vez para toda la casa. Cuenta la comida
+    // entera: si el primero coincide pero el segundo no, hay que cocinar dos cosas.
+    const porHueco = {};
+    ESPEJO_CLAVES.forEach(function(k){
+      const slot = k.split("|").slice(0, 2).join("|");
+      if(porHueco[slot] === undefined) porHueco[slot] = true;
+      if(h[k] !== ESPEJO[k]) porHueco[slot] = false;
+    });
+    const slots = Object.keys(porHueco);
+    return {iguales: slots.filter(function(x){ return porHueco[x]; }).length,
+            posibles: slots.length};
   }
 
   /* ============ Pestañas ============ */
@@ -2350,14 +2425,16 @@ fuera;Fuera de casa
         el("button", {class:"btn btn-primary", text:"Generar semana",
           title: pf.guarde ? "La guardería cubre solo la comida, de lunes a viernes" : null,
           onclick:function(){
-            generar(s, semanaActual()); pintarTodo();
-            aviso("Semana generada" + (objetivosTocados(s) ? " con tus objetivos" : "") + ": " + etiquetaSemana(desdeIso(semanaActual())));
+            const r = generar(s, semanaActual()); pintarTodo();
+            aviso("Semana generada" + (objetivosTocados(s) ? " con tus objetivos" : "") + ": " +
+                  etiquetaSemana(desdeIso(semanaActual())) + compartidas(s, r));
           }}),
         pf.guarde ? el("button", {class:"btn", text:"Generar con guarde",
           title:"La guardería cubre el desayuno, el almuerzo y la comida, de lunes a viernes",
           onclick:function(){
-            generar(s, semanaActual(), "largo"); pintarTodo();
-            aviso("Semana generada con desayuno, almuerzo y comida en la guardería: " + etiquetaSemana(desdeIso(semanaActual())));
+            const r = generar(s, semanaActual(), "largo"); pintarTodo();
+            aviso("Semana generada con desayuno, almuerzo y comida en la guardería: " +
+                  etiquetaSemana(desdeIso(semanaActual())) + compartidas(s, r));
           }}) : null,
         el("button", {class:"btn", text:"Vaciar", onclick:function(){
           fijarHuecos(s, semanaActual(), {}); pintarTodo();
@@ -2553,6 +2630,13 @@ fuera;Fuera de casa
       bg.style.opacity = pend ? "" : ".55";
       bg.title = pend ? "Sube a GitHub los " + pend + " ficheros con cambios" : "No hay cambios sin guardar";
     }
+  }
+
+  // La coletilla del aviso: qué parte de la semana sirve para toda la casa.
+  function compartidas(pid, r){
+    if(!r || !r.posibles) return "";
+    return " · " + r.iguales + " de " + r.posibles + " comidas y cenas iguales que las " +
+           perfil(otroPerfil(pid)).quien;
   }
 
   /* ============ Selector de plato ============ */
