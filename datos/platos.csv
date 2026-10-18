@@ -15,13 +15,13 @@ Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo,
 Fajitas marineras;si;no;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
 Tomate con mozzarella y aceite de oliva;si;no;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;tomate|mozzarella|aceite de oliva|albahaca
 Fajitas de pavo, queso, lechuga y tomate;si;no;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;si;no;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Pechugas de pollo a la plancha;si;si;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
 Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;comida|cena;medio;media;si;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
 Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;comida|cena;medio;media;si;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
 Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;comida|cena;medio;alta;si;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
 Revuelto de gulas, gambas y huevo;si;si;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevos|gulas|gambas|ajo|aceite de oliva|perejil
 Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;comida|cena;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Salmón con verduras;si;si;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;comida|cena;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;comida|cena;bajo;nunca;si;
 Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;comida|cena;medio;alta;no;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
@@ -67,3 +67,4 @@ Bocadillo de jamón serrano;si;no;Pan con tomate y jamón.;Pan y cereales|Embuti
 Macedonia de frutas;si;si;Varias frutas troceadas.;Fruta;almuerzo|merienda;bajo;media;si;manzana|plátano|naranja|kiwi
 Galletas integrales con leche;no;si;Un par de galletas mojadas en leche.;Pan y cereales|Lácteo;merienda;bajo;baja;si;galletas integrales|leche
 Yogur griego con miel y nueces;si;no;Yogur espeso con miel y nueces picadas.;Lácteo|Fruto seco;merienda;bajo;baja;si;yogur griego|miel|nueces
+Dorada o Lubina;si;si;Sin descripción.;Pescado blanco;comida|cena;medio;media;no;
