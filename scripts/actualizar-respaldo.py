@@ -20,7 +20,6 @@ FICHEROS = {
     "csv-platos": "platos.csv",
     "csv-ingredientes": "ingredientes.csv",
     "csv-equilibrio": "equilibrio.csv",
-    "csv-equilibrio-nino": "equilibrio-nino.csv",
     "csv-semanas": "semanas.csv",
     "csv-semanas-nino": "semanas-nino.csv",
     "csv-despensa": "despensa.csv",
