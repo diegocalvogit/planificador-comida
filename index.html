@@ -303,36 +303,27 @@
   .slot-main{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
     background:transparent;color:inherit;font:inherit;padding:10px 14px;cursor:pointer;min-height:56px}
   .slot-main:hover{background-image:linear-gradient(var(--veil), var(--veil))}
-  /* Lo que el niño come distinto, justo debajo del plato de la mesa. */
-  .nino-row{display:flex;align-items:center;gap:7px;padding:4px 10px 6px 38px;
-    border-top:1px dashed var(--line-strong)}
+  /* Lo del niño, debajo de los platos de ese momento. */
+  .nino-bloque{border-top:1px dashed var(--line-strong);background:var(--surface);padding:3px 0}
+  .nino-bloque.propio{background:var(--surface-2)}
+  .nino-row{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 14px}
   .nino-row .etq{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
-    text-transform:uppercase;color:var(--ink-2);background:var(--surface-2);border-radius:20px;
-    padding:1px 7px;flex:none}
-  .nino-row .txt{font-size:12.5px;color:var(--ink-3);font-style:italic}
+    text-transform:uppercase;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);
+    border-radius:20px;padding:1px 7px;flex:none}
+  .nino-row .ord{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);flex:none}
   .nino-plato{flex:1;min-width:0;text-align:left;border:0;background:transparent;color:var(--ink);
-    font:inherit;font-size:12.5px;font-weight:500;padding:2px 4px;border-radius:6px;cursor:pointer;
+    font:inherit;font-size:13px;font-weight:600;padding:3px 5px;border-radius:6px;cursor:pointer;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .nino-plato:hover{background:var(--veil);text-decoration:underline}
+  .nino-plato.suave{font-weight:500;font-style:italic;color:var(--ink-3)}
   .nino-plato.roto{color:var(--pimenton);text-decoration:line-through}
   .nino-quita{flex:none;border:0;background:transparent;color:var(--ink-3);cursor:pointer;
-    font-size:14px;line-height:1;padding:2px 5px;border-radius:6px}
+    font-size:15px;line-height:1;padding:1px 6px;border-radius:6px}
   .nino-quita:hover{background:var(--pimenton-soft);color:var(--pimenton)}
-  .slot-add-nino{position:absolute;top:7px;right:8px;border:0;background:var(--surface-2);
-    color:var(--ink-3);border-radius:20px;padding:1px 8px;cursor:pointer;
-    font-family:"IBM Plex Mono",monospace;font-size:10px;opacity:0;transition:opacity .12s}
-  .slot:hover .slot-add-nino, .slot:focus-within .slot-add-nino{opacity:1}
-  .slot-add-nino:hover{background:var(--accent-soft);color:var(--accent-ink)}
-  .slot .orden{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);flex:none;width:15px;margin-top:3px}
-  .slot .cuerpo{min-width:0}
-  .slot .slot-dish{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:14.5px}
-  .slot .slot-meta{font-size:12.5px;color:var(--ink-2);margin-top:2px}
-  .slot.empty .slot-dish{color:var(--ink-3);font-weight:500;font-style:italic}
-  .slot.ajeno{box-shadow:inset 3px 0 0 var(--pimenton)}
-  .slot.roto{background-color:var(--pimenton-soft)}
-  .slot.roto .slot-dish{color:var(--pimenton);text-decoration:line-through}
-  .marca-ajeno{margin-left:7px;font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
-    text-transform:uppercase;color:var(--pimenton);background:var(--pimenton-soft);border-radius:20px;padding:1px 7px}
+  .nino-add{display:block;width:100%;text-align:left;border:0;background:transparent;cursor:pointer;
+    padding:4px 14px;font-family:inherit;font-size:12px;color:var(--ink-3)}
+  .nino-add:hover{background:var(--veil);color:var(--accent-ink)}
+
   .slot-add{display:flex;gap:9px;align-items:center;width:100%;text-align:left;border:0;
     border-top:1px dashed var(--line-strong);background:transparent;padding:6px 14px;cursor:pointer;
     font-size:12.5px;color:var(--ink-3)}
@@ -2966,9 +2957,6 @@ fuera;Fuera de casa
         card.appendChild(el("div", {class:"momento-head " + momento, text:mo.lbl}));
 
         const pPrim = h[slot + "|1"] ? platoEnSemana("adultos", h[slot + "|1"]) : null;
-        // Si el niño está en la guardería a esa hora, el hueco entero es suyo y
-        // no se desglosa plato a plato: no come en casa y punto.
-        const enGuarde = esGuarde(hn[slot + "|1"] ? platoEnSemana("nino", hn[slot + "|1"]) : null);
 
         ordenesDe(momento).forEach(function(o){
           const clave = slot + "|" + o;
@@ -3014,10 +3002,9 @@ fuera;Fuera de casa
             ])
           ]);
 
-          const suya = filaNino(id, clave, dia, momento, o, h, hn, enGuarde);
-          if(suya) caja.appendChild(suya);
           card.appendChild(caja);
         });
+        card.appendChild(bloqueNino(id, dia, momento, h, hn));
       });
       cont.appendChild(card);
     });
@@ -3048,51 +3035,88 @@ fuera;Fuera de casa
     }
   }
 
-  // La línea del niño debajo del plato. Solo sale cuando come otra cosa; si come
-  // lo mismo queda el botón "+ niño", que no ocupa sitio hasta que pasas por encima.
-  function filaNino(id, clave, dia, momento, orden, h, hn, enGuarde){
-    if(enGuarde){
-      return orden === "1" ? el("div", {class:"nino-row guarde"}, [
+  // Lo del niño va junto, debajo de los platos de ese momento. Mientras coma lo
+  // mismo que en la mesa solo hay un botón; en cuanto le pones un plato suyo, el
+  // momento pasa a ser suyo y el botón reaparece para el siguiente, hasta llenar
+  // los huecos que ese momento admite — uno en el almuerzo, dos en los demás.
+  function bloqueNino(id, dia, momento, h, hn){
+    const slot = dia + "|" + momento, ords = ordenesDe(momento);
+    const propio = ords.some(function(o){
+      return (hn[slot + "|" + o] || "") !== (h[slot + "|" + o] || "");
+    });
+    const suyos = propio ? ords.filter(function(o){ return !!hn[slot + "|" + o]; }) : [];
+    const caja = el("div", {class:"nino-bloque" + (propio ? " propio" : "")});
+
+    suyos.forEach(function(o){
+      const crudo = hn[slot + "|" + o], p = platoEnSemana("nino", crudo);
+      const guarde = esGuarde(p);
+      caja.appendChild(el("div", {class:"nino-row" + (guarde ? " guarde" : "")}, [
         el("span", {class:"etq", text:"niño"}),
-        el("span", {class:"txt", text:"en la guardería"})
-      ]) : null;
+        el("span", {class:"ord", text:ORDEN_LBL[o]}),
+        el("button", {type:"button", class:"nino-plato" + (!p ? " roto" : "") + (guarde ? " suave" : ""),
+          text: guarde ? "en la guardería" : (p ? p.n : crudo),
+          title: guarde ? "Ese día come en la guardería. Pulsa si un día no va."
+                        : (p ? tipoTexto(p) : "Este plato ya no está en el repertorio"),
+          onclick:function(){ abrirSelector("nino", dia, momento, o); }}),
+        el("button", {type:"button", class:"nino-quita", text:"×",
+          title: suyos.length > 1 ? "Quitar este plato del niño"
+                                  : "Quitar: vuelve a comer lo mismo que en la mesa",
+          "aria-label":"Quitar el " + ORDEN_LBL[o] + " plato del niño " + deMomento(momento) + " del " + dia,
+          onclick:function(){ quitaNino(id, slot, o); }})
+      ]));
+    });
+
+    if(suyos.length < ords.length){
+      caja.appendChild(el("button", {type:"button", class:"nino-add",
+        text: propio ? "+ añadir otro plato del niño" : "+ añadir platos del niño",
+        title: propio ? "El niño come " + (suyos.length + 1) + " platos " + deMomento(momento)
+                      : "Que el niño coma algo distinto " + deMomento(momento),
+        onclick:function(){ nuevoPlatoNino(id, dia, momento, propio ? null : "1"); }}));
     }
-    if((hn[clave] || "") === (h[clave] || "")){
-      if(!h[clave]) return null;
-      return el("button", {type:"button", class:"slot-add-nino", text:"+ niño",
-        title:"Que el niño coma otra cosa en este hueco",
-        "aria-label":"Poner al niño algo distinto " + deMomento(momento) + " del " + dia,
-        onclick:function(){ abrirSelector("nino", dia, momento, orden); }});
-    }
-    const suyo = hn[clave] ? platoEnSemana("nino", hn[clave]) : null;
-    return el("div", {class:"nino-row"}, [
-      el("span", {class:"etq", text:"niño"}),
-      el("button", {type:"button", class:"nino-plato" + (!suyo && hn[clave] ? " roto" : ""),
-        text: suyo ? suyo.n : (hn[clave] || "sin asignar"),
-        title: suyo ? tipoTexto(suyo)
-                    : (hn[clave] ? "Este plato ya no está en el repertorio" : "Elegir qué come el niño"),
-        onclick:function(){ abrirSelector("nino", dia, momento, orden); }}),
-      el("button", {type:"button", class:"nino-quita", text:"×",
-        title:"Que coma lo mismo que en la mesa",
-        "aria-label":"Que el niño coma lo mismo " + deMomento(momento) + " del " + dia,
-        onclick:function(){ igualarNino(id, clave); }})
-    ]);
+    return caja;
   }
 
-  // Devuelve el hueco del niño a lo que se cocina en casa. Si ese plato no está
-  // en su menú se le queda el parecido, y se avisa de por qué.
-  function igualarNino(id, clave){
-    const casa = huecos("adultos", id)[clave] || "";
-    const hn = huecos("nino", id), copia = {};
+  // Abre el selector para el siguiente hueco libre del niño. Si hasta ahora comía
+  // lo mismo que en la mesa, el plato que elijas no se suma a lo que había: pasa
+  // a ser lo único que come, y el segundo lo añades tú si quieres.
+  function nuevoPlatoNino(id, dia, momento, primero){
+    const slot = dia + "|" + momento, hn = huecos("nino", id);
+    const orden = primero || (ordenesDe(momento).filter(function(o){ return !hn[slot + "|" + o]; })[0]);
+    if(!orden) return;
+    abrirSelector("nino", dia, momento, orden, {soloEste: !!primero});
+  }
+
+  // Quita un plato del niño. Si era el último, el momento vuelve a lo de la mesa.
+  function quitaNino(id, slot, orden){
+    const hn = huecos("nino", id), copia = {}, mom = slot.split("|")[1], ords = ordenesDe(mom);
     Object.keys(hn).forEach(function(k){ copia[k] = hn[k]; });
-    const toca = espejoNino(casa, clave.split("|")[1]);
-    if(toca) copia[clave] = toca; else delete copia[clave];
+    delete copia[slot + "|" + orden];
+
+    // Si queda el segundo suelto, sube a primero: no hay platos huérfanos.
+    const quedan = ords.map(function(o){ return copia[slot + "|" + o]; }).filter(Boolean);
+    ords.forEach(function(o, i){
+      if(quedan[i]) copia[slot + "|" + o] = quedan[i]; else delete copia[slot + "|" + o];
+    });
+
+    let aviso2 = "";
+    if(!quedan.length){
+      const casa = huecos("adultos", id);
+      ords.forEach(function(o){
+        const x = espejoNino(casa[slot + "|" + o], mom);
+        if(x) copia[slot + "|" + o] = x;
+      });
+      const p1 = copia[slot + "|1"] ? plato("nino", copia[slot + "|1"]) : null;
+      if((p1 && p1.unico) || copia[slot + "|2"] === copia[slot + "|1"]) delete copia[slot + "|2"];
+      const enMesa = casa[slot + "|1"] || "";
+      if(enMesa && copia[slot + "|1"] !== enMesa){
+        aviso2 = "«" + enMesa + "» no está en el menú del niño: le queda " +
+                 (copia[slot + "|1"] ? "«" + copia[slot + "|1"] + "»" : "el hueco vacío") +
+                 ". Marca su casilla en Platos si también puede comerlo.";
+      }
+    }
     fijarHuecos("nino", id, copia);
     pintarTodo();
-    if(casa && toca !== casa){
-      aviso("«" + casa + "» no está en el menú del niño: le he puesto " +
-            (toca ? "«" + toca + "»" : "nada") + ". Marca su casilla en Platos si también puede comerlo.");
-    }
+    if(aviso2) aviso(aviso2);
   }
 
   /* ============ Selector de plato ============ */
@@ -3102,7 +3126,7 @@ fuera;Fuera de casa
   }
   function escSelector(e){ if(e.key === "Escape") cerrarSelector(); }
 
-  function abrirSelector(pid, dia, momento, orden){
+  function abrirSelector(pid, dia, momento, orden, opciones){
     cerrarSelector();
     const id = semanaActual(), h = {}, origen = huecos(pid, id);
     Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
@@ -3111,6 +3135,14 @@ fuera;Fuera de casa
     const previo = origen[clave] || "";
     // Cambiar un plato de la mesa arrastra al niño, salvo que ahí tuviera lo suyo.
     const arrastra = function(nuevo){ if(pid === "adultos") sigueNino(id, clave, previo, nuevo); };
+    // Estrenar los platos propios del niño: lo elegido sustituye a todo el momento.
+    const soloEste = !!(opciones && opciones.soloEste);
+    const limpia = function(){
+      if(!soloEste) return;
+      ordenesDe(momento).forEach(function(o){
+        if(o !== orden) delete h[dia + "|" + momento + "|" + o];
+      });
+    };
 
     const buscar = el("input", {type:"search", id:"picker-buscar", placeholder:"Buscar plato o ingrediente…"});
     const lst = el("div", {class:"picker-list"});
@@ -3160,6 +3192,7 @@ fuera;Fuera de casa
           onclick:function(){
             // Si viene del otro menú, entra en este antes de ocupar el hueco.
             if(ajeno) marcarMenu(p, pid, true);
+            limpia();
             h[clave] = p.n; fijarHuecos(pid, id, h); arrastra(p.n);
             cerrarSelector(); pintarTodo();
           }

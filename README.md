@@ -87,22 +87,29 @@ Cualquier hueco se cambia a mano pulsando sobre él. El selector ofrece **solo l
 
 ### El niño, dentro de la misma semana
 
-Hay **una sola pestaña de semana** y lo que se ve en ella es la mesa de casa. Donde el niño come otra cosa
-aparece una línea suya debajo del plato, y donde come lo mismo no hay nada: solo un botón **+ niño** que asoma
-al pasar por encima del hueco y crea la diferencia. Su línea tiene su propio selector para cambiarla y una **×**
-para devolverla a lo compartido.
+Hay **una sola pestaña de semana** y lo que se ve en ella es la mesa de casa: el 1º y el 2º de cada momento,
+editables pulsando encima. Debajo de los platos de cada momento va lo del niño.
+
+Mientras coma lo mismo que vosotros ahí solo hay un botón, **+ añadir platos del niño**. En cuanto le pones un
+plato suyo, ese momento pasa a ser suyo: lo que elijas es lo único que come —no se suma a lo que había— y el
+botón reaparece como **+ añadir otro plato del niño** para el segundo, si ese momento admite dos. El almuerzo
+solo admite uno, así que ahí el botón desaparece en cuanto pones el primero. Cada plato suyo se cambia pulsando
+encima y se quita con la **×**; al quitar el último, el momento vuelve a lo de la mesa.
 
 ```
 COMIDA
-1º  Lentejas con verduras y pollo
-    Legumbre · Carne blanca
-    └ niño · Puré de verduras con pescado        ×
+1º  Parrillada de verduras
+    Verdura
+2º  Croquetas congeladas
+    Preparado o congelado
+    NIÑO 1º  Berenjenas rellenas        ×
+    NIÑO 2º  Croquetas congeladas       ×
 ```
 
 Las reglas son dos y no hay más:
 
-- **cambiar un plato de la mesa arrastra al niño** si en ese hueco comía lo mismo. Si tenía una diferencia
-  puesta, se respeta;
+- **cambiar un plato de la mesa arrastra al niño** si en ese hueco comía lo mismo. Si tenía platos suyos
+  puestos, se respetan;
 - **al generar, su semana se deriva de la de la casa**: copia lo que puede comer, pone la guardería donde toca
   y, para lo que no está en su menú, busca el plato suyo más parecido — misma base, mismos tipos, misma
   condición de plato único. Esa sustitución no tiene azar, y por eso el programa sabe después si un hueco suyo
@@ -110,9 +117,8 @@ Las reglas son dos y no hay más:
 
 Que coma en la guardería no es un caso especial del programa, sino tres platos más: **Desayuno guarde**,
 **Almuerzo guarde** y **Menú guarde**. Son platos únicos, no tienen ingredientes y por tanto no suman nada a la
-compra, y su repetición es *nunca*, así que no aparecen en ningún hueco por su cuenta. En la semana se pintan
-como una marca gris, `└ niño · en la guardería`, y no como una diferencia: si lo fueran, de lunes a viernes
-tendrías quince líneas diciendo lo mismo.
+compra, y su repetición es *nunca*, así que no aparecen en ningún hueco por su cuenta. En la semana aparecen
+en su bloque como *en la guardería*, en gris: se pueden cambiar pulsando encima, para el día que no vaya.
 
 Por eso hay **dos botones de generar**:
 
