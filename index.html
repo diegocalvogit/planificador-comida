@@ -314,6 +314,7 @@
     font:inherit;font-size:12.5px;font-weight:500;padding:2px 4px;border-radius:6px;cursor:pointer;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .nino-plato:hover{background:var(--veil);text-decoration:underline}
+  .nino-plato.roto{color:var(--pimenton);text-decoration:line-through}
   .nino-quita{flex:none;border:0;background:transparent;color:var(--ink-3);cursor:pointer;
     font-size:14px;line-height:1;padding:2px 5px;border-radius:6px}
   .nino-quita:hover{background:var(--pimenton-soft);color:var(--pimenton)}
@@ -603,13 +604,13 @@ Fajitas de pollo y pimientos;si;no;Tiras de pechuga salteadas con pimiento rojo,
 Fajitas marineras;si;no;Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.;Pescado azul|Verdura|Grasa saludable|Queso;cena;bajo;media;si;tortillas de trigo|salmón ahumado|aguacate|queso fresco|limón
 Tomate con mozzarella y aceite de oliva;si;no;La clásica ensalada Caprese, rápida, fresca y ligera.;Verdura|Queso;cena;bajo;siempre;no;tomate|mozzarella|aceite de oliva|albahaca
 Fajitas de pavo, queso, lechuga y tomate;si;no;Fajitas frías o templadas, ideales sin encender fuego.;Carne blanca|Verdura|Queso|Pan y cereales;cena;bajo;alta;si;tortillas de trigo|pechuga de pavo en lonchas|queso en lonchas|lechuga|tomate
-Pechugas de pollo a la plancha;si;no;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
+Pechugas de pollo a la plancha;si;si;Acompañadas de ensalada variada.;Carne blanca|Verdura;cena;bajo;siempre;si;pechuga de pollo|lechuga|tomate|zanahoria|aceite de oliva
 Solomillo de cerdo o ternera a la plancha;si;no;Con guarnición de champiñones o guisantes.;Carne roja|Verdura;comida|cena;medio;media;si;solomillo de cerdo|champiñones|guisantes|ajo|aceite de oliva
 Hamburguesas caseras de pollo con queso;si;no;En plato con ensalada o en pan con tomate fresco.;Carne blanca|Queso|Verdura|Pan y cereales;comida|cena;medio;media;si;carne picada de pollo|queso en lonchas|pan de hamburguesa|lechuga|tomate|cebolla
 Tiras de lomo salteadas con verduras al wok;si;no;Con calabacín, zanahoria y pimientos en juliana.;Carne roja|Verdura;comida|cena;medio;alta;si;lomo de cerdo|calabacín|zanahoria|pimiento rojo|salsa de soja|aceite de oliva
 Revuelto de gulas, gambas y huevo;si;si;Plato rápido y sabroso de sartén.;Huevo|Marisco;cena;bajo;media;no;huevos|gulas|gambas|ajo|aceite de oliva|perejil
 Tortilla de patata y calabacín;si;no;Preparado de Mercadona, más jugosa y con un plus de verdura.;Huevo|Tubérculo|Verdura;cena;bajo;alta;no;tortilla de patata y calabacín|pan|tomate
-Salmón con verduras;si;no;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;comida|cena;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
+Salmón con verduras;si;si;Preparado de Mercadona: lomo o tacos de salmón con hortalizas.;Pescado azul|Verdura|Arroz;comida|cena;bajo;alta;si;lomo de salmón|calabacín|zanahoria|cebolla|aceite de oliva
 Restaurante;si;si;Ese día se come fuera: no entra en la lista de la compra.;Fuera de casa;comida|cena;bajo;nunca;si;
 Parrillada de verduras;si;no;Calabacín, berenjena, pimiento, cebolla y espárragos a la plancha.;Verdura;comida|cena;medio;alta;no;calabacín|berenjena|pimiento rojo|cebolla|espárragos trigueros|aceite de oliva
 Macarrones con queso y pollo;si;no;Macarrones gratinados con taquitos de pechuga y queso.;Pasta|Queso|Carne blanca;comida;medio;alta;si;macarrones|pechuga de pollo|queso rallado|nata para cocinar|aceite de oliva
@@ -655,6 +656,7 @@ Bocadillo de jamón serrano;si;no;Pan con tomate y jamón.;Pan y cereales|Embuti
 Macedonia de frutas;si;si;Varias frutas troceadas.;Fruta;almuerzo|merienda;bajo;media;si;manzana|plátano|naranja|kiwi
 Galletas integrales con leche;no;si;Un par de galletas mojadas en leche.;Pan y cereales|Lácteo;merienda;bajo;baja;si;galletas integrales|leche
 Yogur griego con miel y nueces;si;no;Yogur espeso con miel y nueces picadas.;Lácteo|Fruto seco;merienda;bajo;baja;si;yogur griego|miel|nueces
+Dorada o Lubina;si;si;Sin descripción.;Pescado blanco;comida|cena;medio;media;no;
 </script>
 <script type="text/csv" id="csv-ingredientes">
 ingrediente;seccion
@@ -779,23 +781,104 @@ Fuera de casa;Fuera de casa;0;2
 </script>
 <script type="text/csv" id="csv-semanas">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Salmón con verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Calamares
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;2;Parrillada de verduras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Nuggets de pollo conjelados
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;2;Croquetas congeladas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Macarrones con queso y pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Puré de verduras con pescado
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;2;Gulas salteadas con gambas y ajo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Restaurante
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Brocoli
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;2;Tiras de lomo salteadas con verduras al wok
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Lentejas con verduras y pollo
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Berenjenas rellenas
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Fajitas marineras
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Restaurante
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Restaurante
-2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Restaurante
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;comida;1;Lentejas con verduras y pollo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;lunes;cena;1;Tortilla de patata y calabacín
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;comida;1;Hamburguesas caseras de pollo con queso
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;martes;cena;1;Tostas de tacos de salmón
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;comida;1;Judías blancas con verduras y gambas
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;miércoles;cena;1;Pechugas de pollo a la plancha
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;comida;1;Fajitas de pollo y pimientos
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;jueves;cena;1;Revuelto de gulas, gambas y huevo
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;comida;1;Ensaladilla rusa casera
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;viernes;cena;1;Gambas al ajillo tradicionales
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;comida;1;Arroz con huevo y carne
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;sábado;cena;1;Tomate con mozzarella y aceite de oliva
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;comida;1;Solomillo de cerdo o ternera a la plancha
+2026-09-14;3ª semana de septiembre (14-20);2026-09-14;2026-09-20;domingo;cena;1;Salmón con verduras
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;desayuno;1;Cereales integrales con leche
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;almuerzo;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;comida;1;Parrillada de verduras
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;comida;2;Patatas fritas
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;merienda;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;cena;1;Croquetas congeladas
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;lunes;cena;2;Queso fresco
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;desayuno;1;Tostada de pan integral con tomate y aceite
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;desayuno;2;Café con leche
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;almuerzo;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;comida;1;Guisantes con jamón
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;comida;2;Niguiri de tortilla
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;merienda;1;Puñado de frutos secos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;martes;cena;1;Restaurante
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;desayuno;1;Tostada de pan integral con tomate y aceite
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;desayuno;2;Zumo de naranja natural
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;almuerzo;1;Puñado de frutos secos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;comida;1;Ensalada de garbanzos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;merienda;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;cena;1;Gulas salteadas con gambas y ajo
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;miércoles;cena;2;Gambas al ajillo tradicionales
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;desayuno;1;Tostada de tomate aguacate y pavo
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;almuerzo;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;comida;1;Macarrones con queso y pollo
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;merienda;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;cena;1;Tomate con mozzarella y aceite de oliva
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;jueves;cena;2;Sopa de pollo
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;desayuno;1;Tostada de pan integral con tomate y aceite
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;desayuno;2;Zumo de naranja natural
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;almuerzo;1;Fruta de temporada
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;comida;1;Garbanzos fritos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;comida;2;Puré o crema de verduras
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;merienda;1;Fruta de temporada
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;viernes;cena;1;Salmón con verduras
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;desayuno;1;Tostada de pan integral con tomate y aceite
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;desayuno;2;Zumo de naranja natural
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;almuerzo;1;Yogur natural con fruta
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;comida;1;Arroz con huevo y carne
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;merienda;1;Puñado de frutos secos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;cena;1;Brocoli
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;sábado;cena;2;Ensalada preparada
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;domingo;desayuno;1;Fruta de temporada
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;domingo;almuerzo;1;Puñado de frutos secos
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;domingo;comida;1;Hamburguesas caseras de pollo con queso
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;domingo;merienda;1;Bocadillo de jamón serrano
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);2026-09-28;2026-10-04;domingo;cena;1;Puré de verduras con pescado
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;lunes;comida;1;Judías blancas con verduras y gambas
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;lunes;cena;1;Pechugas de pollo a la plancha
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;martes;comida;1;Arroz con huevo y carne
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;martes;cena;1;Salmón con verduras
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;miércoles;comida;1;Tiras de lomo salteadas con verduras al wok
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;miércoles;cena;1;Revuelto de gulas, gambas y huevo
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;jueves;comida;1;Garbanzos fritos
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;jueves;cena;1;Tostas de tacos de salmón
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;viernes;comida;1;Lentejas con verduras y pollo
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;viernes;cena;1;Tortilla de patata y calabacín
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;sábado;comida;1;Fajitas de pollo y pimientos
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;sábado;cena;1;Sepia a la plancha con ajo y perejil
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;domingo;comida;1;Pimientos rellenos de bacalao y gambas
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;domingo;cena;1;Hamburguesas caseras de pollo con queso
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;comida;1;Lomo con queso
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;comida;2;Parrillada de verduras
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;cena;1;Calamares
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;cena;2;Parrillada de verduras
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;comida;1;Berenjenas rellenas
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;comida;2;Hamburguesas caseras de pollo con queso
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;cena;1;Dorada o Lubina
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;cena;2;Parrillada de verduras
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;comida;1;Macarrones con queso y pollo
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;comida;1;Lomo con queso
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;cena;1;Salmón con verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;comida;1;Nuggets de pollo conjelados
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;comida;2;Ensalada preparada
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;comida;1;Arroz con huevo y carne
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;comida;2;Parrillada de verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;comida;1;Berenjenas rellenas
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;comida;2;Parrillada de verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;comida;1;Berenjenas rellenas
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;cena;1;Ensalada preparada
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;comida;1;Brocoli
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;comida;2;Nuggets de pollo conjelados
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;cena;1;Ensalada preparada
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;comida;1;Guisantes con jamón
 </script>
 <script type="text/csv" id="csv-semanas-nino">
 semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
@@ -823,16 +906,16 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;comida;2;Rollitos de la Yaya
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;lunes;cena;1;Revuelto de gulas, gambas y huevo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;1;Guisantes con jamón
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;comida;2;Calamares
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Lomo con queso
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;1;Calamares
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;martes;cena;2;Puré o crema de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Arroz con pollo
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;1;Tortilla
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;comida;2;Puré o crema de verduras
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;1;Croquetas congeladas
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Puré o crema de verduras
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Puré o crema de verduras
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;miércoles;cena;2;Lomo con queso
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;1;Arroz con pollo
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;comida;2;Tortilla
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Hamburguesa de pollo
-2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;2;Queso fresco
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;1;Tortilla
+2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;jueves;cena;2;Croquetas congeladas
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;comida;1;Restaurante
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;1;Lomo con queso
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;viernes;cena;2;Queso fresco
@@ -842,6 +925,100 @@ semana_id;etiqueta;inicio;fin;dia;momento;orden;plato
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;comida;1;Macarrones con salchichas
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;1;Rollitos de la Yaya
 2026-09-21;4ª semana de septiembre (21-27);2026-09-21;2026-09-27;domingo;cena;2;Queso fresco
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;lunes;cena;1;Puré de verduras con carne
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;martes;cena;1;Crema de verduras
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;miércoles;cena;1;Revuelto de gulas
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;jueves;cena;1;Sopa de pollo
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;viernes;cena;1;Croquetas congeladas
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;sábado;comida;1;Guisantes con jamón
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;sábado;cena;1;Tortilla
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;domingo;comida;1;Hamburguesa de pollo
+2026-10-05;2ª semana de octubre (5-11);2026-10-05;2026-10-11;domingo;cena;1;Puré de verduras con pescado
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;lunes;desayuno;1;Desayuno guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;lunes;almuerzo;1;Almuerzo guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;lunes;comida;1;Menú guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;lunes;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;lunes;cena;1;Hamburguesa de pollo
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;desayuno;1;Desayuno guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;almuerzo;1;Almuerzo guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;comida;1;Menú guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;cena;1;Puré de verduras con pescado
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;martes;cena;2;Calamares
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;desayuno;1;Desayuno guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;almuerzo;1;Almuerzo guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;comida;1;Menú guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;cena;1;Sopa de pollo
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;miércoles;cena;2;Puré de verduras con pescado
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;desayuno;1;Desayuno guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;almuerzo;1;Almuerzo guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;comida;1;Menú guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;cena;1;Guisantes con jamón
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;jueves;cena;2;Rollitos de la Yaya
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;desayuno;1;Desayuno guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;almuerzo;1;Almuerzo guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;comida;1;Menú guarde
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;cena;1;Revuelto de gulas, gambas y huevo
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;viernes;cena;2;Puré o crema de verduras
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;desayuno;1;Cereales integrales con leche
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;desayuno;2;Bizcocho casero de yogur
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;almuerzo;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;comida;1;Lentejas con verduras y pollo
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;cena;1;Niguiri de tortilla
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;sábado;cena;2;Puré o crema de verduras
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;desayuno;1;Cereales integrales con leche
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;desayuno;2;Bizcocho casero de yogur
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;almuerzo;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;comida;1;Macarrones con salchichas
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;merienda;1;Fruta de temporada
+2026-10-12;3ª semana de octubre (12-18);2026-10-12;2026-10-18;domingo;cena;1;Croquetas congeladas
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;desayuno;1;Desayuno guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;almuerzo;1;Almuerzo guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;comida;1;Menú guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;merienda;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;cena;1;Gulas salteadas con gambas y ajo
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;lunes;cena;2;Puré o crema de verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;desayuno;1;Desayuno guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;almuerzo;1;Almuerzo guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;comida;1;Menú guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;merienda;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;cena;1;Hamburguesa de pollo
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;martes;cena;2;Puré o crema de verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;desayuno;1;Desayuno guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;almuerzo;1;Almuerzo guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;comida;1;Menú guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;merienda;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;cena;1;Niguiri de tortilla
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;miércoles;cena;2;Rollitos de la Yaya
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;desayuno;1;Desayuno guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;almuerzo;1;Almuerzo guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;comida;1;Menú guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;merienda;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;jueves;cena;1;Calamares
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;desayuno;1;Desayuno guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;almuerzo;1;Almuerzo guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;comida;1;Menú guarde
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;merienda;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;viernes;cena;1;Puré de verduras con pescado
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;desayuno;1;Tostada de tomate aguacate y pavo
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;almuerzo;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;comida;1;Lentejas con verduras y pollo
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;merienda;1;Bizcocho casero de yogur
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;merienda;2;Vaso de leche con cacao
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;cena;1;Lomo con queso
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;sábado;cena;2;Puré o crema de verduras
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;desayuno;1;Tostada de pan integral con tomate y aceite
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;desayuno;2;Bizcocho casero de yogur
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;almuerzo;1;Yogur natural con fruta
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;comida;1;Macarrones con salchichas
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;merienda;1;Bizcocho casero de yogur
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;merienda;2;Vaso de leche con cacao
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;cena;1;Tortilla
+2026-10-19;4ª semana de octubre (19-25);2026-10-19;2026-10-25;domingo;cena;2;Puré o crema de verduras
 </script>
 <script type="text/csv" id="csv-despensa">
 ingrediente;en_casa
@@ -857,46 +1034,58 @@ salsa de soja;si
 <script type="text/csv" id="csv-compras">
 semana_id;etiqueta;ingrediente;en_casa
 2026-09-14;3ª semana de septiembre (14-20);aceite de oliva;si
-2026-09-14;3ª semana de septiembre (14-20);aguacate;no
 2026-09-14;3ª semana de septiembre (14-20);ajo;si
-2026-09-14;3ª semana de septiembre (14-20);berenjena;no
-2026-09-14;3ª semana de septiembre (14-20);brócoli;no
+2026-09-14;3ª semana de septiembre (14-20);albahaca;no
+2026-09-14;3ª semana de septiembre (14-20);arroz;no
+2026-09-14;3ª semana de septiembre (14-20);atún en conserva;no
 2026-09-14;3ª semana de septiembre (14-20);calabacín;no
 2026-09-14;3ª semana de septiembre (14-20);calamares;no
 2026-09-14;3ª semana de septiembre (14-20);carne picada de pollo;no
 2026-09-14;3ª semana de septiembre (14-20);cebolla;no
+2026-09-14;3ª semana de septiembre (14-20);champiñones;no
 2026-09-14;3ª semana de septiembre (14-20);croquetas congeladas;no
-2026-09-14;3ª semana de septiembre (14-20);espárragos trigueros;no
+2026-09-14;3ª semana de septiembre (14-20);eneldo;no
+2026-09-14;3ª semana de septiembre (14-20);especias para fajitas;no
+2026-09-14;3ª semana de septiembre (14-20);filetes de ternera;no
 2026-09-14;3ª semana de septiembre (14-20);gambas;no
 2026-09-14;3ª semana de septiembre (14-20);guindilla;si
+2026-09-14;3ª semana de septiembre (14-20);guisantes;no
 2026-09-14;3ª semana de septiembre (14-20);gulas;no
 2026-09-14;3ª semana de septiembre (14-20);hamburguesa de pollo;no
 2026-09-14;3ª semana de septiembre (14-20);harina;si
 2026-09-14;3ª semana de septiembre (14-20);huevos;no
 2026-09-14;3ª semana de septiembre (14-20);jamón cocido;no
+2026-09-14;3ª semana de septiembre (14-20);judías blancas cocidas;no
+2026-09-14;3ª semana de septiembre (14-20);lechuga;no
 2026-09-14;3ª semana de septiembre (14-20);lentejas;no
 2026-09-14;3ª semana de septiembre (14-20);limón;no
 2026-09-14;3ª semana de septiembre (14-20);lomo de cerdo;no
 2026-09-14;3ª semana de septiembre (14-20);lomo de salmón;no
 2026-09-14;3ª semana de septiembre (14-20);macarrones;no
+2026-09-14;3ª semana de septiembre (14-20);mayonesa;si
 2026-09-14;3ª semana de septiembre (14-20);merluza;no
-2026-09-14;3ª semana de septiembre (14-20);nata para cocinar;no
-2026-09-14;3ª semana de septiembre (14-20);nuggets de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);mozzarella;no
+2026-09-14;3ª semana de septiembre (14-20);pan;no
 2026-09-14;3ª semana de septiembre (14-20);pan de hamburguesa;no
+2026-09-14;3ª semana de septiembre (14-20);pan para tostas;no
 2026-09-14;3ª semana de septiembre (14-20);patata;no
 2026-09-14;3ª semana de septiembre (14-20);patatas paja;no
 2026-09-14;3ª semana de septiembre (14-20);pechuga de pollo;no
+2026-09-14;3ª semana de septiembre (14-20);perejil;no
 2026-09-14;3ª semana de septiembre (14-20);pimiento rojo;no
 2026-09-14;3ª semana de septiembre (14-20);pimiento verde;no
 2026-09-14;3ª semana de septiembre (14-20);puerro;no
+2026-09-14;3ª semana de septiembre (14-20);queso crema;no
 2026-09-14;3ª semana de septiembre (14-20);queso en lonchas;no
 2026-09-14;3ª semana de septiembre (14-20);queso fresco;no
 2026-09-14;3ª semana de septiembre (14-20);queso rallado;no
 2026-09-14;3ª semana de septiembre (14-20);salchichas;no
 2026-09-14;3ª semana de septiembre (14-20);salmón ahumado;no
-2026-09-14;3ª semana de septiembre (14-20);salsa de soja;si
+2026-09-14;3ª semana de septiembre (14-20);solomillo de cerdo;no
 2026-09-14;3ª semana de septiembre (14-20);tomate;no
 2026-09-14;3ª semana de septiembre (14-20);tomate frito;no
+2026-09-14;3ª semana de septiembre (14-20);tomate triturado;no
+2026-09-14;3ª semana de septiembre (14-20);tortilla de patata y calabacín;no
 2026-09-14;3ª semana de septiembre (14-20);tortillas de trigo;no
 2026-09-14;3ª semana de septiembre (14-20);zanahoria;no
 2026-09-21;4ª semana de septiembre (21-27);aceite de oliva;si
@@ -911,13 +1100,11 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);gambas;no
 2026-09-21;4ª semana de septiembre (21-27);guisantes;no
 2026-09-21;4ª semana de septiembre (21-27);gulas;no
-2026-09-21;4ª semana de septiembre (21-27);hamburguesa de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);harina;si
 2026-09-21;4ª semana de septiembre (21-27);huevos;no
 2026-09-21;4ª semana de septiembre (21-27);jamón cocido;no
 2026-09-21;4ª semana de septiembre (21-27);lomo de cerdo;no
 2026-09-21;4ª semana de septiembre (21-27);macarrones;si
-2026-09-21;4ª semana de septiembre (21-27);pan de hamburguesa;no
 2026-09-21;4ª semana de septiembre (21-27);patata;no
 2026-09-21;4ª semana de septiembre (21-27);pechuga de pollo;no
 2026-09-21;4ª semana de septiembre (21-27);perejil;si
@@ -926,9 +1113,205 @@ semana_id;etiqueta;ingrediente;en_casa
 2026-09-21;4ª semana de septiembre (21-27);queso fresco;no
 2026-09-21;4ª semana de septiembre (21-27);queso rallado;si
 2026-09-21;4ª semana de septiembre (21-27);salchichas;no
-2026-09-21;4ª semana de septiembre (21-27);tomate;no
 2026-09-21;4ª semana de septiembre (21-27);tomate frito;no
 2026-09-21;4ª semana de septiembre (21-27);zanahoria;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);aceite de oliva;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);aguacate;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);ajo;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);albahaca;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);almendras;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);arroz;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);atún en conserva;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);berenjena;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);brócoli;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);café;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);calabacín;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);caldo de pollo;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);carne picada de pollo;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);cebolla;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);cereales integrales;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);croquetas congeladas;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);espárragos trigueros;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);fideos;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);filetes de ternera;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);gambas;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);garbanzos cocidos;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);guindilla;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);guisantes;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);gulas;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);huevos;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);jamón cocido;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);jamón serrano;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);leche;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);lechuga;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);lomo de salmón;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);macarrones;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);manzana;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);mayonesa;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);merluza;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);mozzarella;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);naranja;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);nata para cocinar;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pan;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pan de hamburguesa;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pan integral;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);patata;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);patatas paja;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pechuga de pavo en lonchas;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pechuga de pollo;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);perejil;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pimentón;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);pimiento rojo;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);plátano;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);puerro;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);queso en lonchas;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);queso fresco;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);queso rallado;si
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);tomate;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);tomate frito;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);yogur natural;no
+2026-09-28;1ª semana de octubre (28 sep - 4 oct);zanahoria;no
+2026-10-05;2ª semana de octubre (5-11);aceite de oliva;si
+2026-10-05;2ª semana de octubre (5-11);ajo;si
+2026-10-05;2ª semana de octubre (5-11);arroz;si
+2026-10-05;2ª semana de octubre (5-11);bacalao;no
+2026-10-05;2ª semana de octubre (5-11);calabacín;si
+2026-10-05;2ª semana de octubre (5-11);caldo de pollo;si
+2026-10-05;2ª semana de octubre (5-11);carne picada de pollo;no
+2026-10-05;2ª semana de octubre (5-11);cebolla;si
+2026-10-05;2ª semana de octubre (5-11);croquetas congeladas;no
+2026-10-05;2ª semana de octubre (5-11);eneldo;no
+2026-10-05;2ª semana de octubre (5-11);especias para fajitas;no
+2026-10-05;2ª semana de octubre (5-11);fideos;si
+2026-10-05;2ª semana de octubre (5-11);filetes de ternera;no
+2026-10-05;2ª semana de octubre (5-11);gambas;no
+2026-10-05;2ª semana de octubre (5-11);garbanzos cocidos;no
+2026-10-05;2ª semana de octubre (5-11);guisantes;no
+2026-10-05;2ª semana de octubre (5-11);gulas;no
+2026-10-05;2ª semana de octubre (5-11);hamburguesa de pollo;no
+2026-10-05;2ª semana de octubre (5-11);harina;si
+2026-10-05;2ª semana de octubre (5-11);huevos;no
+2026-10-05;2ª semana de octubre (5-11);jamón cocido;no
+2026-10-05;2ª semana de octubre (5-11);judías blancas cocidas;no
+2026-10-05;2ª semana de octubre (5-11);lechuga;no
+2026-10-05;2ª semana de octubre (5-11);lentejas;no
+2026-10-05;2ª semana de octubre (5-11);limón;no
+2026-10-05;2ª semana de octubre (5-11);lomo de cerdo;no
+2026-10-05;2ª semana de octubre (5-11);lomo de salmón;no
+2026-10-05;2ª semana de octubre (5-11);merluza;no
+2026-10-05;2ª semana de octubre (5-11);mozzarella;no
+2026-10-05;2ª semana de octubre (5-11);nata para cocinar;no
+2026-10-05;2ª semana de octubre (5-11);pan;no
+2026-10-05;2ª semana de octubre (5-11);pan de hamburguesa;no
+2026-10-05;2ª semana de octubre (5-11);pan para tostas;no
+2026-10-05;2ª semana de octubre (5-11);patata;no
+2026-10-05;2ª semana de octubre (5-11);pechuga de pollo;no
+2026-10-05;2ª semana de octubre (5-11);perejil;si
+2026-10-05;2ª semana de octubre (5-11);pimentón;si
+2026-10-05;2ª semana de octubre (5-11);pimiento rojo;no
+2026-10-05;2ª semana de octubre (5-11);pimiento verde;no
+2026-10-05;2ª semana de octubre (5-11);pimientos del piquillo;no
+2026-10-05;2ª semana de octubre (5-11);puerro;no
+2026-10-05;2ª semana de octubre (5-11);queso crema;no
+2026-10-05;2ª semana de octubre (5-11);queso en lonchas;no
+2026-10-05;2ª semana de octubre (5-11);salmón ahumado;no
+2026-10-05;2ª semana de octubre (5-11);salsa de soja;si
+2026-10-05;2ª semana de octubre (5-11);sepia;no
+2026-10-05;2ª semana de octubre (5-11);tomate;no
+2026-10-05;2ª semana de octubre (5-11);tomate frito;no
+2026-10-05;2ª semana de octubre (5-11);tomate triturado;no
+2026-10-05;2ª semana de octubre (5-11);tortilla de patata y calabacín;no
+2026-10-05;2ª semana de octubre (5-11);tortillas de trigo;no
+2026-10-05;2ª semana de octubre (5-11);zanahoria;no
+2026-10-12;3ª semana de octubre (12-18);aceite de oliva;si
+2026-10-12;3ª semana de octubre (12-18);ajo;si
+2026-10-12;3ª semana de octubre (12-18);arroz;si
+2026-10-12;3ª semana de octubre (12-18);azúcar;si
+2026-10-12;3ª semana de octubre (12-18);berenjena;no
+2026-10-12;3ª semana de octubre (12-18);calabacín;si
+2026-10-12;3ª semana de octubre (12-18);calamares;si
+2026-10-12;3ª semana de octubre (12-18);caldo de pollo;si
+2026-10-12;3ª semana de octubre (12-18);carne picada de pollo;no
+2026-10-12;3ª semana de octubre (12-18);cebolla;si
+2026-10-12;3ª semana de octubre (12-18);cereales integrales;si
+2026-10-12;3ª semana de octubre (12-18);croquetas congeladas;si
+2026-10-12;3ª semana de octubre (12-18);espárragos trigueros;no
+2026-10-12;3ª semana de octubre (12-18);fideos;si
+2026-10-12;3ª semana de octubre (12-18);gambas;si
+2026-10-12;3ª semana de octubre (12-18);guisantes;no
+2026-10-12;3ª semana de octubre (12-18);gulas;si
+2026-10-12;3ª semana de octubre (12-18);hamburguesa de pollo;si
+2026-10-12;3ª semana de octubre (12-18);harina;si
+2026-10-12;3ª semana de octubre (12-18);huevos;si
+2026-10-12;3ª semana de octubre (12-18);jamón cocido;no
+2026-10-12;3ª semana de octubre (12-18);leche;si
+2026-10-12;3ª semana de octubre (12-18);lechuga;no
+2026-10-12;3ª semana de octubre (12-18);lentejas;si
+2026-10-12;3ª semana de octubre (12-18);lomo de cerdo;no
+2026-10-12;3ª semana de octubre (12-18);lomo de salmón;no
+2026-10-12;3ª semana de octubre (12-18);macarrones;si
+2026-10-12;3ª semana de octubre (12-18);manzana;no
+2026-10-12;3ª semana de octubre (12-18);merluza;si
+2026-10-12;3ª semana de octubre (12-18);nata para cocinar;no
+2026-10-12;3ª semana de octubre (12-18);pan de hamburguesa;no
+2026-10-12;3ª semana de octubre (12-18);patata;si
+2026-10-12;3ª semana de octubre (12-18);pechuga de pollo;si
+2026-10-12;3ª semana de octubre (12-18);perejil;si
+2026-10-12;3ª semana de octubre (12-18);pimiento rojo;no
+2026-10-12;3ª semana de octubre (12-18);pimiento verde;no
+2026-10-12;3ª semana de octubre (12-18);puerro;no
+2026-10-12;3ª semana de octubre (12-18);queso en lonchas;si
+2026-10-12;3ª semana de octubre (12-18);queso rallado;si
+2026-10-12;3ª semana de octubre (12-18);salchichas;si
+2026-10-12;3ª semana de octubre (12-18);tomate;no
+2026-10-12;3ª semana de octubre (12-18);tomate frito;si
+2026-10-12;3ª semana de octubre (12-18);yogur natural;si
+2026-10-12;3ª semana de octubre (12-18);zanahoria;si
+2026-10-19;4ª semana de octubre (19-25);aceite de oliva;si
+2026-10-19;4ª semana de octubre (19-25);aguacate;no
+2026-10-19;4ª semana de octubre (19-25);ajo;si
+2026-10-19;4ª semana de octubre (19-25);arroz;si
+2026-10-19;4ª semana de octubre (19-25);azúcar;si
+2026-10-19;4ª semana de octubre (19-25);berenjena;no
+2026-10-19;4ª semana de octubre (19-25);brócoli;no
+2026-10-19;4ª semana de octubre (19-25);cacao soluble;si
+2026-10-19;4ª semana de octubre (19-25);calabacín;si
+2026-10-19;4ª semana de octubre (19-25);calamares;si
+2026-10-19;4ª semana de octubre (19-25);carne picada de pollo;no
+2026-10-19;4ª semana de octubre (19-25);cebolla;si
+2026-10-19;4ª semana de octubre (19-25);espárragos trigueros;no
+2026-10-19;4ª semana de octubre (19-25);filetes de ternera;no
+2026-10-19;4ª semana de octubre (19-25);gambas;si
+2026-10-19;4ª semana de octubre (19-25);guindilla;si
+2026-10-19;4ª semana de octubre (19-25);guisantes;no
+2026-10-19;4ª semana de octubre (19-25);gulas;si
+2026-10-19;4ª semana de octubre (19-25);hamburguesa de pollo;si
+2026-10-19;4ª semana de octubre (19-25);harina;si
+2026-10-19;4ª semana de octubre (19-25);huevos;no
+2026-10-19;4ª semana de octubre (19-25);jamón cocido;no
+2026-10-19;4ª semana de octubre (19-25);leche;no
+2026-10-19;4ª semana de octubre (19-25);lentejas;si
+2026-10-19;4ª semana de octubre (19-25);lomo de cerdo;no
+2026-10-19;4ª semana de octubre (19-25);macarrones;si
+2026-10-19;4ª semana de octubre (19-25);merluza;si
+2026-10-19;4ª semana de octubre (19-25);nuggets de pollo;no
+2026-10-19;4ª semana de octubre (19-25);pan de hamburguesa;no
+2026-10-19;4ª semana de octubre (19-25);pan integral;no
+2026-10-19;4ª semana de octubre (19-25);patata;si
+2026-10-19;4ª semana de octubre (19-25);patatas paja;no
+2026-10-19;4ª semana de octubre (19-25);pechuga de pavo en lonchas;no
+2026-10-19;4ª semana de octubre (19-25);pechuga de pollo;si
+2026-10-19;4ª semana de octubre (19-25);pimiento rojo;no
+2026-10-19;4ª semana de octubre (19-25);pimiento verde;no
+2026-10-19;4ª semana de octubre (19-25);plátano;no
+2026-10-19;4ª semana de octubre (19-25);puerro;no
+2026-10-19;4ª semana de octubre (19-25);queso en lonchas;no
+2026-10-19;4ª semana de octubre (19-25);queso rallado;si
+2026-10-19;4ª semana de octubre (19-25);salchichas;si
+2026-10-19;4ª semana de octubre (19-25);tomate;no
+2026-10-19;4ª semana de octubre (19-25);tomate frito;si
+2026-10-19;4ª semana de octubre (19-25);yogur natural;si
+2026-10-19;4ª semana de octubre (19-25);zanahoria;si
 </script>
 <script type="text/csv" id="csv-tipos">
 clave;tipo
@@ -2684,9 +3067,10 @@ fuera;Fuera de casa
     const suyo = hn[clave] ? platoEnSemana("nino", hn[clave]) : null;
     return el("div", {class:"nino-row"}, [
       el("span", {class:"etq", text:"niño"}),
-      el("button", {type:"button", class:"nino-plato",
+      el("button", {type:"button", class:"nino-plato" + (!suyo && hn[clave] ? " roto" : ""),
         text: suyo ? suyo.n : (hn[clave] || "sin asignar"),
-        title: suyo ? tipoTexto(suyo) : "Elegir qué come el niño",
+        title: suyo ? tipoTexto(suyo)
+                    : (hn[clave] ? "Este plato ya no está en el repertorio" : "Elegir qué come el niño"),
         onclick:function(){ abrirSelector("nino", dia, momento, orden); }}),
       el("button", {type:"button", class:"nino-quita", text:"×",
         title:"Que coma lo mismo que en la mesa",
