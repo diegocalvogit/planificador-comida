@@ -201,15 +201,22 @@
 
   /* Tabla de platos */
   .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-  table{border-collapse:collapse;width:100%;min-width:900px}
+  table{border-collapse:collapse;width:100%;min-width:860px}
+  /* La columna de Editar se queda pegada a la derecha: con nueve columnas la
+     tabla no cabe en según qué pantalla, y el botón era lo primero que se perdía. */
+  .col-acc{position:sticky;right:0;z-index:1;background:var(--surface)}
+  .col-acc::before{content:"";position:absolute;inset:0 auto 0 0;width:10px;
+    transform:translateX(-10px);pointer-events:none;
+    background:linear-gradient(to right, transparent, rgba(19,30,45,.07))}
+  tbody tr:hover .col-acc{background:var(--surface-2)}
   table.estrecha{min-width:640px}
   thead th{text-align:left;font-family:"IBM Plex Mono", monospace;font-size:10.5px;letter-spacing:.08em;
     text-transform:uppercase;color:var(--ink-3);font-weight:500;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
-  tbody td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  tbody td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
   tbody tr:last-child td{border-bottom:0}
   tbody tr:hover{background:var(--surface-2)}
   .dish-name{font-weight:700;font-family:"Bricolage Grotesque", sans-serif;font-size:15px}
-  .dish-desc{color:var(--ink-2);font-size:13.5px;margin-top:2px;max-width:38ch}
+  .dish-desc{color:var(--ink-2);font-size:13.5px;margin-top:2px;max-width:32ch}
   .tipos{display:flex;flex-wrap:wrap;gap:4px;max-width:24ch}
   .chip-tipo{background:var(--surface-2);color:var(--ink-2);font-weight:400;font-size:11.5px;padding:1px 8px}
   .tipos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:5px;margin-top:6px;
@@ -503,6 +510,10 @@
   .picker > header{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:10px}
   .picker h3{font-size:16px;font-weight:700}
   .picker-list{overflow-y:auto;padding:6px 0}
+  .picker-alta{border-top:1px solid var(--line);padding:11px 16px;display:flex;align-items:center;
+    gap:10px;flex-wrap:wrap;background:var(--surface-2)}
+  .picker-alta .alta-eco{flex:1 1 200px;min-width:0;font-size:13px;font-weight:600;color:var(--ink)}
+  .picker-alta .alta-pista{flex:1 1 200px;min-width:0;font-size:12px;color:var(--ink-3);line-height:1.45}
   .picker-filtro{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
   .picker-filtro input{margin:0;flex:none}
   .picker-filtro .om{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
@@ -618,6 +629,7 @@
 <script>
 (function(){
   "use strict";
+
 
 
 
@@ -1633,9 +1645,17 @@
       const b = el("button", {type:"button", class:"chip-mom chip-" + m + " on",
                               "aria-pressed":"true", "data-mom":m, text:MOMENTO_LBL[m]});
       b.addEventListener("click", function(){
+        const todos = MOMS_VISTOS.length === IDS_MOMENTO.length;
         const i = MOMS_VISTOS.indexOf(m);
-        if(i === -1) MOMS_VISTOS.push(m); else MOMS_VISTOS.splice(i, 1);
-        // Apagarlos todos no enseña nada útil, así que equivale a encenderlos todos.
+        if(todos){
+          // Partiendo de "todos", pulsar una ficha quiere decir "enséñame solo esta".
+          MOMS_VISTOS = [m];
+        }else if(i === -1){
+          MOMS_VISTOS.push(m);                       // sumar un momento más
+        }else{
+          MOMS_VISTOS.splice(i, 1);                  // quitar este
+        }
+        // Quedarse sin ninguno no enseña nada útil: vuelve a enseñarlos todos.
         if(!MOMS_VISTOS.length) MOMS_VISTOS = IDS_MOMENTO.slice();
         fichas.querySelectorAll(".chip-mom").forEach(function(x){
           const on = MOMS_VISTOS.indexOf(x.dataset.mom) !== -1;
@@ -2530,6 +2550,54 @@
     if(aviso2) aviso(aviso2);
   }
 
+  // De qué tipo suele ser un ingrediente, mirando los platos que ya lo usan. Si
+  // "merluza" solo sale en platos de pescado blanco, el tipo está claro; si es
+  // "aceite de oliva", que sale en diecisiete platos de todo, no dice nada y se
+  // calla. No hace falta ninguna tabla nueva: lo aprende del propio repertorio.
+  function tiposProbables(ings){
+    const todos = repertorio(), voto = {};
+    // Cada cuánto sale cada tipo en el recetario entero. Sirve de vara de medir:
+    // que un ingrediente vaya con "Verdura", que está en un tercio de los platos,
+    // no dice nada; que vaya con "Pescado azul", que está en el cinco por ciento,
+    // lo dice todo. Sin esto, un ingrediente con un solo plato proponía los
+    // cuatro tipos de ese plato como si los cuatro fueran seguros.
+    const base = {};
+    TIPOS.forEach(function(t){
+      base[t] = todos.filter(function(p){ return tiposDe(p).indexOf(t) !== -1; }).length /
+                Math.max(1, todos.length);
+    });
+    ings.forEach(function(ing){
+      const usan = todos.filter(function(p){ return p.i.indexOf(ing) !== -1; });
+      // Un ingrediente que sale en medio recetario no dice de qué es el plato.
+      // El aceite de oliva está en diecisiete, y arrastraba verdura y tubérculo
+      // a todo lo que se diera de alta. Solo opinan los específicos.
+      if(!usan.length || usan.length > 5) return;
+      const cuenta = {};
+      usan.forEach(function(p){
+        tiposDe(p).forEach(function(t){ cuenta[t] = (cuenta[t] || 0) + 1; });
+      });
+      Object.keys(cuenta).forEach(function(t){
+        // Y solo si ese tipo acompaña al ingrediente en la mayoría de sus platos:
+        // con menos de dos tercios es casualidad, no una pista.
+        const prop = cuenta[t] / usan.length;
+        if(prop >= 0.66 && prop >= (base[t] || 0) * 3) voto[t] = (voto[t] || 0) + 1;
+      });
+    });
+    // Como mucho tres: una propuesta larga se tarda más en corregir que en hacer.
+    return TIPOS.filter(function(t){ return voto[t]; })
+                .sort(function(a, b){ return voto[b] - voto[a]; })
+                .slice(0, 3);
+  }
+
+  // "Sopa de sobre con pollo; sopa, caldo de pollo" -> nombre e ingredientes.
+  function leerAlta(texto){
+    const partes = String(texto || "").split(";");
+    const n = (partes[0] || "").trim();
+    const i = (partes.slice(1).join(";") || "").split(",")
+      .map(function(x){ return x.trim(); }).filter(Boolean);
+    return {n:n, i:i};
+  }
+
   /* ============ Selector de plato ============ */
   let capa = null;
   function cerrarSelector(){
@@ -2557,8 +2625,10 @@
       });
     };
 
-    const buscar = el("input", {type:"search", id:"picker-buscar", placeholder:"Buscar plato o ingrediente…"});
+    const buscar = el("input", {type:"search", id:"picker-buscar",
+                                placeholder:"Buscar, o «Nombre del plato; ingrediente, ingrediente»"});
     const lst = el("div", {class:"picker-list"});
+    const pieAlta = el("div", {class:"picker-alta"});
 
     // Por defecto solo se ofrece lo que se come en ese momento: en una cena no
     // pintan nada los desayunos. La casilla abre la puerta a los demás para el
@@ -2636,10 +2706,25 @@
       if(!coinciden.length){
         const nada = fuera.length
           ? "Ningún plato de " + MOMENTO_LBL[momento].toLowerCase() + " coincide, pero sí " +
-            fuera.length + " de otros momentos. Márcalos arriba para verlos, o crea el plato en la pestaña " +
-            "Platos."
-          : "Ningún plato del repertorio coincide. Créalo en la pestaña Platos.";
-        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)", text:nada}));
+            fuera.length + " de otros momentos. Márcalos arriba para verlos."
+          : "Ningún plato del repertorio coincide.";
+        lst.appendChild(el("div", {style:"padding:22px 16px 6px;color:var(--ink-3)", text:nada}));
+      }
+
+      // Lo escrito sirve para dar de alta el plato que falta, sin salir de aquí.
+      const alta = leerAlta(buscar.value);
+      const existe = alta.n && !!platoPorNombre(alta.n);
+      pieAlta.textContent = "";
+      if(alta.n && !existe){
+        const resumen = alta.i.length
+          ? alta.n + " · " + alta.i.length + (alta.i.length === 1 ? " ingrediente" : " ingredientes")
+          : alta.n + " · sin ingredientes";
+        pieAlta.appendChild(el("div", {class:"alta-eco", text:resumen}));
+        pieAlta.appendChild(el("button", {class:"btn btn-primary", text:"Crear plato",
+          onclick:function(){ crearDesdeSelector(pid, dia, momento, orden, buscar.value, lst, pieAlta); }}));
+      }else{
+        pieAlta.appendChild(el("div", {class:"alta-pista", text:
+          "¿No está? Escríbelo aquí arriba como «Nombre del plato; ingrediente, ingrediente» y podrás crearlo."}));
       }
     }
     buscar.addEventListener("input", pinta);
@@ -2655,6 +2740,7 @@
         filtroMom
       ]),
       lst,
+      pieAlta,
       el("footer", null, [
         el("button", {class:"btn btn-ghost", text:"Dejar el hueco vacío", onclick:function(){
           delete h[clave]; fijarHuecos(pid, id, h); arrastra("");
@@ -2668,6 +2754,65 @@
     document.body.appendChild(capa);
     document.addEventListener("keydown", escSelector);
     buscar.focus();
+  }
+
+  // Da de alta el plato que acabas de escribir. Si trae ingredientes que no están
+  // en el catálogo, primero pregunta en qué sección del súper va cada uno: el
+  // catálogo cerrado es lo que evita que convivan "pimiento" y "pimientos".
+  function crearDesdeSelector(pid, dia, momento, orden, texto, lst, pieAlta){
+    const alta = leerAlta(texto);
+    if(!alta.n) return;
+    const conocidos = {};
+    ingredientes().forEach(function(x){ conocidos[x.n] = 1; });
+    const nuevos = alta.i.filter(function(x){ return !conocidos[x]; });
+
+    const seguir = function(){
+      const id = semanaActual();
+      cerrarSelector();
+      abrirEditor(null, ambito("platos"), {
+        n: alta.n,
+        i: alta.i,
+        m: [momento],
+        t: tiposProbables(alta.i),
+        alGuardar: function(nombre){
+          const h = {}, origen = huecos(pid, id);
+          Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
+          h[dia + "|" + momento + "|" + orden] = nombre;
+          fijarHuecos(pid, id, h);
+          guardar(); pintarTodo();
+          aviso("«" + nombre + "» creado y puesto " + deMomento(momento) + " del " + dia);
+        }
+      });
+    };
+
+    if(!nuevos.length){ seguir(); return; }
+
+    // Un paso más: la sección de cada ingrediente que no existía.
+    const selectores = {};
+    const filas = nuevos.map(function(ing){
+      const sel = el("select", {"aria-label":"Sección de " + ing});
+      SECCIONES.forEach(function(sec){ sel.appendChild(el("option", {value:sec, text:sec})); });
+      selectores[ing] = sel;
+      return el("div", {class:"nuevo-row"}, [el("span", {class:"nm", text:ing}), sel]);
+    });
+
+    lst.textContent = "";
+    lst.appendChild(el("div", {style:"padding:16px"}, [
+      el("div", {class:"bloque-lbl", style:"margin-bottom:8px",
+                 text: nuevos.length === 1 ? "Este ingrediente no está en el catálogo"
+                                           : "Estos ingredientes no están en el catálogo"}),
+      el("p", {class:"hint", style:"margin-bottom:10px",
+               text:"Dime en qué parte del súper van y los añado al catálogo."})
+    ].concat(filas)));
+    pieAlta.textContent = "";
+    pieAlta.appendChild(el("button", {class:"btn btn-primary", text:"Añadirlos y seguir",
+      onclick:function(){
+        nuevos.forEach(function(ing){
+          estado.ing.extra.push({n:ing, seccion:selectores[ing].value});
+        });
+        guardar();
+        seguir();
+      }}));
   }
 
   /* ============ Editor de platos  /* ============ Editor de platos ============ */
@@ -2692,8 +2837,12 @@
 
   // ref: null para crear, {tipo:"base", orig} o {tipo:"extra", uid} para editar.
   // "a" es la pestaña desde la que se abre: decide el momento por defecto.
-  function abrirEditor(ref, a){
+  // "a" es la pestaña desde la que se abre (decide los momentos por defecto).
+  // "ini" trae valores de partida y un aviso para cuando se guarde, que es lo que
+  // usa el alta rápida desde el selector de la semana.
+  function abrirEditor(ref, a, ini){
     cerrarEditor();
+    ini = ini || {};
     const nuevo = !ref;
     let p = null;
     if(ref && ref.tipo === "base") p = repertorio().filter(function(x){ return x.orig === ref.orig; })[0];
@@ -2701,9 +2850,9 @@
     if(!nuevo && !p){ aviso("Ese plato ya no existe"); return; }
     const nombreAntes = p ? p.n : "";
 
-    const eNombre = el("input", {type:"text", id:"e-nombre", value: p ? p.n : "", placeholder:"Merluza al horno con patata"});
+    const eNombre = el("input", {type:"text", id:"e-nombre", value: p ? p.n : (ini.n || ""), placeholder:"Merluza al horno con patata"});
     const eDesc   = el("input", {type:"text", id:"e-desc", value: p ? p.d : "", placeholder:"Lomos de merluza con patata y cebolla."});
-    const tActuales = tiposDe(p);
+    const tActuales = p ? tiposDe(p) : (ini.t || []);
     const tGrid = el("div", {class:"tipos-grid"});
     TIPOS.forEach(function(t){
       const slug = t.replace(/[^a-z0-9]+/gi, "-");
@@ -2727,7 +2876,7 @@
     // mirando desayunos, lo normal es que vayas a dar de alta un desayuno.
     const porDefecto = (MOMS_VISTOS.length && MOMS_VISTOS.length < IDS_MOMENTO.length)
                        ? MOMS_VISTOS.slice() : ["comida"];
-    const mActuales = p ? momentosDe(p) : porDefecto;
+    const mActuales = p ? momentosDe(p) : (ini.m || porDefecto);
     const momGrid = el("div", {class:"tipos-grid"});
     MOMENTOS.forEach(function(mo){
       const cb = el("input", {type:"checkbox", id:"e-m-" + mo.id, "aria-label":"Se come " + deMomento(mo.id)});
@@ -2756,7 +2905,7 @@
 
 
     // Los ingredientes salen del catálogo: aquí se buscan, no se escriben.
-    let elegidos = p ? p.i.slice() : [];
+    let elegidos = p ? p.i.slice() : (ini.i ? ini.i.slice() : []);
     const chips = el("div", {class:"ing-chips"});
     const eIngs = el("input", {type:"text", id:"e-ings", autocomplete:"off", role:"combobox",
                                "aria-autocomplete":"list", "aria-expanded":"false",
@@ -2917,7 +3066,8 @@
           PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, nombreAntes, n); });
         }
         guardar(); cerrarEditor(); pintarTodo();
-        aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
+        if(nuevo && ini.alGuardar) ini.alGuardar(n);
+        else aviso(nuevo ? "Plato añadido al repertorio" : "Plato actualizado");
       }})
     ]));
 
