@@ -453,6 +453,22 @@
   .nuevo-row .nm{flex:1 1 auto;font-size:13px;min-width:0}
   .nuevo-row select{flex:0 1 215px;font-size:13px;padding:4px 7px}
 
+  /* La puerta tapa la página entera: sin sesión no se ve ni el menú de pestañas. */
+  .puerta{position:fixed;inset:0;background:var(--ground);z-index:200;display:flex;
+    align-items:center;justify-content:center;padding:24px}
+  .puerta .caja{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);padding:26px 24px;width:100%;max-width:400px}
+  .puerta h2{font-family:"Bricolage Grotesque",sans-serif;font-size:21px;font-weight:800}
+  .puerta p{color:var(--ink-2);font-size:13.5px;margin-top:8px;line-height:1.5}
+  .puerta input{width:100%;margin-top:16px;padding:10px 12px;border:1px solid var(--line-strong);
+    border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
+  .puerta input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .puerta .btn{width:100%;margin-top:10px;justify-content:center}
+  .puerta .p-aviso{margin-top:12px;font-size:13px;color:var(--ink-2);line-height:1.5}
+  .puerta .p-aviso.mal{color:var(--pimenton);background:var(--pimenton-soft);
+    border-radius:8px;padding:9px 11px}
+  .puerta .p-aviso.bien{color:var(--ok);background:var(--ok-soft);
+    border-radius:8px;padding:9px 11px}
   .overlay{position:fixed;inset:0;background:rgba(10,16,24,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center}
   @media (min-width:640px){ .overlay{align-items:center;padding:24px} }
   .picker{background:var(--surface);width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;
@@ -1330,9 +1346,20 @@ guarde;Guardería
 fuera;Fuera de casa
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script>
 (function(){
   "use strict";
+
+  /* ============ Base de datos ============ */
+  // La clave es pública a propósito y va a la vista en esta misma página. Lo que
+  // protege los datos no es ella, sino las políticas del propio Postgres: sin una
+  // sesión cuyo correo esté en la tabla `hogar`, la base no devuelve ni una fila.
+  // Comprobado contra el proyecto: con esta clave y sin sesión responde 42501,
+  // "permission denied". La clave secreta no está aquí ni debe estarlo nunca.
+  const SUPABASE_URL = "https://hoaifyokcgyuacsbbcdo.supabase.co";
+  const SUPABASE_KEY = "sb_publishable__3MJZhGtxfwFXocPrK4ezw_AW3-_yST";
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   /* ============ Constantes ============ */
   const DIAS = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
@@ -1459,16 +1486,6 @@ fuera;Fuera de casa
   function lista(s){ return String(s || "").split("|").map(function(x){ return x.trim(); }).filter(Boolean); }
 
   /* ============ Carga ============ */
-  const FUENTES = [
-    ["platos",           "datos/platos.csv",           "csv-platos"],
-    ["ingredientes",     "datos/ingredientes.csv",     "csv-ingredientes"],
-    ["equilibrio",       "datos/equilibrio.csv",       "csv-equilibrio"],
-    ["semanas",          "datos/semanas.csv",          "csv-semanas"],
-    ["semanas_nino",     "datos/semanas-nino.csv",     "csv-semanas-nino"],
-    ["despensa",         "datos/despensa.csv",         "csv-despensa"],
-    ["compras",          "datos/compras.csv",          "csv-compras"],
-    ["tipos",            "datos/tipos.csv",            "csv-tipos"]
-  ];
   const datos = {};    // filas ya parseadas
   const crudos = {};   // el texto tal cual vino, para detectar cambios sin guardar
   let desdeRespaldo = false;
@@ -1477,17 +1494,74 @@ fuera;Fuera de casa
     const e = $(id), t = e ? e.textContent : "";
     return t.indexOf("PLACEHOLDER_") === 0 ? "" : t;
   }
+
+  // Un tope generoso, porque PostgREST pagina. Con 35 huecos por semana y dos
+  // menús esto da para unos cinco años de histórico; cuando se acerque habrá que
+  // traer solo las semanas que se miran.
+  const TOPE = 20000;
+  async function tabla(nombre, orden){
+    let q = db.from(nombre).select("*").limit(TOPE);
+    (orden || []).forEach(function(c){ q = q.order(c, {ascending:true}); });
+    const { data, error } = await q;
+    if(error) throw error;
+    return data || [];
+  }
+
+  // Las filas se traducen a la forma que tenían los CSV: listas unidas por "|" y
+  // booleanos como "si"/"no". Así nada de lo que viene después se entera del
+  // cambio de origen, que es justo lo que se quiere en un primer paso.
+  function tubo(v){ return Array.isArray(v) ? v.join("|") : (v || ""); }
+  function sn(v){ return v ? "si" : "no"; }
+
   async function cargar(){
-    await Promise.all(FUENTES.map(async function(f){
-      let texto = null;
-      try{
-        const r = await fetch(f[1], {cache:"no-store"});
-        if(r.ok) texto = await r.text();
-      }catch(e){ /* file:// o sin red: usamos la copia incrustada */ }
-      if(texto === null){ desdeRespaldo = true; texto = respaldo(f[2]); }
-      crudos[f[0]] = texto;
-      datos[f[0]] = leerCSV(texto);
-    }));
+    const r = await Promise.all([
+      tabla("secciones",    ["orden"]),
+      tabla("ingredientes", ["ingrediente"]),
+      tabla("tipos",        ["orden"]),
+      tabla("equilibrio",   ["orden"]),
+      tabla("platos",       ["nombre"]),
+      tabla("semanas",      ["semana_id", "dia", "momento", "orden"]),
+      tabla("compras",      ["semana_id", "ingrediente"]),
+      tabla("despensa",     ["ingrediente"])
+    ]);
+    const [secciones, ingredientes, tipos, equilibrio, platos, semanas, compras, despensa] = r;
+
+    // El orden de las secciones es el del súper y manda en la lista de la compra:
+    // los ingredientes se devuelven ordenados por él, como venían en el CSV.
+    const pos = {};
+    secciones.forEach(function(x){ pos[x.seccion] = x.orden; });
+    ingredientes.sort(function(a, b){
+      return (pos[a.seccion] - pos[b.seccion]) || a.ingrediente.localeCompare(b.ingrediente, "es");
+    });
+
+    datos.tipos = tipos.map(function(x){ return {clave:x.clave, tipo:x.tipo}; });
+    datos.ingredientes = ingredientes.map(function(x){
+      return {ingrediente:x.ingrediente, seccion:x.seccion};
+    });
+    datos.equilibrio = equilibrio.map(function(x){
+      return {objetivo:x.objetivo, tipos:tubo(x.tipos),
+              minimo:String(x.minimo), maximo:String(x.maximo)};
+    });
+    datos.platos = platos.map(function(x){
+      return {nombre:x.nombre, adultos:sn(x.adultos), nino:sn(x.nino),
+              descripcion:x.descripcion || "", tipo:tubo(x.tipo), momento:tubo(x.momento),
+              tiempo:x.tiempo, repeticion:x.repeticion, plato_unico:sn(x.plato_unico),
+              ingredientes:tubo(x.ingredientes)};
+    });
+    const deMenu = function(m){
+      return semanas.filter(function(x){ return x.menu === m; }).map(function(x){
+        return {semana_id:x.semana_id, dia:x.dia, momento:x.momento,
+                orden:String(x.orden), plato:x.plato};
+      });
+    };
+    datos.semanas = deMenu("casa");
+    datos.semanas_nino = deMenu("nino");
+    datos.compras = compras.map(function(x){
+      return {semana_id:x.semana_id, ingrediente:x.ingrediente, en_casa:sn(x.en_casa)};
+    });
+    datos.despensa = despensa.map(function(x){
+      return {ingrediente:x.ingrediente, en_casa:sn(x.en_casa)};
+    });
   }
 
   /* ============ Estado ============ */
@@ -4104,13 +4178,13 @@ fuera;Fuera de casa
   function pintarCreditos(){
     const c = $("credits"); c.textContent = "";
     c.appendChild(el("div", {text:
-      "Datos en datos/*.csv · " + PLATOS.length + " platos y " +
-      Object.keys(SECCION).length + " ingredientes. " +
-      "Lo que marcas se guarda en este navegador; para fijarlo, descarga los CSV desde el Histórico y súbelos al repositorio."}));
-    if(desdeRespaldo){
-      c.appendChild(el("div", {style:"margin-top:6px",
-        text:"Abierto sin servidor: se está usando la copia de los CSV incrustada en el propio index.html."}));
-    }
+      "Datos en Supabase · " + PLATOS.length + " platos y " +
+      Object.keys(SECCION).length + " ingredientes · " + (sesion ? sesion.email : "")}));
+    c.appendChild(el("div", {style:"margin-top:6px"}, [
+      document.createTextNode("Migración a medias: la página ya lee de la base de datos, pero lo que cambies " +
+                              "sigue guardándose solo en este navegador. "),
+      el("button", {class:"btn btn-sm", text:"Cerrar sesión", onclick:salir})
+    ]));
   }
 
   /* ============ Pintado global ============ */
@@ -4121,8 +4195,106 @@ fuera;Fuera de casa
     pintarCompra(); pintarHistorico();
   }
 
+  /* ============ Puerta ============ */
+  let sesion = null, arrancado = false, capaPuerta = null;
+
+  function cerrarPuerta(){ if(capaPuerta){ capaPuerta.remove(); capaPuerta = null; } }
+
+  function puerta(mensaje, malo){
+    cerrarPuerta();
+    const correo = el("input", {type:"email", id:"p-correo", placeholder:"tu@correo.com",
+                                autocomplete:"email", inputmode:"email",
+                                "aria-label":"Tu correo"});
+    const nota = el("div", {class:"p-aviso" + (mensaje ? (malo ? " mal" : " bien") : ""),
+                            text: mensaje || "Te llega un enlace al correo. Al pulsarlo entras, sin contraseña."});
+    const boton = el("button", {class:"btn btn-primary", text:"Enviarme el enlace"});
+
+    async function enviar(){
+      const email = correo.value.trim();
+      if(email.indexOf("@") < 1){
+        nota.className = "p-aviso mal"; nota.textContent = "Escribe un correo válido.";
+        correo.focus(); return;
+      }
+      boton.disabled = true; boton.textContent = "Enviando…";
+      const { error } = await db.auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: location.origin + location.pathname }
+      });
+      boton.disabled = false; boton.textContent = "Enviarme el enlace";
+      if(error){
+        nota.className = "p-aviso mal";
+        nota.textContent = "No se ha podido enviar: " + error.message;
+        return;
+      }
+      nota.className = "p-aviso bien";
+      nota.textContent = "Enviado a " + email + ". Abre el enlace en este mismo dispositivo; " +
+                         "si no lo ves, mira en correo no deseado.";
+    }
+    boton.addEventListener("click", enviar);
+    correo.addEventListener("keydown", function(e){ if(e.key === "Enter") enviar(); });
+
+    capaPuerta = el("div", {class:"puerta"}, [
+      el("div", {class:"caja"}, [
+        el("h2", {text:"Menú Semanal"}),
+        el("p", {text:"Las comidas de casa. Entra con tu correo para verlas."}),
+        correo, boton, nota
+      ])
+    ]);
+    document.body.appendChild(capaPuerta);
+    correo.focus();
+  }
+
+  async function salir(){
+    await db.auth.signOut();
+    location.reload();
+  }
+
+  // Un correo que no esté en la tabla `hogar` entra en Supabase pero no saca nada
+  // de la base: Postgres responde 42501. Sin este aviso parecería que la
+  // aplicación está rota, y es el fallo más probable de toda la migración.
+  function esSinPermiso(e){
+    const t = String((e && (e.message || e.code)) || e);
+    return t.indexOf("42501") !== -1 || t.indexOf("permission denied") !== -1;
+  }
+
+  async function entrar(){
+    if(arrancado) return;
+    let usuario = null;
+    try{
+      const { data } = await db.auth.getSession();
+      usuario = data && data.session ? data.session.user : null;
+    }catch(e){ /* sin red: se pide el correo igual */ }
+    if(!usuario){ puerta(); return; }
+    sesion = usuario;
+
+    try{
+      await cargar();
+    }catch(e){
+      const correo = usuario.email;
+      await db.auth.signOut();
+      sesion = null;
+      if(esSinPermiso(e)){
+        puerta("Has entrado como " + correo + ", pero ese correo no tiene acceso a los datos. " +
+               "Hay que añadirlo a la tabla «hogar» de Supabase.", true);
+      }else{
+        puerta("No he podido leer la base de datos: " + (e.message || e), true);
+      }
+      return;
+    }
+    arrancado = true;
+    cerrarPuerta();
+    arrancar();
+  }
+
+  // Al volver del enlace del correo, la sesión llega en la dirección y la librería
+  // la canjea sola; este aviso es el que lo recoge.
+  db.auth.onAuthStateChange(function(evento){
+    if(evento === "SIGNED_IN" && !arrancado) entrar();
+  });
+  entrar();
+
   /* ============ Arranque ============ */
-  cargar().then(function(){
+  function arrancar(){
     construir();
     cargarEstado();
     montarPestanas();
@@ -4143,7 +4315,7 @@ fuera;Fuera de casa
     pintarCreditos();
     const valida = PESTANAS.some(function(t){ return t.id === estado.tab; });
     verTab(valida ? estado.tab : "semana");
-  });
+  }
 })();
 </script>
 </body>
