@@ -2237,6 +2237,7 @@ fuera;Fuera de casa
   ];
   function montarPestanas(){
     const nav = $("tabs");
+    nav.textContent = "";   // montar dos veces no debe dejar la barra duplicada
     PESTANAS.forEach(function(t){
       const hijos = [document.createTextNode(t.lbl + " ")];
       if(t.quien) hijos.push(el("span", {class:"quien", text:t.quien}));
@@ -4196,7 +4197,7 @@ fuera;Fuera de casa
   }
 
   /* ============ Puerta ============ */
-  let sesion = null, arrancado = false, capaPuerta = null;
+  let sesion = null, arrancado = false, capaPuerta = null, entrando = null;
 
   function cerrarPuerta(){ if(capaPuerta){ capaPuerta.remove(); capaPuerta = null; } }
 
@@ -4258,6 +4259,18 @@ fuera;Fuera de casa
   }
 
   async function entrar(){
+    // El cerrojo se cierra ANTES de esperar nada: si no, la llamada directa y la
+    // del aviso de sesión se cuelan las dos y la aplicación se monta por
+    // duplicado. Guardar la promesa y no un booleano es lo que lo evita.
+    if(entrando) return entrando;
+    entrando = (async function(){
+      await abrir();
+      entrando = null;
+    })();
+    return entrando;
+  }
+
+  async function abrir(){
     if(arrancado) return;
     let usuario = null;
     try{
