@@ -621,6 +621,7 @@
 
 
 
+
   /* ============ Base de datos ============ */
   // La clave es pública a propósito y va a la vista en esta misma página. Lo que
   // protege los datos no es ella, sino las políticas del propio Postgres: sin una
@@ -637,12 +638,15 @@
   const MESES_CORTOS = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
   // Los cinco momentos del día, en el orden en que se comen. "platos" dice
   // cuántos huecos tiene cada uno: el almuerzo de media mañana es uno solo.
+  // Todos los momentos admiten lo mismo. No estorba porque los huecos se revelan
+  // de uno en uno: una comida vacía ocupa una sola línea.
+  const PLATOS_POR_COMIDA = 3;
   const MOMENTOS = [
-    {id:"desayuno", lbl:"Desayuno", platos:2},
-    {id:"almuerzo", lbl:"Almuerzo", platos:1},
-    {id:"comida",   lbl:"Comida",   platos:2},
-    {id:"merienda", lbl:"Merienda", platos:2},
-    {id:"cena",     lbl:"Cena",     platos:2}
+    {id:"desayuno", lbl:"Desayuno"},
+    {id:"almuerzo", lbl:"Almuerzo"},
+    {id:"comida",   lbl:"Comida"},
+    {id:"merienda", lbl:"Merienda"},
+    {id:"cena",     lbl:"Cena"}
   ];
   const MOMENTO_LBL = {};
   MOMENTOS.forEach(function(m){ MOMENTO_LBL[m.id] = m.lbl; });
@@ -651,12 +655,17 @@
   // comida y cena son las que conviene variar.
   const LIGEROS = {desayuno:1, almuerzo:1, merienda:1};
   function momento(id){ return MOMENTOS.filter(function(m){ return m.id === id; })[0]; }
-  function ordenesDe(id){
-    const m = momento(id), n = m ? m.platos : 2, salida = [];
-    for(let i = 1; i <= n; i++) salida.push(String(i));
+  function ordenesDe(){
+    const salida = [];
+    for(let i = 1; i <= PLATOS_POR_COMIDA; i++) salida.push(String(i));
     return salida;
   }
-  const ORDEN_LBL = {"1":"1º", "2":"2º"};
+  // Un plato único resuelve la comida él solo, pero sigue admitiendo postre: por
+  // eso la paella deja sitio para la manzana y no para un tercero.
+  function cabenEn(primero){
+    return primero && primero.unico ? 2 : PLATOS_POR_COMIDA;
+  }
+  const ORDEN_LBL = {"1":"1º", "2":"2º", "3":"3º"};
   const DIA_MS = 86400000;
   const FINDE = {"sábado":1, "domingo":1};
   const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5, nunca:-999};
@@ -1097,7 +1106,7 @@
     slotsDe().forEach(function(slot){
       const mom = slot.split("|")[1];
       if(guarde[slot]){ h[slot + "|1"] = guarde[slot]; return; }
-      ordenesDe(mom).forEach(function(o){
+      ordenesDe().forEach(function(o){
         const x = espejoNino(casa[slot + "|" + o], mom);
         if(x) h[slot + "|" + o] = x;
       });
@@ -1131,7 +1140,7 @@
     slotsDe().forEach(function(slot){
       const suyo = hn[slot + "|1"] ? plato("nino", hn[slot + "|1"]) : null;
       if(esGuarde(suyo)){ guarde++; return; }
-      ordenesDe(slot.split("|")[1]).forEach(function(o){
+      ordenesDe().forEach(function(o){
         const k = slot + "|" + o;
         if((casa[k] || "") !== (hn[k] || "")) propias++;
       });
@@ -1213,13 +1222,13 @@
   function clavesDe(){
     const salida = [];
     slotsDe().forEach(function(x){
-      ordenesDe(x.split("|")[1]).forEach(function(o){ salida.push(x + "|" + o); });
+      ordenesDe().forEach(function(o){ salida.push(x + "|" + o); });
     });
     return salida;
   }
   // Los platos de un hueco, ya resueltos contra el repertorio del menú.
   function platosDe(pid, h, slot){
-    return ordenesDe(slot.split("|")[1])
+    return ordenesDe()
       .map(function(o){ return h[slot + "|" + o]; })
       .map(function(n){ return n ? platoEnSemana(pid, n) : null; })
       .filter(Boolean);
@@ -1311,7 +1320,8 @@
     // calcula aquí una vez y luego sólo se consulta.
     const SLOTS = slotsDe(), CLAVES = clavesDe();
     const ORD = {}, APTOS = {}, PORNOMBRE = {}, CUBRE = {};
-    SLOTS.forEach(function(x){ ORD[x] = ordenesDe(x.split("|")[1]); });
+    const ORDS = ordenesDe();
+    SLOTS.forEach(function(x){ ORD[x] = ORDS; });
     IDS_MOMENTO.forEach(function(m){
       APTOS[m] = todos.filter(function(p){ return elegible(p, m); });
     });
@@ -1382,7 +1392,9 @@
       apunta(slot, "1", primero);
 
       // Un plato único basta. Si no lo es, se le busca otro plato que tampoco lo sea.
-      if(primero.unico || ordenesDe(momento).length < 2) return;
+      // Un plato único resuelve la comida: el postre y el tercero, si hacen
+      // falta, los pone el repaso cuando con ellos cuadra algún objetivo.
+      if(primero.unico) return;
       const parejas = aptos.filter(function(p){ return !p.unico && p.n !== primero.n; });
       if(!parejas.length) return;
       const libres = vario ? parejas.filter(function(p){ return !usados[p.n]; }) : parejas;
@@ -1415,28 +1427,67 @@
     }
     function repasa(){
       let cuentas = conteo(h), mejor = desvioDe(cuentas);
-      const claves = CLAVES.filter(function(k){ return h[k]; });
-      // Con 35 huecos y 17 objetivos hace falta rebuscar bastante más que antes.
-      const vueltas = Math.max(600, claves.length * 60);
+      // Se recorren todos los huecos, ocupados o no: cambiar un plato y añadir
+      // uno donde cabe son el mismo movimiento desde el punto de vista del
+      // equilibrio, y el repaso solo acepta lo que acerca la semana a su sitio.
+      // Por eso puede llegar a poner un tercer plato, pero nunca de más: añadir
+      // algo que rebase un máximo empeora el desvío y se descarta.
+      const vueltas = Math.max(600, CLAVES.length * 40);
       for(let vuelta = 0; vuelta < vueltas && mejor > 0; vuelta++){
-        const k = claves[Math.floor(Math.random() * claves.length)];
+        const k = CLAVES[Math.floor(Math.random() * CLAVES.length)];
         if(!k) break;
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
         if(fijados[slot] && orden === "1") continue;   // lo de la guardería no se toca
-        const actual = PORNOMBRE[h[k]];
-        if(!actual) continue;
-        const hermano = h[slot + "|" + (orden === "1" ? "2" : "1")];
+
+        const actual = h[k] ? PORNOMBRE[h[k]] : null;
+        if(h[k] && !actual) continue;                  // un plato que ya no existe
+        const anade = !h[k];
+
+        // Quitar un acompañante es el movimiento simétrico de añadirlo, y es el
+        // único que arregla un exceso: si la semana se pasa de pescado, ningún
+        // cambio de plato lo baja, hay que retirar uno. El primero no se toca,
+        // y el segundo solo si el primero se basta solo: si no, dejaría una
+        // ensalada haciendo de cena ella sola.
+        const base1 = h[slot + "|1"] ? PORNOMBRE[h[slot + "|1"]] : null;
+        const puedeQuitar = actual && (orden === "3" || (orden === "2" && base1 && base1.unico));
+        if(puedeQuitar){
+          const guardado = h[k];
+          delete h[k];
+          // Si se quita el de en medio, el siguiente sube para no dejar un salto.
+          const movido = (orden === "2" && h[slot + "|3"]) ? h[slot + "|3"] : null;
+          if(movido){ h[slot + "|2"] = movido; delete h[slot + "|3"]; }
+          const tras = conteo(h), dq = desvioDe(tras);
+          if(dq < mejor){ mejor = dq; cuentas = tras; continue; }
+          if(movido){ h[slot + "|3"] = movido; }
+          h[k] = guardado;
+        }
+
+        // Los demás platos de esa comida y cuántos caben, que un plato único deja
+        // sitio para el postre pero no para un tercero.
+        const otros = [];
+        ORD[slot].forEach(function(o){
+          if(o !== orden && h[slot + "|" + o]) otros.push(h[slot + "|" + o]);
+        });
+        const primero = h[slot + "|1"] ? PORNOMBRE[h[slot + "|1"]] : null;
+        if(anade){
+          // Solo se rellena el hueco siguiente al último ocupado, y si cabe.
+          const puestos = ORD[slot].filter(function(o){ return !!h[slot + "|" + o]; }).length;
+          if(Number(orden) !== puestos + 1) continue;
+          if(Number(orden) > cabenEn(primero)) continue;
+        }
+
         const enUso = {};
         CLAVES.forEach(function(x){ if(h[x] && x !== k) enUso[h[x]] = 1; });
 
         const cands = (APTOS[momento] || []).filter(function(c){
-          if(c.n === actual.n || c.n === hermano) return false;
+          if(actual && c.n === actual.n) return false;
+          if(otros.indexOf(c.n) !== -1) return false;
           // Lo marcado como "nunca" (guarde, restaurante) solo se pone a mano.
           if(c.rep === "nunca") return false;
           if(enUso[c.n] && !LIGEROS[momento]) return false;
-          // De primero vale cualquiera: si es único, el segundo se retira abajo.
-          // De segundo, nunca uno que se baste solo.
+          // De primero vale cualquiera: si es único, lo que sobre se retira abajo.
+          // Del segundo en adelante, nunca uno que se baste solo.
           return orden === "1" ? true : !c.unico;
         });
         if(!cands.length) continue;
@@ -1456,13 +1507,23 @@
 
         const cand = urna[Math.floor(Math.random() * urna.length)];
         const previo = h[k];
-        // Un plato único resuelve la comida él solo: el segundo que hubiera sobra.
-        const sobraSegundo = orden === "1" && cand.unico && hermano;
+        // Un plato único de primero recorta la comida a dos: lo que pase de ahí sobra.
+        const retirados = {};
+        if(orden === "1" && cand.unico){
+          ORD[slot].forEach(function(o){
+            if(Number(o) > 2 && h[slot + "|" + o]){
+              retirados[o] = h[slot + "|" + o];
+              delete h[slot + "|" + o];
+            }
+          });
+        }
         h[k] = cand.n;
-        if(sobraSegundo) delete h[slot + "|2"];
         const ahora = conteo(h), d = desvioDe(ahora);
         if(d < mejor){ mejor = d; cuentas = ahora; }
-        else { h[k] = previo; if(sobraSegundo) h[slot + "|2"] = hermano; }
+        else {
+          if(previo) h[k] = previo; else delete h[k];
+          Object.keys(retirados).forEach(function(o){ h[slot + "|" + o] = retirados[o]; });
+        }
       }
     }
     repasa();
@@ -2296,30 +2357,38 @@
 
         const pPrim = h[slot + "|1"] ? platoEnSemana("adultos", h[slot + "|1"]) : null;
 
-        ordenesDe(momento).forEach(function(o){
+        // Se enseña lo que hay y una línea más para lo siguiente: ni un hueco
+        // vacío de más. Un plato único corta en dos, dejando sitio al postre.
+        const tope = cabenEn(pPrim);
+        let vistos = 0, ofrecido = false;
+        ordenesDe().forEach(function(o){
           const clave = slot + "|" + o;
           const p = h[clave] ? platoEnSemana("adultos", h[clave]) : null;
           const ajeno = !!(p && !(p.menus && p.menus.adultos));
           const roto = !!(h[clave] && !p);
 
-          // El segundo plato solo ocupa sitio si lo hay; si no, una línea para añadirlo.
-          if(!p && !h[clave] && o === "2"){
-            const basta = pPrim && pPrim.unico;
+          if(!p && !h[clave]){
+            // Una sola línea de "añadir", la del hueco siguiente al último puesto:
+            // ofrecer a la vez el 2º y el 3º sería justo el ruido que se quiere evitar.
+            if(ofrecido || vistos !== Number(o) - 1 || Number(o) > tope) return;
+            ofrecido = true;
             card.appendChild(el("button", {
               type:"button", class:"slot-add",
-              "aria-label":"Añadir segundo plato " + deMomento(momento) + " del " + dia,
+              "aria-label":"Añadir " + (o === "1" ? "plato" : ORDEN_LBL[o] + " plato") +
+                           " de adulto " + deMomento(momento) + " del " + dia,
               onclick:function(){ abrirSelector("adultos", dia, momento, o); }
             }, [
               el("span", {class:"orden", text:ORDEN_LBL[o]}),
-              el("span", {text: basta ? "plato único, no hace falta segundo" : "+ añadir segundo plato"})
+              el("span", {text: o === "1" ? "Añadir plato adulto"
+                                          : "Añadir " + ORDEN_LBL[o] + " plato adulto"})
             ]));
             return;
           }
+          vistos++;
 
           const cuerpo = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
           // Solo el nombre: los tipos ya los dice el color del hueco y la leyenda
           // de abajo, y repetirlos en texto comía la mitad del alto de cada día.
-          // Quien quiera el detalle lo tiene en el título al pasar por encima.
           if(p && ajeno){
             cuerpo.push(el("div", {class:"slot-meta"}, [
               el("span", {class:"marca-ajeno", text:"fuera de este menú"})
@@ -2330,8 +2399,8 @@
             ]));
           }
 
-          const caja = el("div", {class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) +
-                                        (ajeno ? " ajeno" : "")}, [
+          card.appendChild(el("div", {class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) +
+                                             (ajeno ? " ajeno" : "")}, [
             el("button", {
               type:"button", class:"slot-main",
               "aria-label": ORDEN_LBL[o] + " plato " + deMomento(momento) + " del " + dia +
@@ -2342,9 +2411,7 @@
               el("span", {class:"orden", text:ORDEN_LBL[o]}),
               el("div", {class:"cuerpo"}, cuerpo)
             ])
-          ]);
-
-          card.appendChild(caja);
+          ]));
         });
         card.appendChild(bloqueNino(id, dia, momento, h, hn));
       });
@@ -2374,12 +2441,17 @@
   // momento pasa a ser suyo y el botón reaparece para el siguiente, hasta llenar
   // los huecos que ese momento admite — uno en el almuerzo, dos en los demás.
   function bloqueNino(id, dia, momento, h, hn){
-    const slot = dia + "|" + momento, ords = ordenesDe(momento);
+    const slot = dia + "|" + momento, ords = ordenesDe();
+    // Mientras no haya nada suyo, el niño come lo de la mesa y no se desglosa.
     const propio = ords.some(function(o){
       return (hn[slot + "|" + o] || "") !== (h[slot + "|" + o] || "");
     });
     const suyos = propio ? ords.filter(function(o){ return !!hn[slot + "|" + o]; }) : [];
     const caja = el("div", {class:"nino-bloque" + (propio ? " propio" : "")});
+
+    // Su primera línea solo aparece cuando en la mesa hay algo: sin plato de
+    // adulto no hay nada de lo que diferenciarse.
+    if(!h[slot + "|1"] && !suyos.length) return caja;
 
     suyos.forEach(function(o){
       const crudo = hn[slot + "|" + o], p = platoEnSemana("nino", crudo);
@@ -2400,9 +2472,14 @@
       ]));
     });
 
-    if(suyos.length < ords.length){
+    // Y una línea más para el siguiente, mientras quepa. Si su primero se basta
+    // solo, corta en dos igual que en la mesa, dejando sitio al postre.
+    const suPrimero = suyos.length ? plato("nino", hn[slot + "|1"]) : null;
+    const tope = propio ? cabenEn(suPrimero) : PLATOS_POR_COMIDA;
+    if(suyos.length < tope){
+      const siguiente = String(suyos.length + 1);
       caja.appendChild(el("button", {type:"button", class:"nino-add",
-        text: propio ? "+ añadir otro plato del niño" : "+ añadir platos del niño",
+        text: propio ? "Añadir " + ORDEN_LBL[siguiente] + " plato niño" : "Añadir plato niño",
         title: propio ? "El niño come " + (suyos.length + 1) + " platos " + deMomento(momento)
                       : "Que el niño coma algo distinto " + deMomento(momento),
         onclick:function(){ nuevoPlatoNino(id, dia, momento, propio ? null : "1"); }}));
@@ -2415,14 +2492,14 @@
   // a ser lo único que come, y el segundo lo añades tú si quieres.
   function nuevoPlatoNino(id, dia, momento, primero){
     const slot = dia + "|" + momento, hn = huecos("nino", id);
-    const orden = primero || (ordenesDe(momento).filter(function(o){ return !hn[slot + "|" + o]; })[0]);
+    const orden = primero || (ordenesDe().filter(function(o){ return !hn[slot + "|" + o]; })[0]);
     if(!orden) return;
     abrirSelector("nino", dia, momento, orden, {soloEste: !!primero});
   }
 
   // Quita un plato del niño. Si era el último, el momento vuelve a lo de la mesa.
   function quitaNino(id, slot, orden){
-    const hn = huecos("nino", id), copia = {}, mom = slot.split("|")[1], ords = ordenesDe(mom);
+    const hn = huecos("nino", id), copia = {}, mom = slot.split("|")[1], ords = ordenesDe();
     Object.keys(hn).forEach(function(k){ copia[k] = hn[k]; });
     delete copia[slot + "|" + orden];
 
@@ -2465,7 +2542,9 @@
     const id = semanaActual(), h = {}, origen = huecos(pid, id);
     Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
     const clave = dia + "|" + momento + "|" + orden;
-    const otroEnSlot = h[dia + "|" + momento + "|" + (orden === "1" ? "2" : "1")];
+    // Los demás platos de esa misma comida, para no ofrecer dos veces el mismo.
+    const yaEnLaComida = ordenesDe().filter(function(o){ return o !== orden; })
+      .map(function(o){ return h[dia + "|" + momento + "|" + o]; }).filter(Boolean);
     const previo = origen[clave] || "";
     // Cambiar un plato de la mesa arrastra al niño, salvo que ahí tuviera lo suyo.
     const arrastra = function(nuevo){ if(pid === "adultos") sigueNino(id, clave, previo, nuevo); };
@@ -2473,7 +2552,7 @@
     const soloEste = !!(opciones && opciones.soloEste);
     const limpia = function(){
       if(!soloEste) return;
-      ordenesDe(momento).forEach(function(o){
+      ordenesDe().forEach(function(o){
         if(o !== orden) delete h[dia + "|" + momento + "|" + o];
       });
     };
@@ -2503,7 +2582,7 @@
       function propio(p){ return elegible(p, momento) || p.n === puesto; }
 
       const buscados = repertorio()
-        .filter(function(p){ return p.n !== otroEnSlot; })
+        .filter(function(p){ return yaEnLaComida.indexOf(p.n) === -1; })
         .filter(function(p){ return !q || sinTildes(p.n + " " + p.i.join(" ")).indexOf(q) !== -1; });
       const fuera = buscados.filter(function(p){ return !propio(p); });
       const coinciden = verTodos.checked ? buscados : buscados.filter(propio);

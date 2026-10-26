@@ -81,7 +81,7 @@ create table if not exists public.semanas (
   menu      text     not null check (menu in ('casa','nino')),
   dia       text     not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
   momento   text     not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
-  orden     smallint not null check (orden in (1,2)),
+  orden     smallint not null check (orden in (1,2,3)),
   plato     text     not null references public.platos(nombre)
                           on update cascade on delete cascade,
   primary key (semana_id, menu, dia, momento, orden)
