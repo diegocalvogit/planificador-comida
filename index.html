@@ -470,10 +470,11 @@
     box-shadow:var(--shadow);padding:26px 24px;width:100%;max-width:400px}
   .puerta h2{font-family:"Bricolage Grotesque",sans-serif;font-size:21px;font-weight:800}
   .puerta p{color:var(--ink-2);font-size:13.5px;margin-top:8px;line-height:1.5}
-  .puerta input{width:100%;margin-top:16px;padding:10px 12px;border:1px solid var(--line-strong);
+  .puerta input{width:100%;margin-top:10px;padding:10px 12px;border:1px solid var(--line-strong);
     border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:15px}
   .puerta input:focus{outline:2px solid var(--accent);outline-offset:1px}
-  .puerta .btn{width:100%;margin-top:10px;justify-content:center}
+  .puerta input:first-of-type{margin-top:18px}
+  .puerta .btn{width:100%;margin-top:14px;justify-content:center}
   .puerta .p-aviso{margin-top:12px;font-size:13px;color:var(--ink-2);line-height:1.5}
   .puerta .p-aviso.mal{color:var(--pimenton);background:var(--pimenton-soft);
     border-radius:8px;padding:9px 11px}
@@ -3276,45 +3277,52 @@
   function puerta(mensaje, malo){
     cerrarPuerta();
     const correo = el("input", {type:"email", id:"p-correo", placeholder:"tu@correo.com",
-                                autocomplete:"email", inputmode:"email",
+                                autocomplete:"username", inputmode:"email",
                                 "aria-label":"Tu correo"});
+    const clave = el("input", {type:"password", id:"p-clave", placeholder:"Contraseña",
+                               autocomplete:"current-password", "aria-label":"Tu contraseña"});
     const nota = el("div", {class:"p-aviso" + (mensaje ? (malo ? " mal" : " bien") : ""),
-                            text: mensaje || "Te llega un enlace al correo. Al pulsarlo entras, sin contraseña."});
-    const boton = el("button", {class:"btn btn-primary", text:"Enviarme el enlace"});
+                            text: mensaje || "La sesión se queda abierta en este dispositivo."});
+    const boton = el("button", {class:"btn btn-primary", text:"Entrar"});
 
-    async function enviar(){
-      const email = correo.value.trim();
+    async function entra(){
+      const email = correo.value.trim(), pass = clave.value;
       if(email.indexOf("@") < 1){
         nota.className = "p-aviso mal"; nota.textContent = "Escribe un correo válido.";
         correo.focus(); return;
       }
-      boton.disabled = true; boton.textContent = "Enviando…";
-      const { error } = await db.auth.signInWithOtp({
-        email: email,
-        options: { emailRedirectTo: location.origin + location.pathname }
-      });
-      boton.disabled = false; boton.textContent = "Enviarme el enlace";
+      if(!pass){
+        nota.className = "p-aviso mal"; nota.textContent = "Te falta la contraseña.";
+        clave.focus(); return;
+      }
+      boton.disabled = true; boton.textContent = "Entrando…";
+      const { error } = await db.auth.signInWithPassword({email:email, password:pass});
+      boton.disabled = false; boton.textContent = "Entrar";
       if(error){
         nota.className = "p-aviso mal";
-        nota.textContent = "No se ha podido enviar: " + error.message;
-        return;
+        // El mensaje de Supabase es el mismo se equivoque uno en el correo o en la
+        // contraseña, a propósito: decir cuál de los dos falla ayuda a quien prueba.
+        nota.textContent = /invalid login/i.test(error.message)
+          ? "El correo o la contraseña no son correctos."
+          : "No se ha podido entrar: " + error.message;
+        clave.select(); return;
       }
-      nota.className = "p-aviso bien";
-      nota.textContent = "Enviado a " + email + ". Abre el enlace en este mismo dispositivo; " +
-                         "si no lo ves, mira en correo no deseado.";
+      entrar();
     }
-    boton.addEventListener("click", enviar);
-    correo.addEventListener("keydown", function(e){ if(e.key === "Enter") enviar(); });
+    boton.addEventListener("click", entra);
+    [correo, clave].forEach(function(c){
+      c.addEventListener("keydown", function(e){ if(e.key === "Enter") entra(); });
+    });
 
     capaPuerta = el("div", {class:"puerta"}, [
       el("div", {class:"caja"}, [
         el("h2", {text:"Menú Semanal"}),
-        el("p", {text:"Las comidas de casa. Entra con tu correo para verlas."}),
-        correo, boton, nota
+        el("p", {text:"Las comidas de casa. Entra para verlas."}),
+        correo, clave, boton, nota
       ])
     ]);
     document.body.appendChild(capaPuerta);
-    correo.focus();
+    (correo.value ? clave : correo).focus();
   }
 
   async function salir(){
@@ -3371,11 +3379,6 @@
     arrancar();
   }
 
-  // Al volver del enlace del correo, la sesión llega en la dirección y la librería
-  // la canjea sola; este aviso es el que lo recoge.
-  db.auth.onAuthStateChange(function(evento){
-    if(evento === "SIGNED_IN" && !arrancado) entrar();
-  });
   entrar();
 
   /* ============ Arranque ============ */
