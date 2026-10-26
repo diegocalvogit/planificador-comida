@@ -120,5 +120,19 @@ begin
     execute format(
       'create policy "solo la casa" on public.%I for all to authenticated '
       'using (public.es_de_la_casa()) with check (public.es_de_la_casa())', t);
+    -- El permiso de tabla, aparte de la política: así el esquema funciona
+    -- tanto si el proyecto expone las tablas nuevas por su cuenta como si no.
+    execute format('grant select, insert, update, delete on public.%I to authenticated', t);
+    execute format('revoke all on public.%I from anon', t);
   end loop;
 end $$;
+
+grant usage on schema public to authenticated;
+grant execute on function public.es_de_la_casa() to authenticated;
+
+-- `hogar` queda fuera de la API por partida doble: sin permiso de tabla y sin
+-- ninguna política. Solo la lee la función de arriba, que corre como su dueño.
+revoke all on public.hogar from anon, authenticated;
+
+-- Sin sesión no se llega a nada: `anon` no tiene permiso sobre ninguna tabla.
+revoke usage on schema public from anon;
