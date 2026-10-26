@@ -605,97 +605,6 @@
   "use strict";
 
 
-  /* ============ Banco de pruebas (se quita antes de publicar) ============ */
-  // Con ?prueba=1 la página habla con una base de datos de mentira que vive en
-  // memoria y apunta todo lo que se le pide. Sirve para comprobar la escritura sin
-  // una sesión real, que es lo único que no se puede simular.
-  const PRUEBA = location.search.indexOf("prueba=1") !== -1;
-  function baseFalsa(){
-    const T = {
-      secciones: [{seccion:"Frutería y verdulería", orden:0}, {seccion:"Despensa", orden:1}],
-      tipos: [{clave:"verdura", tipo:"Verdura", orden:0}, {clave:"arroz", tipo:"Arroz", orden:1},
-              {clave:"fruta", tipo:"Fruta", orden:2}, {clave:"guarde", tipo:"Guardería", orden:3}],
-      ingredientes: [{ingrediente:"tomate", seccion:"Frutería y verdulería"},
-                     {ingrediente:"arroz", seccion:"Despensa"},
-                     {ingrediente:"manzana", seccion:"Frutería y verdulería"}],
-      equilibrio: [{objetivo:"Verduras", tipos:["Verdura"], minimo:1, maximo:9, orden:0},
-                   {objetivo:"Fruta", tipos:["Fruta"], minimo:1, maximo:9, orden:1}],
-      platos: [
-        {nombre:"Ensalada", adultos:true, nino:true, descripcion:"Tomate y poco más.",
-         tipo:["Verdura"], momento:["comida","cena"], tiempo:"bajo", repeticion:"alta",
-         plato_unico:false, ingredientes:["tomate"]},
-        {nombre:"Arroz blanco", adultos:true, nino:true, descripcion:"Arroz.",
-         tipo:["Arroz"], momento:["comida"], tiempo:"medio", repeticion:"media",
-         plato_unico:true, ingredientes:["arroz"]},
-        {nombre:"Fruta", adultos:true, nino:true, descripcion:"Una pieza.",
-         tipo:["Fruta"], momento:["desayuno","almuerzo","merienda"], tiempo:"bajo",
-         repeticion:"siempre", plato_unico:true, ingredientes:["manzana"]},
-        {nombre:"Menú guarde", adultos:false, nino:true, descripcion:"En la guardería.",
-         tipo:["Guardería"], momento:["comida"], tiempo:"bajo", repeticion:"nunca",
-         plato_unico:true, ingredientes:[]},
-        {nombre:"Desayuno guarde", adultos:false, nino:true, descripcion:"En la guardería.",
-         tipo:["Guardería"], momento:["desayuno"], tiempo:"bajo", repeticion:"nunca",
-         plato_unico:true, ingredientes:[]},
-        {nombre:"Almuerzo guarde", adultos:false, nino:true, descripcion:"En la guardería.",
-         tipo:["Guardería"], momento:["almuerzo"], tiempo:"bajo", repeticion:"nunca",
-         plato_unico:true, ingredientes:[]}
-      ],
-      semanas: [], compras: [], despensa: []
-    };
-    const PK = {secciones:["seccion"], tipos:["clave"], ingredientes:["ingrediente"],
-                equilibrio:["objetivo"], platos:["nombre"],
-                semanas:["semana_id","menu","dia","momento","orden"],
-                compras:["semana_id","ingrediente"], despensa:["ingrediente"]};
-    const diario = [];
-    const k = function(t, f){ return PK[t].map(function(c){ return String(f[c]); }).join("|"); };
-
-    function consulta(nombre){
-      const filtros = [];
-      const api = {
-        select:function(){ return api; },
-        limit:function(){ return api; },
-        order:function(){ return api; },
-        eq:function(c, v){ filtros.push([c, v]); return api; },
-        upsert:function(filas){
-          diario.push({op:"upsert", tabla:nombre, n:filas.length});
-          filas.forEach(function(f){
-            const i = T[nombre].findIndex(function(x){ return k(nombre, x) === k(nombre, f); });
-            if(i === -1) T[nombre].push(JSON.parse(JSON.stringify(f)));
-            else T[nombre][i] = JSON.parse(JSON.stringify(f));
-          });
-          return api;
-        },
-        delete:function(){
-          api.__borra = true;
-          return api;
-        },
-        then:function(res){
-          if(api.__borra){
-            const antesN = T[nombre].length;
-            T[nombre] = T[nombre].filter(function(x){
-              return !filtros.every(function(f){ return String(x[f[0]]) === String(f[1]); });
-            });
-            diario.push({op:"delete", tabla:nombre, n:antesN - T[nombre].length});
-          }
-          return Promise.resolve({data:T[nombre], error:null}).then(res);
-        }
-      };
-      return api;
-    }
-    window.__banco = {tablas:T, diario:diario};
-    return {
-      from: consulta,
-      auth: {
-        getSession: function(){
-          return Promise.resolve({data:{session:{user:{email:"prueba@casa"}}}});
-        },
-        signOut: function(){ return Promise.resolve({}); },
-        signInWithOtp: function(){ return Promise.resolve({error:null}); },
-        onAuthStateChange: function(){ return {data:{subscription:{unsubscribe:function(){}}}}; }
-      }
-    };
-  }
-
   /* ============ Base de datos ============ */
   // La clave es pública a propósito y va a la vista en esta misma página. Lo que
   // protege los datos no es ella, sino las políticas del propio Postgres: sin una
@@ -704,9 +613,7 @@
   // "permission denied". La clave secreta no está aquí ni debe estarlo nunca.
   const SUPABASE_URL = "https://hoaifyokcgyuacsbbcdo.supabase.co";
   const SUPABASE_KEY = "sb_publishable__3MJZhGtxfwFXocPrK4ezw_AW3-_yST";
-  const db = (location.search.indexOf("prueba=1") !== -1)
-    ? baseFalsa()
-    : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   /* ============ Constantes ============ */
   const DIAS = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
@@ -3328,8 +3235,6 @@
   function fijarBase(){
     BASE = {};
     TABLAS.forEach(function(t){ BASE[t.n] = t.filas(); });
-    if(PRUEBA) window.__menu = {cambios:cambios, persistir:persistir, base:function(){ return BASE; },
-                                tablas:TABLAS, repertorio:repertorio, huecos:huecos};
   }
 
   /* ============ Avisos ============ */
