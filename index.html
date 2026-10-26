@@ -137,6 +137,18 @@
   .tab.pendiente .n{background:var(--pimenton-soft);color:var(--pimenton)}
   .tab.pendiente .n::after{content:" ●";font-size:9px;vertical-align:middle}
   /* El semáforo del guardado, donde antes estaba el botón. */
+  /* Las fichas del filtro de momento: encendidas por defecto, apagadas en gris. */
+  .chips-mom{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .chip-mom{border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-3);
+    border-radius:20px;padding:5px 13px;cursor:pointer;font:inherit;font-size:12.5px;
+    font-weight:500;transition:background .12s,color .12s,border-color .12s}
+  .chip-mom:hover{border-color:var(--ink-3)}
+  .chip-mom.on{border-color:transparent;font-weight:600}
+  .chip-mom.on.chip-desayuno{background:var(--m-desayuno);color:var(--m-desayuno-ink)}
+  .chip-mom.on.chip-almuerzo{background:var(--m-almuerzo);color:var(--m-almuerzo-ink)}
+  .chip-mom.on.chip-comida{background:var(--m-comida);color:var(--m-comida-ink)}
+  .chip-mom.on.chip-merienda{background:var(--m-merienda);color:var(--m-merienda-ink)}
+  .chip-mom.on.chip-cena{background:var(--m-cena);color:var(--m-cena-ink)}
   .guardado{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;
     font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em}
   .guardado::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
@@ -288,7 +300,10 @@
   .obj-row .sep{color:var(--ink-3);font-size:12px}
   .obj-foot{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 
-  .week{display:grid;grid-template-columns:repeat(auto-fill, minmax(268px, 1fr));gap:12px}
+  .week{display:grid;grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));gap:12px}
+  /* En un monitor caben cuatro días por fila sin apretarlos: siete días salen
+     en 4 + 3 y se abarca media semana de un vistazo. */
+  @media (min-width:1080px){ .week{grid-template-columns:repeat(4, 1fr)} }
   .day{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
   .day.hoy{border-color:var(--accent)}
   .day > header{padding:8px 10px 8px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -311,7 +326,7 @@
 
   .slot{position:relative;border-top:1px solid var(--line);background-color:var(--surface)}
   .slot-main{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
-    background:transparent;color:inherit;font:inherit;padding:10px 14px;cursor:pointer;min-height:56px}
+    background:transparent;color:inherit;font:inherit;padding:9px 14px;cursor:pointer;min-height:40px}
   .slot-main:hover{background-image:linear-gradient(var(--veil), var(--veil))}
   /* Lo del niño, debajo de los platos de ese momento. */
   .nino-bloque{border-top:1px dashed var(--line-strong);background:var(--surface);padding:3px 0}
@@ -532,7 +547,6 @@
 
 <main>
   <section id="panel-platos" role="tabpanel" aria-labelledby="tab-platos" hidden></section>
-  <section id="panel-desayunos" role="tabpanel" aria-labelledby="tab-desayunos" hidden></section>
   <section id="panel-semana" role="tabpanel" aria-labelledby="tab-semana"></section>
 
   <section id="panel-compra" role="tabpanel" aria-labelledby="tab-compra" hidden>
@@ -604,6 +618,7 @@
 <script>
 (function(){
   "use strict";
+
 
 
   /* ============ Base de datos ============ */
@@ -1460,7 +1475,6 @@
   /* ============ Pestañas ============ */
   const PESTANAS = [
     {id:"platos",         lbl:"Platos"},
-    {id:"desayunos",      lbl:"Desayunos", quien:"y meriendas"},
     {id:"semana",         lbl:"Semana"},
     {id:"compra",         lbl:"Compra"},
     {id:"ingredientes",   lbl:"Ingredientes"},
@@ -1493,21 +1507,12 @@
   // que cambia es qué momentos del día enseña cada una.
   const AMBITOS = [
     {id:"platos", lbl:"Platos", titulo:"Repertorio de platos", hoja:"Platos", nuevo:"Nuevo plato",
-     moms:["comida","cena"],
-     lead:"Las comidas y las cenas de casa, en una sola lista. Las casillas de cada fila dicen en qué " +
-          "menús entra: márcalas o desmárcalas ahí mismo. El resto se edita entero desde su botón Editar.",
-     vacio:"Ningún plato coincide con el filtro."},
-    {id:"desayunos", lbl:"Desayunos y meriendas", titulo:"Desayunos, almuerzos y meriendas", hoja:"Desayunos", nuevo:"Nuevo desayuno",
-     moms:["desayuno","almuerzo","merienda"],
-     lead:"Lo que se come fuera de la mesa grande: el desayuno, el almuerzo de media mañana y la merienda. " +
-          "Sale del mismo fichero que los platos, filtrado por su momento, y cuenta igual para el equilibrio de la semana.",
-     vacio:"Nada coincide con el filtro."}
+     moms:IDS_MOMENTO,
+     lead:"Todo lo que se come en casa, de la tostada del desayuno a la cena, en una sola lista. " +
+          "Las casillas de cada fila dicen en qué menús entra el plato; el resto se edita desde su botón Editar.",
+     vacio:"Ningún plato coincide con el filtro."}
   ];
   function ambito(id){ return AMBITOS.filter(function(a){ return a.id === id; })[0]; }
-  // La pestaña en la que se crean los platos de un momento dado.
-  function ambitoDe(mom){
-    return AMBITOS.filter(function(a){ return a.moms.indexOf(mom) !== -1; })[0] || AMBITOS[0];
-  }
   // Un plato cae en la pestaña si se come en alguno de sus momentos.
   function delAmbito(a, p){
     const l = momentosDe(p);
@@ -1517,6 +1522,8 @@
   // El orden de cada tabla, al estilo de una hoja de cálculo.
   const ORDEN = {};
   AMBITOS.forEach(function(a){ ORDEN[a.id] = {col:0, asc:true, cols:[]}; });
+  // Qué momentos se están mirando en la tabla. Todos, mientras no toques nada.
+  let MOMS_VISTOS = [];
   function ordenarPor(a, i){
     const o = ORDEN[a.id];
     if(o.col === i) o.asc = !o.asc;
@@ -1556,12 +1563,36 @@
     ]);
     TIPOS.forEach(function(t){ fTipo.appendChild(el("option", {value:t, text:t})); });
 
-    const opMom = [["","Todos"]].concat(a.moms.map(function(m){ return [m, MOMENTO_LBL[m]]; }));
+    // El momento no es un desplegable sino una fila de fichas que se encienden y
+    // se apagan: casi siempre quieres ver dos o tres a la vez —el desayuno y la
+    // merienda, o la comida y la cena— y con un desplegable eso no se puede.
+    MOMS_VISTOS = IDS_MOMENTO.slice();
+    const fichas = el("div", {class:"chips-mom", role:"group", "aria-label":"Momentos del día"});
+    IDS_MOMENTO.forEach(function(m){
+      const b = el("button", {type:"button", class:"chip-mom chip-" + m + " on",
+                              "aria-pressed":"true", "data-mom":m, text:MOMENTO_LBL[m]});
+      b.addEventListener("click", function(){
+        const i = MOMS_VISTOS.indexOf(m);
+        if(i === -1) MOMS_VISTOS.push(m); else MOMS_VISTOS.splice(i, 1);
+        // Apagarlos todos no enseña nada útil, así que equivale a encenderlos todos.
+        if(!MOMS_VISTOS.length) MOMS_VISTOS = IDS_MOMENTO.slice();
+        fichas.querySelectorAll(".chip-mom").forEach(function(x){
+          const on = MOMS_VISTOS.indexOf(x.dataset.mom) !== -1;
+          x.classList.toggle("on", on);
+          x.setAttribute("aria-pressed", String(on));
+        });
+        repinta();
+      });
+      fichas.appendChild(b);
+    });
+    p.appendChild(el("div", {class:"field full"}, [
+      el("label", {class:"bloque-lbl", text:"Momento del día"}), fichas
+    ]));
+
     p.appendChild(el("div", {class:"filters"}, [
       el("div", {class:"field grow"}, [el("label", {for:ide("f-buscar"), text:"Buscar"}), buscar]),
       filtro("f-menu", "Menú", [["","Todos"],["adultos","Adultos"],["nino","Niño"],
                                 ["ambos","En los dos"],["ninguno","En ninguno"]]),
-      filtro("f-momento", "Momento", opMom),
       filtro("f-tiempo", "Preparación", [["","Toda"],["bajo","Bajo"],["medio","Medio"],["alto","Alto"]]),
       filtro("f-repeticion", "Repetición", [["","Toda"],["siempre","Siempre"],["alta","Alta"],["media","Media"],["baja","Baja"],["ocasional","Ocasional"],["nunca","Nunca"]]),
       filtro("f-unico", "Plato único", [["","Todos"],["si","Sí"],["no","No"]]),
@@ -1647,7 +1678,7 @@
   function platosFiltrados(a){
     const ide = function(b){ return $(b + "-" + a.id); };
     const q = ide("f-buscar").value.trim().toLowerCase();
-    const mm = ide("f-menu").value, m = ide("f-momento").value;
+    const mm = ide("f-menu").value;
     const ti = ide("f-tiempo").value, re2 = ide("f-repeticion").value;
     const un = ide("f-unico").value, tp = ide("f-tipo").value;
     const filas = repertorio().filter(function(p){ return delAmbito(a, p); }).filter(function(p){
@@ -1656,7 +1687,7 @@
       if(mm === "nino" && !en.nino) return false;
       if(mm === "ambos" && !(en.adultos && en.nino)) return false;
       if(mm === "ninguno" && (en.adultos || en.nino)) return false;
-      if(m && momentosDe(p).indexOf(m) === -1) return false;
+      if(!momentosDe(p).some(function(x){ return MOMS_VISTOS.indexOf(x) !== -1; })) return false;
       if(ti && p.tiempo !== ti) return false;
       if(re2 && p.rep !== re2) return false;
       if(un && (un === "si") !== !!p.unico) return false;
@@ -2286,10 +2317,13 @@
           }
 
           const cuerpo = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
-          if(p){
-            const meta = el("div", {class:"slot-meta", text:tipoTexto(p)});
-            if(ajeno) meta.appendChild(el("span", {class:"marca-ajeno", text:"fuera de este menú"}));
-            cuerpo.push(meta);
+          // Solo el nombre: los tipos ya los dice el color del hueco y la leyenda
+          // de abajo, y repetirlos en texto comía la mitad del alto de cada día.
+          // Quien quiera el detalle lo tiene en el título al pasar por encima.
+          if(p && ajeno){
+            cuerpo.push(el("div", {class:"slot-meta"}, [
+              el("span", {class:"marca-ajeno", text:"fuera de este menú"})
+            ]));
           }else if(roto){
             cuerpo.push(el("div", {class:"slot-meta"}, [
               el("span", {class:"marca-ajeno", text:"este plato ya no existe"})
@@ -2302,6 +2336,7 @@
               type:"button", class:"slot-main",
               "aria-label": ORDEN_LBL[o] + " plato " + deMomento(momento) + " del " + dia +
                             ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiarlo.",
+              title: p ? tipoTexto(p) : null,
               onclick:function(){ abrirSelector("adultos", dia, momento, o); }
             }, [
               el("span", {class:"orden", text:ORDEN_LBL[o]}),
@@ -2523,8 +2558,8 @@
         const nada = fuera.length
           ? "Ningún plato de " + MOMENTO_LBL[momento].toLowerCase() + " coincide, pero sí " +
             fuera.length + " de otros momentos. Márcalos arriba para verlos, o crea el plato en la pestaña " +
-            (ambitoDe(momento).lbl) + "."
-          : "Ningún plato del repertorio coincide. Créalo en la pestaña " + ambitoDe(momento).lbl + ".";
+            "Platos."
+          : "Ningún plato del repertorio coincide. Créalo en la pestaña Platos.";
         lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)", text:nada}));
       }
     }
@@ -2609,7 +2644,11 @@
       ]));
     });
     // El momento es una lista: un bizcocho vale para desayunar y para merendar.
-    const mActuales = p ? momentosDe(p) : (a && a.moms ? a.moms.slice(0, 1) : ["comida"]);
+    // Un plato nuevo nace con los momentos que tengas filtrados: si estabas
+    // mirando desayunos, lo normal es que vayas a dar de alta un desayuno.
+    const porDefecto = (MOMS_VISTOS.length && MOMS_VISTOS.length < IDS_MOMENTO.length)
+                       ? MOMS_VISTOS.slice() : ["comida"];
+    const mActuales = p ? momentosDe(p) : porDefecto;
     const momGrid = el("div", {class:"tipos-grid"});
     MOMENTOS.forEach(function(mo){
       const cb = el("input", {type:"checkbox", id:"e-m-" + mo.id, "aria-label":"Se come " + deMomento(mo.id)});

@@ -57,9 +57,9 @@ insert into public.hogar (email) values ('quien.sea@ejemplo.com');
 La clave **secret** de Supabase y la contraseña de la base se saltan todo esto. No están en el repositorio ni
 deben estarlo: viven solo en el panel.
 
-## Las seis pestañas## Las seis pestañas
+## Las cinco pestañas## Las seis pestañas
 
-**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: **momentos** en que se come (desayuno, almuerzo, comida, merienda y cena; un bizcocho puede ser desayuno y merienda a la vez), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente.
+**Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: **momentos** en que se come (desayuno, almuerzo, comida, merienda y cena; un bizcocho puede ser desayuno y merienda a la vez), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente. El filtro de **momento del día** es una fila de fichas que se encienden y se apagan, porque casi siempre quieres ver dos o tres a la vez —el desayuno y la merienda, o la comida y la cena—; apagarlas todas equivale a encenderlas todas.
 
 **Exportar a Excel** baja un `.xlsx` con lo que se ve en ese momento: respeta los filtros y el orden, y el botón dice cuántos platos saldrán cuando hay algo filtrado. La hoja lleva la cabecera fija y en negrita, autofiltro y anchos de columna. El fichero se construye a mano en `index.html` —un xlsx no es más que un ZIP de XML— para no meter ninguna librería externa en una página que no tiene ninguna.
 
@@ -68,11 +68,6 @@ Todo plato es **editable por completo** desde su botón *Editar*, venga del volc
 Los ingredientes **solo se eligen del catálogo**: el editor los ofrece con autocompletado y rechaza lo que no esté en él. Así no acaban conviviendo «pimiento», «pimientos» y «piniento».
 
 La columna **Menús** lleva una casilla por menú, marcable desde la propia tabla: así se pasa un plato de un menú a otro sin duplicarlo. Desmarcar la última casilla no borra el plato, solo lo deja fuera de los dos menús; para eliminarlo del repertorio está el botón del editor. Al sacarlo de un menú, se quita también de las semanas de ese menú.
-
-**Desayunos y meriendas** — La misma tabla que *Platos*, con los mismos filtros, el mismo editor y el mismo
-exportador a Excel, pero enseñando lo que se come fuera de la mesa grande: **desayuno**, **almuerzo** de media
-mañana y **merienda**. Sale de la misma tabla `platos`; lo único que separa las dos pestañas es la columna
-`momento`, que es una lista. Un plato que vale para varios momentos aparece en las dos.
 
 **Semana** — Reparto de lunes a domingo con los **cinco momentos del día**: desayuno, almuerzo,
 comida, merienda y cena. Son **35 huecos** por semana. Todos admiten dos platos, el 1º y el 2º, salvo el
