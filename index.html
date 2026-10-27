@@ -149,6 +149,15 @@
   .chip-mom.on.chip-comida{background:var(--m-comida);color:var(--m-comida-ink)}
   .chip-mom.on.chip-merienda{background:var(--m-merienda);color:var(--m-merienda-ink)}
   .chip-mom.on.chip-cena{background:var(--m-cena);color:var(--m-cena-ink)}
+  /* Configuración: bloques sueltos con su título, no una pantalla de datos. */
+  .cfg-bloque{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .cfg-bloque h3, .cfg-titulo{font-size:14px;font-weight:700;margin-bottom:9px}
+  .cfg-titulo{margin:22px 0 9px}
+  .cfg-fila{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .cfg-fila .cfg-dato{font-size:13.5px;color:var(--ink)}
+  .cfg-fila .hint{flex:1 1 100%;margin:0}
+  .guardado[hidden]{display:none}
   .guardado{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;
     font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em}
   .guardado::before{content:"";width:7px;height:7px;border-radius:50%;flex:none}
@@ -612,10 +621,6 @@
 
 <div class="top">
   <div class="top-inner">
-    <div class="brand">
-      <h1>Menú Semanal</h1>
-      <span class="tag">Comidas de casa</span>
-    </div>
     <nav class="tabs" role="tablist" aria-label="Secciones" id="tabs"></nav>
   </div>
 </div>
@@ -628,14 +633,13 @@
     <div class="section-head">
       <div>
         <div class="eyebrow" id="compra-semana">—</div>
-        <h2>Lista de la compra</h2>
+        <h2 class="oculto-visual">Lista de la compra</h2>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn" id="btn-copiar">Copiar lista</button>
         <button class="btn btn-ghost" id="btn-reset-despensa">Desmarcar la semana</button>
       </div>
     </div>
-    <p class="lead">Los ingredientes de las dos semanas, la de los adultos y la del niño, en una sola lista agrupada por sección del súper. Cada semana guarda su propia foto de lo que había en casa; lo que no digas de una semana se hereda de la anterior.</p>
 
     <div class="weeknav">
       <button class="arrow" id="cp-prev" aria-label="Compra de la semana anterior">◀</button>
@@ -662,14 +666,17 @@
   <section id="panel-ingredientes" role="tabpanel" aria-labelledby="tab-ingredientes" hidden></section>
 
   <section id="panel-historico" role="tabpanel" aria-labelledby="tab-historico" hidden>
-    <div class="section-head">
-      <div>
-        <div class="eyebrow">datos/semanas.csv · datos/semanas-nino.csv</div>
-        <h2>Histórico de semanas</h2>
-      </div>
+    <div class="cfg-bloque">
+      <h3>Cuenta</h3>
+      <div class="cfg-fila" id="cfg-cuenta"></div>
     </div>
-    <p class="lead">Todas las semanas planificadas: lo que se cocina en casa (<strong>mesa</strong>) y lo que acaba comiendo el niño. Los cambios suben solos a la base de datos en cuanto los haces.</p>
 
+    <div class="cfg-bloque">
+      <h3>Datos</h3>
+      <div class="cfg-fila" id="cfg-datos"></div>
+    </div>
+
+    <h3 class="cfg-titulo">Semanas guardadas</h3>
     <div class="table-wrap">
       <table class="estrecha">
         <thead><tr>
@@ -684,7 +691,6 @@
   </section>
 </main>
 
-<footer class="credits" id="credits"></footer>
 
 <!-- Copia de los CSV incrustada, para poder abrir index.html directamente desde disco.
      Se regenera con: python scripts/actualizar-respaldo.py -->
@@ -693,6 +699,7 @@
 <script>
 (function(){
   "use strict";
+
 
 
 
@@ -793,7 +800,7 @@
       rango = lunes.getDate() + " " + MESES_CORTOS[lunes.getMonth()] + " - " +
               domingo.getDate() + " " + MESES_CORTOS[domingo.getMonth()];
     }
-    return ordinal + "ª semana de " + MESES[mes] + " (" + rango + ")";
+    return ordinal + "ª de " + MESES[mes] + " (" + rango + ")";
   }
   function subtituloSemana(lunes){
     const domingo = sumaDias(lunes, 6);
@@ -1625,7 +1632,7 @@
     {id:"semana",         lbl:"Semana"},
     {id:"compra",         lbl:"Compra"},
     {id:"ingredientes",   lbl:"Ingredientes"},
-    {id:"historico",      lbl:"Histórico"}
+    {id:"historico",      lbl:"Configuración"}
   ];
   function montarPestanas(){
     const nav = $("tabs");
@@ -1650,8 +1657,8 @@
   }
 
   /* ============ Panel: platos ============ */
-  // Dos pestañas comparten la misma tabla y el mismo datos/platos.csv; lo único
-  // que cambia es qué momentos del día enseña cada una.
+  // Quedó un solo ámbito, de cuando Platos y Desayunos eran dos pestañas. Se
+  // mantiene la estructura porque es la que parametriza la tabla y su exportador.
   const AMBITOS = [
     {id:"platos", lbl:"Platos", titulo:"Repertorio de platos", hoja:"Platos", nuevo:"Nuevo plato",
      moms:IDS_MOMENTO,
@@ -1684,10 +1691,6 @@
     const repinta = function(){ pintarAmbito(a); };
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
-      el("div", null, [
-        el("div", {class:"eyebrow", text:"datos/platos.csv"}),
-        el("h2", {text:a.titulo})
-      ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
         el("button", {class:"btn", id:ide("excel"), onclick:function(){ exportarPlatos(a); },
                       title:"Descarga un .xlsx con lo que se ve ahora, con sus filtros y su orden",
@@ -1696,7 +1699,6 @@
                       onclick:function(){ abrirEditor(null, a); }, text:a.nuevo})
       ])
     ]));
-    p.appendChild(el("p", {class:"lead", text:a.lead}));
 
     function filtro(base, etiqueta, opciones){
       const sel = el("select", {id:ide(base), oninput:repinta});
@@ -2098,17 +2100,9 @@
     const p = $("panel-ingredientes");
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
-      el("div", null, [
-        el("div", {class:"eyebrow", text:"datos/ingredientes.csv"}),
-        el("h2", {text:"Catálogo de ingredientes"})
-      ]),
       el("button", {class:"btn btn-primary", text:"Nuevo ingrediente",
                     onclick:function(){ abrirIngrediente(null); }})
     ]));
-    p.appendChild(el("p", {class:"lead", text:
-      "La única lista de la que salen los ingredientes de los platos: al escribir un plato solo se puede " +
-      "elegir de aquí, para que no acaben conviviendo «pimiento», «pimientos» y «piniento». La sección " +
-      "manda en el orden de la lista de la compra."}));
 
     const buscar = el("input", {type:"search", id:"fi-buscar", placeholder:"Ingrediente…",
                                 oninput:pintarIngredientes});
@@ -2295,10 +2289,6 @@
     const p = $("panel-semana");
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
-      el("div", null, [
-        el("div", {class:"eyebrow", text:"Lunes a domingo · " + MOMENTOS.map(function(m){ return m.lbl.toLowerCase(); }).join(", ")}),
-        el("h2", {text:"Reparto de la semana"})
-      ]),
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
         el("button", {class:"btn btn-primary", text:"Generar semana",
           title:"El niño come en la guardería solo al mediodía, de lunes a viernes",
@@ -2317,20 +2307,14 @@
         el("button", {class:"btn", text:"Imprimir",
                       title:"La semana entera en una hoja apaisada",
                       onclick:function(){ window.print(); }}),
-        el("span", {class:"guardado hecho", id:"estado-guardado", text:"Guardado",
-                    title:"Los cambios suben solos a la base de datos"})
+        el("span", {class:"guardado hecho", id:"estado-guardado", hidden:"hidden"})
       ])
     ]));
-    p.appendChild(el("p", {class:"lead", text:
-      "Lo que se cocina en casa, un solo menú. Donde el niño coma otra cosa aparece su línea debajo del plato; " +
-      "en los demás huecos, el botón «+ niño» la crea."}));
-
     p.appendChild(el("div", {class:"weeknav"}, [
       el("button", {class:"arrow", "aria-label":"Semana anterior", text:"◀",
         onclick:function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); }}),
       el("div", {class:"wk"}, [
-        el("div", {class:"lbl", id:"wk-label", text:"—"}),
-        el("div", {class:"sub", id:"wk-sub", text:"—"})
+        el("div", {class:"lbl", id:"wk-label", text:"—"})
       ]),
       el("button", {class:"arrow", "aria-label":"Semana siguiente", text:"▶",
         onclick:function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), 7))); }}),
@@ -2424,7 +2408,6 @@
     etiqueta.textContent = etiquetaSemana(lunes);
     // Para la hoja impresa, que no lleva la barra de navegación de semanas.
     $("panel-semana").setAttribute("data-semana", "Menú semanal · " + etiquetaSemana(lunes));
-    $("wk-sub").textContent = subtituloSemana(lunes);
     if(id === hoyId) etiqueta.appendChild(el("span", {class:"now", text:"esta semana"}));
 
     // Los objetivos son "veces por semana", así que cuentan comidas, no platos:
@@ -3601,11 +3584,13 @@
     const e = $("estado-guardado");
     if(!e) return;
     if(!estadoG) estadoG = guardando ? "guardando" : (ultimoFallo ? "mal" : "hecho");
+    // Mientras todo va bien no dice nada: que una escritura salga bien es lo
+    // normal y no merece un adorno permanente en pantalla. Habla si está
+    // subiendo, y se queda en rojo si algo falló.
     e.className = "guardado " + estadoG;
-    e.textContent = estadoG === "guardando" ? "Guardando…"
-                  : estadoG === "mal" ? "Sin guardar"
-                  : "Guardado";
-    e.title = estadoG === "mal" ? ultimoFallo : "Los cambios suben solos a la base de datos";
+    e.hidden = (estadoG === "hecho");
+    e.textContent = estadoG === "guardando" ? "Guardando…" : "Sin guardar";
+    e.title = estadoG === "mal" ? ultimoFallo : "Subiendo a la base de datos";
   }
 
   // Al arrancar, lo que la base tiene es exactamente lo que la página ve, porque
@@ -3626,16 +3611,25 @@
     avisoTimer = setTimeout(function(){ t.remove(); }, 3000);
   }
 
+  // Lo que antes era un pie de página con letra gris vive ahora en Configuración,
+  // que es donde se va a buscar. El texto de "migración a medias" que había aquí
+  // se quedó de cuando la página solo leía de la base: hace tiempo que escribe.
   function pintarCreditos(){
-    const c = $("credits"); c.textContent = "";
-    c.appendChild(el("div", {text:
-      "Datos en Supabase · " + PLATOS.length + " platos y " +
-      Object.keys(SECCION).length + " ingredientes · " + (sesion ? sesion.email : "")}));
-    c.appendChild(el("div", {style:"margin-top:6px"}, [
-      document.createTextNode("Migración a medias: la página ya lee de la base de datos, pero lo que cambies " +
-                              "sigue guardándose solo en este navegador. "),
-      el("button", {class:"btn btn-sm", text:"Cerrar sesión", onclick:salir})
-    ]));
+    const cuenta = $("cfg-cuenta");
+    if(cuenta){
+      cuenta.textContent = "";
+      cuenta.appendChild(el("span", {class:"cfg-dato", text: sesion ? sesion.email : "sin sesión"}));
+      cuenta.appendChild(el("button", {class:"btn btn-sm", text:"Cerrar sesión", onclick:salir}));
+    }
+    const datos = $("cfg-datos"), n_semanas = idsSemanas("adultos").length;
+    if(datos){
+      datos.textContent = "";
+      datos.appendChild(el("span", {class:"cfg-dato",
+        text: PLATOS.length + " platos · " + Object.keys(SECCION).length + " ingredientes · " +
+              n_semanas + (n_semanas === 1 ? " semana" : " semanas")}));
+      datos.appendChild(el("span", {class:"hint",
+        text:"En una base Postgres de Supabase. Cada cambio sube solo."}));
+    }
   }
 
   /* ============ Pintado global ============ */

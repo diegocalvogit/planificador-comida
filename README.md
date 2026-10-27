@@ -57,7 +57,9 @@ insert into public.hogar (email) values ('quien.sea@ejemplo.com');
 La clave **secret** de Supabase y la contraseña de la base se saltan todo esto. No están en el repositorio ni
 deben estarlo: viven solo en el panel.
 
-## Las cinco pestañas## Las seis pestañas
+## Las cinco pestañas
+
+La pantalla va sin títulos ni textos de ayuda: la pestaña activa ya dice dónde estás, y lo que hace cada botón se ve al usarlo. Lo que había explicando cada sección estaba de más una vez te la sabes.## Las seis pestañas
 
 **Platos** — El repertorio: descripción, **tipo de alimento** (selección múltiple sobre el catálogo de `tipos.csv`: verdura, tubérculo, legumbre, arroz, pasta, pescado blanco o azul, marisco, carne blanca o roja, embutido, huevo, lácteo, queso…). Esa es la **única clasificación** que hay: describe el plato, le da su color en el calendario y es la que mide el equilibrio de la semana. El primer tipo marcado es la **base** y decide el color. Además: **momentos** en que se come (desayuno, almuerzo, comida, merienda y cena; un bizcocho puede ser desayuno y merienda a la vez), tiempo de preparación (bajo, medio, alto), repetición (siempre, alta, media, baja, ocasional, nunca), **plato único** (sí o no) e ingredientes. Se busca y se filtra por cualquiera de esas columnas, y **se ordena pulsando en la cabecera**, como en una hoja de cálculo: una vez ascendente, otra descendente. El filtro de **momento del día** es una fila de fichas: partiendo de todas encendidas, pulsar una quiere decir «enséñame solo esta», y a partir de ahí se van sumando o quitando. Apagarlas todas equivale a encenderlas todas.
 
@@ -170,7 +172,7 @@ algo distinto. **El equilibrio mide la mesa de casa**, no las excepciones del ni
 
 **Ingredientes** — El catálogo, la única fuente de la que salen los ingredientes de los platos. Cada uno con su sección del súper y los platos que lo usan; se busca, se filtra por sección y por si está en uso o suelto. Desde aquí se añaden, se renombran —lo que arrastra a todos los platos, la despensa y el histórico de compras— y se borran, siempre que no los use ningún plato.
 
-**Histórico** — Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
+**Configuración** — La cuenta con la que has entrado y el botón de salir, un resumen de lo que hay en la base, y el histórico de semanas: Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
 
 ## Cómo se guardan los cambios
 
