@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pruebas · Menú Semanal</title>
+<style>
+  :root{ --ok:#1B7F52; --mal:#B03A2E; --linea:#DDD; --tinta:#1A1A1A; --suave:#666; --fondo:#FAFAF8 }
+  @media (prefers-color-scheme:dark){
+    :root{ --ok:#5BBE8B; --mal:#E8705F; --linea:#333; --tinta:#EEE; --suave:#999; --fondo:#15171A }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:22px;background:var(--fondo);color:var(--tinta);
+    font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+  h1{font-size:19px;margin:0 0 3px}
+  .sub{color:var(--suave);font-size:13px;margin-bottom:18px}
+  #marcador{font:600 15px/1 ui-monospace,"SF Mono",Consolas,monospace;padding:11px 14px;
+    border-radius:9px;border:1px solid var(--linea);display:inline-block;margin-bottom:16px}
+  #marcador.ok{color:var(--ok);border-color:var(--ok)}
+  #marcador.mal{color:var(--mal);border-color:var(--mal)}
+  .caso{border-top:1px solid var(--linea);padding:9px 0}
+  .caso .t{display:flex;gap:9px;align-items:baseline}
+  .caso .m{font:600 13px/1 ui-monospace,monospace;flex:none;width:22px}
+  .caso.ok .m{color:var(--ok)}
+  .caso.mal .m{color:var(--mal)}
+  .caso .n{flex:1 1 auto}
+  .caso .ms{font:12px/1 ui-monospace,monospace;color:var(--suave);flex:none}
+  .fallo{margin:7px 0 2px 31px;padding:8px 11px;border-left:2px solid var(--mal);
+    font:12.5px/1.5 ui-monospace,monospace;color:var(--mal);white-space:pre-wrap}
+  iframe{position:absolute;width:1200px;height:900px;left:-9999px;top:0;border:0}
+</style>
+</head>
+<body>
+<h1>Pruebas de Menú Semanal</h1>
+<p class="sub">Cargan la aplicación de verdad contra una base de datos de mentira.
+  No tocan Supabase y no necesitan nada instalado: basta con abrir esta página
+  desde un servidor local, por ejemplo <code>python -m http.server</code> en la raíz
+  del repositorio, y entrar en <code>/pruebas/</code>.</p>
+<div id="marcador">corriendo…</div>
+<div id="lista"></div>
+
+<script src="datos.js"></script>
+<script src="banco.js"></script>
+<script src="casos.js"></script>
+<script>
+(function(){
+  "use strict";
+  const $ = function(id){ return document.getElementById(id); };
+  const el = function(t, c, txt){
+    const e = document.createElement(t);
+    if(c) e.className = c;
+    if(txt !== undefined) e.textContent = txt;
+    return e;
+  };
+
+  // Las comprobaciones. Lanzan a la primera: dentro de un caso, el segundo
+  // fallo casi siempre es consecuencia del primero y leerlos juntos despista.
+  function comprobador(){
+    return {
+      cierto: function(v, que){
+        if(!v) throw new Error("No se cumple: " + (que || "(sin descripción)"));
+      },
+      igual: function(a, b, que){
+        const x = JSON.stringify(a), y = JSON.stringify(b);
+        if(x !== y) throw new Error((que ? que + ": " : "") + "esperaba " + y + " y es " + x);
+      }
+    };
+  }
+
+  // La aplicación busca estos dos en su `window` y, si no están, en el del
+  // padre. Van aquí porque no hay manera de poner nada dentro del marco antes
+  // de que corra su propio script, que es justo cuando hace falta la base.
+  let bancoActual = null, avisarListo = null;
+  window.__bancoFalso = function(){ return bancoActual; };
+  window.__appLista = function(app){ if(avisarListo) avisarListo(app); };
+
+  function arrancarApp(){
+    // Base nueva por caso: así ninguno hereda lo que el anterior dejó a medias.
+    bancoActual = window.bancoFalso(window.DATOS_PRUEBA);
+    const banco = bancoActual;
+    return new Promise(function(listo, falla){
+      const marco = document.createElement("iframe");
+      const fin = setTimeout(function(){
+        avisarListo = null;
+        marco.remove();
+        falla(new Error("La aplicación no arrancó en 15 s"));
+      }, 15000);
+      avisarListo = function(app){
+        clearTimeout(fin);
+        avisarListo = null;
+        listo({app:app, banco:banco, marco:marco, ventana:marco.contentWindow});
+      };
+      marco.src = "../index.html?prueba=1";
+      document.body.appendChild(marco);
+    });
+  }
+
+  async function correr(){
+    const lista = $("lista");
+    let bien = 0, mal = 0;
+
+    for(const caso of window.CASOS){
+      const fila = el("div", "caso");
+      const cab = el("div", "t");
+      const marca = el("span", "m", "·");
+      cab.appendChild(marca);
+      cab.appendChild(el("span", "n", caso.nombre));
+      const ms = el("span", "ms", "");
+      cab.appendChild(ms);
+      fila.appendChild(cab);
+      lista.appendChild(fila);
+
+      const t0 = performance.now();
+      let entorno = null, error = null;
+      try{
+        entorno = await arrancarApp();
+        await caso.correr(entorno.app, entorno.banco, comprobador());
+      }catch(e){
+        error = e;
+      }finally{
+        if(entorno) entorno.marco.remove();
+      }
+      ms.textContent = Math.round(performance.now() - t0) + " ms";
+
+      if(error){
+        mal++;
+        fila.className = "caso mal";
+        marca.textContent = "✗";
+        fila.appendChild(el("div", "fallo", String(error.message || error)));
+      }else{
+        bien++;
+        fila.className = "caso ok";
+        marca.textContent = "✓";
+      }
+
+      const m = $("marcador");
+      m.textContent = bien + " bien · " + mal + " mal";
+      m.className = mal ? "mal" : "ok";
+    }
+
+    const m = $("marcador");
+    m.textContent = mal ? (mal + " de " + (bien + mal) + " fallan")
+                        : ("Las " + bien + " pasan");
+    m.className = mal ? "mal" : "ok";
+    document.title = (mal ? "✗ " : "✓ ") + m.textContent;
+  }
+
+  correr();
+})();
+</script>
+</body>
+</html>

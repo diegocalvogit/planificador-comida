@@ -841,9 +841,6 @@
 </main>
 
 
-<!-- Copia de los CSV incrustada, para poder abrir index.html directamente desde disco.
-     Se regenera con: python scripts/actualizar-respaldo.py -->
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script>
 (function(){
@@ -867,7 +864,27 @@
   // "permission denied". La clave secreta no está aquí ni debe estarlo nunca.
   const SUPABASE_URL = "https://hoaifyokcgyuacsbbcdo.supabase.co";
   const SUPABASE_KEY = "sb_publishable__3MJZhGtxfwFXocPrK4ezw_AW3-_yST";
-  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // Con ?prueba=1 y una base falsa puesta por quien abre la página, se trabaja
+  // contra ella. Es lo que usa pruebas/index.html, y es la única forma de
+  // probar esto sin una cuenta de verdad y sin tocar los datos de nadie.
+  //
+  // El repliegue importa: si alguien le pone ?prueba=1 a la página publicada,
+  // donde no hay base falsa, entra por la de siempre y no se rompe nada. Y lo
+  // que se expone al final tampoco regala nada: las políticas de la base siguen
+  // siendo las que mandan, aquí y en cualquier otro sitio.
+  const PRUEBA = location.search.indexOf("prueba=1") !== -1;
+  // Dentro de un marco, el que manda es el padre: no hay forma de poner nada
+  // en este `window` antes de que corra este mismo script.
+  function deFuera(que){
+    try{
+      if(typeof window[que] === "function") return window[que];
+      if(window.parent !== window && typeof window.parent[que] === "function") return window.parent[que];
+    }catch(e){ /* otro origen: no es una prueba nuestra */ }
+    return null;
+  }
+  const bancoDePruebas = PRUEBA ? deFuera("__bancoFalso") : null;
+  const db = bancoDePruebas ? bancoDePruebas()
+                            : window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   // El identificador del proyecto sale de la propia URL de la API, que es donde
   // ya está: tenerlo escrito dos veces es tenerlo mal una de las dos algún día.
   const REF_PROYECTO = (SUPABASE_URL.match(/\/\/([a-z0-9]+)\./) || [])[1] || "";
@@ -1172,93 +1189,23 @@
                  ing:{ediciones:{}, borrados:[], extra:[]},
                  adultos:perfilVacio(), nino:perfilVacio() };
 
-  function fusionaPerfil(dest, p){
-    if(!p || typeof p !== "object") return;
-    dest.semanas = p.semanas && typeof p.semanas === "object" ? p.semanas : {};
-  }
-  // Antes cada comida tenía un solo plato: esas claves pasan a ser el primero.
-  function migraOrden(semanas){
-    if(!semanas || typeof semanas !== "object") return semanas;
-    Object.keys(semanas).forEach(function(id){
-      const h = semanas[id], nuevo = {};
-      Object.keys(h).forEach(function(k){
-        nuevo[k.split("|").length === 2 ? k + "|1" : k] = h[k];
-      });
-      semanas[id] = nuevo;
-    });
-    return semanas;
-  }
+  // Lo que el navegador recuerda, que son tres preferencias y nada más.
+  //
+  // Esto leía antes el estado entero — platos, semanas, compras, objetivos —
+  // porque en la época de los CSV localStorage *era* la base de datos, y arrastró
+  // mucho código de migración de formatos viejos. Desde Supabase, guardar() solo
+  // escribe estas tres claves, así que todo aquello era código que no podía
+  // ejecutarse y que hacía creer que aquí había datos.
   function cargarEstado(){
-    let p = null, viejo = false;
+    let p = null;
     try{ p = JSON.parse(localStorage.getItem(CLAVE) || "null"); }catch(e){}
-    if(!p){
-      try{
-        const v4 = JSON.parse(localStorage.getItem("mesa-semanal:v4") || "null");
-        if(v4){ p = v4; viejo = true; }
-      }catch(e){}
-    }
-    if(!p){
-      // Lo guardado antes de separar adultos y niño pasa al perfil de adultos.
-      try{
-        const v3 = JSON.parse(localStorage.getItem("mesa-semanal:v3") || "null");
-        if(v3){
-          p = { semana:v3.semana, despensa:v3.despensa, secciones:v3.secciones,
-                adultos:{semanas:v3.semanas, ediciones:v3.ediciones, borrados:v3.borrados,
-                         extra:v3.extra, objetivos:v3.objetivos} };
-          viejo = true;
-        }
-      }catch(e){}
-    }
     if(!p || typeof p !== "object") return;
-    if(viejo){
-      if(p.adultos) migraOrden(p.adultos.semanas);
-      if(p.nino) migraOrden(p.nino.semanas);
-    }
-    estado.tab = (p.tab === "semana-adultos" || p.tab === "semana-nino") ? "semana" : (p.tab || "semana");
+    estado.tab = p.tab || "semana";
     estado.semana = p.semana || null;
-    // Antes era un booleano, de cuando el bloque era uno solo.
     estado.equilibrioAbierto = (p.equilibrioAbierto && typeof p.equilibrioAbierto === "object")
                              ? p.equilibrioAbierto : {};
-    estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
-    estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
-    estado.compras = p.compras && typeof p.compras === "object" ? p.compras : {};
-    estado.semanasBorradas = Array.isArray(p.semanasBorradas) ? p.semanasBorradas : [];
-    // Los objetivos eran de cada menú y ahora son de la casa: valen los de adultos.
-    const objGuardados = (p.objetivos && typeof p.objetivos === "object") ? p.objetivos
-                       : ((p.adultos && p.adultos.objetivos) || {});
-    estado.objetivos = typeof objGuardados === "object" ? objGuardados : {};
-    fusionaPerfil(estado.adultos, p.adultos);
-    fusionaPerfil(estado.nino, p.nino);
-    if(p.ing && typeof p.ing === "object"){
-      estado.ing.ediciones = p.ing.ediciones && typeof p.ing.ediciones === "object" ? p.ing.ediciones : {};
-      estado.ing.borrados  = Array.isArray(p.ing.borrados) ? p.ing.borrados : [];
-      estado.ing.extra     = Array.isArray(p.ing.extra) ? p.ing.extra : [];
-    }
-    // Lo que antes eran secciones sueltas de ingredientes nuevos pasa al catálogo,
-    // pero solo si algún plato los usa: si no, es basura de estados viejos.
-    const usadosEnPlatos = {};
-    (datos.platos || []).forEach(function(r){
-      String(r.ingredientes || "").split("|").forEach(function(x){ if(x) usadosEnPlatos[x.trim()] = 1; });
-    });
-    ((p.platos && p.platos.extra) || []).forEach(function(x){
-      (x.i || []).forEach(function(y){ usadosEnPlatos[y] = 1; });
-    });
-    Object.keys(p.platos && p.platos.ediciones || {}).forEach(function(k){
-      ((p.platos.ediciones[k] || {}).i || []).forEach(function(y){ usadosEnPlatos[y] = 1; });
-    });
-    Object.keys(estado.secciones).forEach(function(n){
-      if(!usadosEnPlatos[n]) return;
-      const yaEsta = (datos.ingredientes || []).some(function(r){ return r.ingrediente === n; }) ||
-                     estado.ing.extra.some(function(x){ return x.n === n; });
-      if(!yaEsta) estado.ing.extra.push({n:n, seccion:estado.secciones[n]});
-    });
-    estado.secciones = {};
-    if(p.platos && typeof p.platos === "object"){
-      estado.platos.ediciones = p.platos.ediciones && typeof p.platos.ediciones === "object" ? p.platos.ediciones : {};
-      estado.platos.borrados  = Array.isArray(p.platos.borrados) ? p.platos.borrados : [];
-      estado.platos.extra     = Array.isArray(p.platos.extra) ? p.platos.extra : [];
-    }
   }
+
   // En el navegador ya solo viven las preferencias: qué pestaña y qué semana
   // estabas mirando, y si dejaste el equilibrio abierto.
   function guardarPreferencias(){
@@ -1536,9 +1483,6 @@
       salida.push({n:x.n, seccion:x.seccion, custom:true});
     });
     return salida;
-  }
-  function nombresIngredientes(){
-    return ingredientes().map(function(x){ return x.n; });
   }
   function seccionDe(ing){
     const f = ingredientes().filter(function(x){ return x.n === ing; })[0];
@@ -4775,6 +4719,29 @@
   function fijarBase(){
     BASE = {};
     TABLAS.forEach(function(t){ BASE[t.n] = t.filas(); });
+    // Las tripas, solo en pruebas. Se preparan aquí, pero no se avisa hasta el
+    // final de arrancar(): en este punto cargarEstado() todavía no ha corrido y
+    // borraría lo que la prueba escribiera.
+    if(PRUEBA){
+      window.__app = {
+        estado:estado, BASE:function(){ return BASE; }, TABLAS:TABLAS,
+        repertorio:repertorio, platos:platos, plato:plato, ingredientes:ingredientes,
+        objetivos:objetivos, huecos:huecos, fijarHuecos:fijarHuecos, clavesDe:clavesDe,
+        slotsDe:slotsDe, ordenesDe:ordenesDe, generar:generar, completarNino:completarNino,
+        adultoDesdeNino:adultoDesdeNino, cuentaEquilibrio:cuentaEquilibrio,
+        fueraDeRango:fueraDeRango, ingredientesDeSemana:ingredientesDeSemana,
+        paraComprar:paraComprar, marcarCompra:marcarCompra, huecosIguales:huecosIguales,
+        REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
+        aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
+        RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarPasos:fijarPasos,
+        platosConReceta:platosConReceta, necesitaReceta:necesitaReceta,
+        revisaGuarde:revisaGuarde, parecidos:parecidos, pesoPalabras:pesoPalabras,
+        palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
+        semanaActual:semanaActual, irASemana:irASemana, verTab:verTab,
+        guardar:guardar, persistir:persistir, pintarTodo:pintarTodo,
+        copiaEntera:copiaEntera, revisaCopia:revisaCopia, restaurarCopia:restaurarCopia
+      };
+    }
   }
 
   /* ============ Avisos ============ */
@@ -5374,6 +5341,12 @@
     pintarCreditos();
     const valida = PESTANAS.some(function(t){ return t.id === estado.tab; });
     verTab(valida ? estado.tab : "semana");
+
+    // Ahora sí: todo montado y el estado en su sitio.
+    if(PRUEBA){
+      const avisar = deFuera("__appLista");
+      if(avisar) avisar(window.__app);
+    }
   }
 })();
 </script>

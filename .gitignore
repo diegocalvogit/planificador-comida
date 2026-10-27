@@ -2,3 +2,8 @@
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Copias que deja el trabajo en curso. Una de estas pesa lo mismo que la
+# aplicación entera y puede llevar dentro una base de datos de mentira.
+*.bak
+*.orig
