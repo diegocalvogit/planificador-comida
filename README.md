@@ -86,7 +86,7 @@ Dentro de cada día, cada momento abre con su banda de color — melocotón el d
   merienda**, donde repetir es lo normal: ahí manda la columna `repeticion` y un café con leche sale los siete días;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
-- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca* — el restaurante y los comodines viejos de guardería se ponen a mano;
+- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca*, que es como está el restaurante;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
 - persigue estos objetivos, que salen de la tabla `equilibrio`. Se cuentan **veces por semana**, es decir
@@ -374,6 +374,10 @@ enlace mágico necesita una dirección de verdad a la que volver. Esa dirección
 Para rehacer la base desde cero, los dos ficheros de `supabase/` en orden, en el editor SQL del panel.
 
 ## Dos platos especiales
+
+Hubo tres platos comodín — *Desayuno guarde*, *Almuerzo guarde* y *Menú guarde* — y un tipo *Guardería* para
+decir que ese día comía fuera. Los sustituyó el cargador de menús con la casilla `es_para_comprar`, que dice
+lo mismo mejor: qué come exactamente y que no hay que comprarlo. Se borraron.
 
 **Restaurante** está en los dos repertorios, para los días que se sale de la planificación. No tiene ingredientes, así que no suma nada a la compra; es plato único, así que no pide segundo; su grupo es *fuera de casa*, que no compite con los grupos nutricionales y lleva su propio contador en el panel de equilibrio; y su repetición es *nunca*, de modo que el generador no lo propone solo.
 

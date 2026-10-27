@@ -10,7 +10,7 @@ window.CASOS = [
 {
   nombre: "La semilla llega entera a la aplicación",
   correr: function(app, banco, t){
-    t.igual(app.repertorio().length, 69, "platos");
+    t.igual(app.repertorio().length, 66, "platos");
     t.igual(app.ingredientes().length, 98, "ingredientes");
     t.igual(app.objetivos().length, 17, "objetivos");
   }
@@ -221,7 +221,7 @@ window.CASOS = [
     app.TABLAS.forEach(function(tab){
       t.cierto(Array.isArray(copia.tablas[tab.n]), "la copia trae " + tab.n);
     });
-    t.cierto(copia.tablas.platos.length === 69, "con los 69 platos");
+    t.cierto(copia.tablas.platos.length === 66, "con los 66 platos");
   }
 },
 {

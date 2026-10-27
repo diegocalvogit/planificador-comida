@@ -60,7 +60,6 @@
     --g-grasa:#E6EEDC;
     --g-salsa:#E9ECEF;
     --g-congelado:#E3E5F5;
-    --g-guarde:#EFE3E6;
     --g-fuera:#E6EAEF;
   }
   @media (prefers-color-scheme: dark){
@@ -84,7 +83,7 @@
       --g-azul:#152539; --g-marisco:#122A2B; --g-blanca:#30251A; --g-roja:#35211F;
       --g-embutido:#32202A; --g-huevo:#302B15; --g-lacteo:#1E252D; --g-queso:#2E2A1A;
       --g-frutoseco:#2A231C; --g-grasa:#232A1D; --g-salsa:#23282D; --g-congelado:#212639;
-      --g-guarde:#2E2327; --g-fuera:#242B35;
+      --g-fuera:#242B35;
     }
   }
   :root[data-theme="dark"]{
@@ -102,7 +101,7 @@
     --g-azul:#152539; --g-marisco:#122A2B; --g-blanca:#30251A; --g-roja:#35211F;
     --g-embutido:#32202A; --g-huevo:#302B15; --g-lacteo:#1E252D; --g-queso:#2E2A1A;
     --g-frutoseco:#2A231C; --g-grasa:#232A1D; --g-salsa:#23282D; --g-congelado:#212639;
-    --g-guarde:#2E2327; --g-fuera:#242B35;
+    --g-fuera:#242B35;
   }
 
   *{box-sizing:border-box}
@@ -379,7 +378,6 @@
     font:inherit;font-size:13px;font-weight:600;padding:3px 5px;border-radius:6px;cursor:pointer;
     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .nino-plato:hover{background:var(--veil);text-decoration:underline}
-  .nino-plato.suave{font-weight:500;font-style:italic;color:var(--ink-3)}
   .nino-plato.roto{color:var(--pimenton);text-decoration:line-through}
   .nino-quita{flex:none;border:0;background:transparent;color:var(--ink-3);cursor:pointer;
     font-size:15px;line-height:1;padding:1px 6px;border-radius:6px}
@@ -415,7 +413,6 @@
   .slot.g-grasa{background-color:var(--g-grasa)}
   .slot.g-salsa{background-color:var(--g-salsa)}
   .slot.g-congelado{background-color:var(--g-congelado)}
-  .slot.g-guarde{background-color:var(--g-guarde)}
   .slot.g-fuera{background-color:var(--g-fuera)}
 
   .legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
@@ -1363,12 +1360,6 @@
   }
   function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
 
-  // Un plato marcado como "guarde" en el catálogo: los tres comodines que había
-  // antes de poder cargar los menús de verdad. Quedan por las semanas viejas.
-  function esGuarde(p){
-    return !!p && tiposDe(p).some(function(t){ return claveDe(t) === "guarde"; });
-  }
-
   // Qué platos de la semana hay que comprar. Casi todos, así que lo que se
   // guarda aquí son las excepciones: lo que el niño come en la guardería y lo
   // que ya está en la nevera. Va por plato y no por hueco, porque dentro de una
@@ -1413,7 +1404,7 @@
     if(!dela) return "";
     const base0 = base(dela), tipos = tiposDe(dela);
     const cands = platos(pid).filter(function(c){
-      return elegible(c, momento) && c.rep !== "nunca" && !esGuarde(c);
+      return elegible(c, momento) && c.rep !== "nunca";
     });
     if(!cands.length) return "";
     cands.sort(function(a, b){
@@ -3016,16 +3007,14 @@
 
     suyos.forEach(function(o){
       const crudo = hn[slot + "|" + o], p = platoEnSemana("nino", crudo);
-      const guarde = esGuarde(p);
-      caja.appendChild(el("div", {class:"nino-row" + (guarde ? " guarde" : "") +
+      caja.appendChild(el("div", {class:"nino-row" +
                                          (paraComprar(id, "nino", slot + "|" + o) ? "" : " sin-compra")}, [
         checkCompra(id, "nino", slot + "|" + o, p ? p.n : crudo),
         el("span", {class:"etq", text:"niño"}),
         el("span", {class:"ord", text:ORDEN_LBL[o]}),
-        el("button", {type:"button", class:"nino-plato" + (!p ? " roto" : "") + (guarde ? " suave" : ""),
-          text: guarde ? "en la guardería" : (p ? p.n : crudo),
-          title: guarde ? "Ese día come en la guardería. Pulsa si un día no va."
-                        : (p ? tipoTexto(p) : "Este plato ya no está en el repertorio"),
+        el("button", {type:"button", class:"nino-plato" + (!p ? " roto" : ""),
+          text: p ? p.n : crudo,
+          title: p ? tipoTexto(p) : "Este plato ya no está en el repertorio",
           onclick:function(){ abrirSelector("nino", dia, momento, o); }}),
         el("button", {type:"button", class:"nino-quita", text:"×",
           title: suyos.length > 1 ? "Quitar este plato del niño"

@@ -132,11 +132,6 @@ window.DATOS_PRUEBA = {
    "orden": 19
   },
   {
-   "clave": "guarde",
-   "tipo": "Guardería",
-   "orden": 20
-  },
-  {
    "clave": "fuera",
    "tipo": "Fuera de casa",
    "orden": 21
@@ -1623,54 +1618,6 @@ window.DATOS_PRUEBA = {
    ]
   },
   {
-   "nombre": "Desayuno guarde",
-   "adultos": false,
-   "nino": true,
-   "descripcion": "Ese día desayuna en la guardería: no entra en la lista de la compra.",
-   "tipo": [
-    "Guardería"
-   ],
-   "momento": [
-    "desayuno"
-   ],
-   "tiempo": "bajo",
-   "repeticion": "nunca",
-   "plato_unico": true,
-   "ingredientes": []
-  },
-  {
-   "nombre": "Almuerzo guarde",
-   "adultos": false,
-   "nino": true,
-   "descripcion": "El almuerzo de media mañana es el de la guardería: no entra en la lista de la compra.",
-   "tipo": [
-    "Guardería"
-   ],
-   "momento": [
-    "almuerzo"
-   ],
-   "tiempo": "bajo",
-   "repeticion": "nunca",
-   "plato_unico": true,
-   "ingredientes": []
-  },
-  {
-   "nombre": "Menú guarde",
-   "adultos": false,
-   "nino": true,
-   "descripcion": "Ese día come en la guardería: no entra en la lista de la compra.",
-   "tipo": [
-    "Guardería"
-   ],
-   "momento": [
-    "comida"
-   ],
-   "tiempo": "bajo",
-   "repeticion": "nunca",
-   "plato_unico": true,
-   "ingredientes": []
-  },
-  {
    "nombre": "Lomo con queso",
    "adultos": true,
    "nino": true,
@@ -3115,15 +3062,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-09-14",
    "menu": "nino",
    "dia": "lunes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-09-14",
-   "menu": "nino",
-   "dia": "lunes",
    "momento": "cena",
    "orden": 1,
    "plato": "Puré de verduras con pescado"
@@ -3136,15 +3074,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 2,
    "plato": "Hamburguesa de pollo"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-09-14",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -3169,27 +3098,9 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-09-14",
    "menu": "nino",
    "dia": "miércoles",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-09-14",
-   "menu": "nino",
-   "dia": "miércoles",
    "momento": "cena",
    "orden": 1,
    "plato": "Gulas salteadas con gambas y ajo"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-09-14",
-   "menu": "nino",
-   "dia": "jueves",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -3208,15 +3119,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 2,
    "plato": "Lomo con queso"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-09-14",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -3565,33 +3467,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-12",
    "menu": "nino",
    "dia": "lunes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "lunes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "lunes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "lunes",
    "momento": "merienda",
    "orden": 1,
    "plato": "Fruta de temporada"
@@ -3604,33 +3479,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 1,
    "plato": "Hamburguesa de pollo"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -3664,33 +3512,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-12",
    "menu": "nino",
    "dia": "miércoles",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "miércoles",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "miércoles",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "miércoles",
    "momento": "merienda",
    "orden": 1,
    "plato": "Fruta de temporada"
@@ -3718,33 +3539,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-12",
    "menu": "nino",
    "dia": "jueves",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "jueves",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "jueves",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "jueves",
    "momento": "merienda",
    "orden": 1,
    "plato": "Fruta de temporada"
@@ -3766,33 +3560,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 2,
    "plato": "Rollitos de la Yaya"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-12",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -3943,33 +3710,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-19",
    "menu": "nino",
    "dia": "lunes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "lunes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "lunes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "lunes",
    "momento": "merienda",
    "orden": 1,
    "plato": "Yogur natural con fruta"
@@ -3991,33 +3731,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 2,
    "plato": "Puré o crema de verduras"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "martes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
@@ -4051,33 +3764,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-19",
    "menu": "nino",
    "dia": "miércoles",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "miércoles",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "miércoles",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "miércoles",
    "momento": "merienda",
    "orden": 1,
    "plato": "Yogur natural con fruta"
@@ -4105,33 +3791,6 @@ window.DATOS_PRUEBA = {
    "semana_id": "2026-10-19",
    "menu": "nino",
    "dia": "jueves",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "jueves",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "jueves",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "jueves",
    "momento": "merienda",
    "orden": 1,
    "plato": "Yogur natural con fruta"
@@ -4144,33 +3803,6 @@ window.DATOS_PRUEBA = {
    "momento": "cena",
    "orden": 1,
    "plato": "Calamares"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "desayuno",
-   "orden": 1,
-   "plato": "Desayuno guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "almuerzo",
-   "orden": 1,
-   "plato": "Almuerzo guarde"
-  },
-  {
-   "es_para_comprar": true,
-   "semana_id": "2026-10-19",
-   "menu": "nino",
-   "dia": "viernes",
-   "momento": "comida",
-   "orden": 1,
-   "plato": "Menú guarde"
   },
   {
    "es_para_comprar": true,
