@@ -313,6 +313,22 @@ Se escriben desde la propia ficha, **un paso por línea**, que es lo que más se
 voz alta y evita un editor de listas con sus botones de subir y bajar. Se busca por plato o por ingrediente,
 y se filtra por dificultad o por *sin escribir*, que es la lista de lo que queda por hacer.
 
+## Los ficheros
+
+```
+index.html      el esqueleto: la cabecera, las pestañas y los paneles vacíos
+app.js          todo lo demás
+estilos.css     los estilos
+pruebas/        la base falsa, los datos y los casos
+supabase/       el esquema, la semilla y las recetas de ejemplo
+prompt-guarderia.md
+```
+
+Estuvo todo en `index.html` hasta que pasó de 260 KB y dejó de poder navegarse.
+Partirlo **no añade compilación ni empaquetador**: son tres ficheros que el
+navegador lee tal cual, y Vercel los sirve igual que antes. Para cambiar algo:
+editas, `git push`, y ya está.
+
 ## Pruebas
 
 ```
