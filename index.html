@@ -678,6 +678,14 @@
       <div class="cfg-fila" id="cfg-datos"></div>
     </div>
 
+    <div class="cfg-bloque">
+      <h3>Copia de seguridad</h3>
+      <p class="hint" style="margin:0 0 10px">El plan gratuito de Supabase no hace copias automáticas, así
+        que esta es la única que vas a tener. Se descarga un fichero con todo —platos, ingredientes, semanas
+        y compras— que vale para volver atrás si algo se estropea.</p>
+      <div class="cfg-fila" id="cfg-copia"></div>
+    </div>
+
     <h3 class="cfg-titulo">Semanas guardadas</h3>
     <div class="table-wrap">
       <table class="estrecha">
@@ -701,6 +709,8 @@
 <script>
 (function(){
   "use strict";
+
+
 
 
 
@@ -3654,6 +3664,117 @@
     }
   }
 
+  /* ============ Copias de seguridad ============ */
+  // Todo lo que hay en la base, tal cual, en un fichero. Las tablas van en el
+  // orden de TABLAS, que es de padres a hijos: así al restaurar se puede recorrer
+  // en ese mismo orden sin que falle ninguna clave ajena.
+  async function copiaEntera(){
+    const copia = {formato:"menu-semanal", version:1, fecha:new Date().toISOString(), tablas:{}};
+    for(let i = 0; i < TABLAS.length; i++){
+      copia.tablas[TABLAS[i].n] = await tabla(TABLAS[i].n);
+    }
+    return copia;
+  }
+
+  function descargarTexto(nombre, texto){
+    const url = URL.createObjectURL(new Blob([texto], {type:"application/json"}));
+    const a = el("a", {href:url, download:nombre});
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+  }
+
+  async function descargarCopia(silenciosa){
+    const copia = await copiaEntera();
+    const cuantas = Object.keys(copia.tablas).reduce(function(n, k){ return n + copia.tablas[k].length; }, 0);
+    descargarTexto("menu-semanal-" + iso(new Date()) + (silenciosa ? "-antes-de-restaurar" : "") + ".json",
+                   JSON.stringify(copia, null, 1));
+    return cuantas;
+  }
+
+  // Lo que llega de un fichero es lo único que no controlamos, así que se mira
+  // entero antes de borrar nada: a media restauración no hay vuelta atrás.
+  function revisaCopia(c){
+    if(!c || c.formato !== "menu-semanal") return "Eso no es una copia de Menú Semanal.";
+    if(!c.tablas || typeof c.tablas !== "object") return "A la copia le faltan las tablas.";
+    for(let i = 0; i < TABLAS.length; i++){
+      const n = TABLAS[i].n;
+      if(!Array.isArray(c.tablas[n])) return "A la copia le falta la tabla «" + n + "».";
+    }
+    if(!c.tablas.platos.length) return "La copia no tiene ni un plato: no parece buena.";
+    return "";
+  }
+
+  async function restaurarCopia(c){
+    // De hijos a padres para vaciar, y de padres a hijos para llenar.
+    for(let i = TABLAS.length - 1; i >= 0; i--){
+      const t = TABLAS[i];
+      const { error } = await db.from(t.n).delete().not(t.pk[0], "is", null);
+      if(error) throw error;
+    }
+    for(let i = 0; i < TABLAS.length; i++){
+      const t = TABLAS[i], filas = c.tablas[t.n];
+      for(let j = 0; j < filas.length; j += 500){
+        const { error } = await db.from(t.n).insert(filas.slice(j, j + 500));
+        if(error) throw error;
+      }
+    }
+  }
+
+  function montarCopias(){
+    const caja = $("cfg-copia");
+    if(!caja) return;
+    caja.textContent = "";
+
+    const bajar = el("button", {class:"btn", text:"Descargar copia"});
+    bajar.addEventListener("click", async function(){
+      bajar.disabled = true; bajar.textContent = "Preparando…";
+      try{
+        const n = await descargarCopia(false);
+        aviso("Copia descargada: " + n + " filas");
+      }catch(e){ aviso("No se ha podido descargar: " + (e.message || e)); }
+      bajar.disabled = false; bajar.textContent = "Descargar copia";
+    });
+
+    const fichero = el("input", {type:"file", accept:"application/json,.json",
+                                 id:"cfg-fichero", style:"display:none"});
+    const subir = el("button", {class:"btn", text:"Restaurar copia…"});
+    subir.addEventListener("click", function(){ fichero.value = ""; fichero.click(); });
+
+    fichero.addEventListener("change", async function(){
+      const f = fichero.files && fichero.files[0];
+      if(!f) return;
+      let c = null;
+      try{ c = JSON.parse(await f.text()); }
+      catch(e){ aviso("Ese fichero no se puede leer como copia."); return; }
+
+      const mal = revisaCopia(c);
+      if(mal){ aviso(mal); return; }
+
+      const cuantas = Object.keys(c.tablas).reduce(function(n, k){ return n + c.tablas[k].length; }, 0);
+      const cuando = String(c.fecha || "").slice(0, 10);
+      if(!window.confirm("Restaurar la copia del " + cuando + " (" + c.tablas.platos.length +
+                         " platos, " + cuantas + " filas). " +
+                         "Se borra todo lo que hay ahora y se pone lo de la copia. " +
+                         "Antes se descargará una copia de lo actual, por si acaso.")) return;
+
+      subir.disabled = true; bajar.disabled = true; subir.textContent = "Restaurando…";
+      try{
+        await descargarCopia(true);          // la red por debajo de la red
+        await restaurarCopia(c);
+        aviso("Copia restaurada. Recargando…");
+        setTimeout(function(){ location.reload(); }, 1200);
+      }catch(e){
+        subir.disabled = false; bajar.disabled = false; subir.textContent = "Restaurar copia…";
+        aviso("La restauración ha fallado: " + (e.message || e) +
+              ". Tienes la copia de lo anterior en Descargas.");
+      }
+    });
+
+    caja.appendChild(bajar);
+    caja.appendChild(subir);
+    caja.appendChild(fichero);
+  }
+
   /* ============ Pintado global ============ */
   function pintarTodo(){
     pintarPlatos();
@@ -3784,6 +3905,7 @@
     montarPanelIngredientes();
     montarPanelSemana();
     pintarObjetivos();
+    montarCopias();
 
     // La primera vez la semana en curso se rellena sola, para no abrir en blanco.
     // Con histórico ya guardado no se toca nada: inventar una semana marcaría

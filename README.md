@@ -172,6 +172,8 @@ algo distinto. **El equilibrio mide la mesa de casa**, no las excepciones del ni
 
 **Ingredientes** — El catálogo, la única fuente de la que salen los ingredientes de los platos. Cada uno con su sección del súper y los platos que lo usan; se busca, se filtra por sección y por si está en uso o suelto. Desde aquí se añaden, se renombran —lo que arrastra a todos los platos, la despensa y el histórico de compras— y se borran, siempre que no los use ningún plato.
 
+**Configuración** — Incluye **copia de seguridad**: un botón descarga todo lo que hay en la base en un fichero JSON, y otro lo restaura. Importa porque el plan gratuito de Supabase **no hace copias automáticas** ("Automatic backups: Not included"), así que esa es la única que hay. Antes de restaurar se descarga sola una copia de lo actual, y el fichero se valida entero antes de borrar nada: a media restauración no habría vuelta atrás.
+
 **Configuración** — La cuenta con la que has entrado y el botón de salir, un resumen de lo que hay en la base, y el histórico de semanas: Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
 
 ## Cómo se guardan los cambios
