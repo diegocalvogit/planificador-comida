@@ -559,7 +559,10 @@
 
   /* ====== Al imprimir: la semana entera en una hoja apaisada ====== */
   @media print{
-    @page{ size:A4 landscape; margin:8mm }
+    /* Margen de página a cero y el blanco por dentro. No es un capricho: con
+       margen, el navegador aprovecha para colar ahí su cabecera y su pie —el
+       título, la dirección, "1 de 1" y la hora—, y sin margen no le caben. */
+    @page{ size:A4 landscape; margin:0 }
     :root{ --surface:#fff; --ground:#fff; --line:#bbb; --line-strong:#999;
            --ink:#000; --ink-2:#333; --ink-3:#666; --shadow:none; --veil:transparent }
     body{ background:#fff }
@@ -569,7 +572,7 @@
     #panel-ingredientes, #panel-historico, .puerta{ display:none !important }
     .slot-add, .nino-add, .nino-quita{ display:none !important }
     main{ padding:0; max-width:none }
-    #panel-semana{ display:block !important }
+    #panel-semana{ display:block !important; padding:8mm }
     /* El encabezado lo pone el ::before con la semana: el "Reparto de la semana"
        de la pantalla sobra en papel y se llevaba media línea de altura. */
     .section-head{ display:none }
@@ -690,6 +693,7 @@
 <script>
 (function(){
   "use strict";
+
 
 
 
@@ -2419,8 +2423,7 @@
     const etiqueta = $("wk-label");
     etiqueta.textContent = etiquetaSemana(lunes);
     // Para la hoja impresa, que no lleva la barra de navegación de semanas.
-    $("panel-semana").setAttribute("data-semana",
-      "Menú semanal · " + etiquetaSemana(lunes) + " · " + subtituloSemana(lunes));
+    $("panel-semana").setAttribute("data-semana", "Menú semanal · " + etiquetaSemana(lunes));
     $("wk-sub").textContent = subtituloSemana(lunes);
     if(id === hoyId) etiqueta.appendChild(el("span", {class:"now", text:"esta semana"}));
 
