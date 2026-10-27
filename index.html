@@ -157,6 +157,8 @@
   .cfg-fila{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .cfg-fila .cfg-dato{font-size:13.5px;color:var(--ink)}
   .cfg-fila .hint{flex:1 1 100%;margin:0}
+  .cfg-enlaces{display:flex;gap:8px;flex-wrap:wrap;flex:1 1 100%}
+  a.btn{text-decoration:none}
   .guardado[hidden]{display:none}
   .guardado{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:8px;
     font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.04em}
@@ -707,6 +709,7 @@
 
 
 
+
   /* ============ Base de datos ============ */
   // La clave es pública a propósito y va a la vista en esta misma página. Lo que
   // protege los datos no es ella, sino las políticas del propio Postgres: sin una
@@ -716,6 +719,10 @@
   const SUPABASE_URL = "https://hoaifyokcgyuacsbbcdo.supabase.co";
   const SUPABASE_KEY = "sb_publishable__3MJZhGtxfwFXocPrK4ezw_AW3-_yST";
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // El identificador del proyecto sale de la propia URL de la API, que es donde
+  // ya está: tenerlo escrito dos veces es tenerlo mal una de las dos algún día.
+  const REF_PROYECTO = (SUPABASE_URL.match(/\/\/([a-z0-9]+)\./) || [])[1] || "";
+  const PANEL = REF_PROYECTO ? "https://supabase.com/dashboard/project/" + REF_PROYECTO : "";
 
   /* ============ Constantes ============ */
   const DIAS = ["lunes","martes","miércoles","jueves","viernes","sábado","domingo"];
@@ -3629,6 +3636,21 @@
               n_semanas + (n_semanas === 1 ? " semana" : " semanas")}));
       datos.appendChild(el("span", {class:"hint",
         text:"En una base Postgres de Supabase. Cada cambio sube solo."}));
+      if(PANEL){
+        // El sitio al que ir si algo va mal: ahí se ven y se arreglan las filas
+        // a mano. Pide tu cuenta de Supabase, no la de aquí.
+        const enlaces = el("div", {class:"cfg-enlaces"}, [
+          el("a", {class:"btn btn-sm", href:PANEL + "/editor", target:"_blank", rel:"noopener",
+                   text:"Ver las tablas"}),
+          el("a", {class:"btn btn-sm", href:PANEL + "/sql/new", target:"_blank", rel:"noopener",
+                   text:"Consultas SQL"}),
+          el("a", {class:"btn btn-sm", href:PANEL + "/logs/explorer", target:"_blank", rel:"noopener",
+                   text:"Registro de errores"})
+        ]);
+        datos.appendChild(enlaces);
+        datos.appendChild(el("span", {class:"hint",
+          text:"Proyecto " + REF_PROYECTO + ". Entrar pide tu cuenta de Supabase."}));
+      }
     }
   }
 
