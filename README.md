@@ -109,6 +109,10 @@ Dentro de cada día, cada momento abre con su banda de color — melocotón el d
 | Preparado o congelado | Preparado o congelado | 0–2 |
 | Fuera de casa | Fuera de casa | 0–2 |
 
+El bloque va **plegado en una línea** con lo que incumple —*Fruta −4 · Lácteos −3*—, en rojo si hay algo fuera y en verde si no; se despliega entero con la flecha, y recuerda cómo lo dejaste. En el móvil lo que no cabe se corta con puntos suspensivos.
+
+El botón **Imprimir** saca la semana entera en **una hoja A4 apaisada**: siete columnas, una por día, sin barras ni botones. Medido sobre seis semanas generadas, la más llena ocupa 674 px de los 733 que caben.
+
 Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con un solo plato de pasta en el menú de adultos, pedir *2 a 4 comidas con pasta* deja ese objetivo en rojo de
 vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos son **ajustables antes de generar**: *Ajustar objetivos antes de generar* abre un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 

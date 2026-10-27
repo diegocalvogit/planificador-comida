@@ -278,9 +278,23 @@
   .weeknav .wk .now{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
     color:var(--ok);background:var(--ok-soft);border-radius:20px;padding:2px 7px;margin-left:8px;vertical-align:middle}
 
-  .balance{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;box-shadow:var(--shadow)}
-  .balance h3{font-size:14px;font-weight:700;margin-bottom:3px}
+  .balance{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:0 16px;margin-bottom:18px;box-shadow:var(--shadow)}
   .balance > p{margin:0 0 11px;color:var(--ink-2);font-size:13.5px}
+  /* La cabecera plegada: una línea, y lo que no quepa se corta con puntos
+     suspensivos. En el móvil casi nunca cabe entero, y abrirlo es un toque. */
+  .balance-cab{display:flex;align-items:center;gap:10px;padding:13px 0;cursor:pointer;
+    list-style:none;min-width:0}
+  .balance-cab::-webkit-details-marker{display:none}
+  .balance-cab .bal-tit{font-size:14px;font-weight:700;flex:none}
+  .balance-cab .bal-eco{flex:1 1 auto;min-width:0;font-size:13px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .balance-cab .bal-eco.bien{color:var(--ok)}
+  .balance-cab .bal-eco.mal{color:var(--pimenton)}
+  .balance-cab .bal-chevron{flex:none;color:var(--ink-3);font-size:17px;line-height:1;
+    transition:transform .15s}
+  .balance[open] .balance-cab .bal-chevron{transform:rotate(180deg)}
+  .balance[open] .balance-cab{border-bottom:1px solid var(--line);margin-bottom:12px}
+  .balance > .obj{margin-bottom:14px}
   .meters{display:flex;flex-wrap:wrap;gap:8px}
   .meter{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
   .meter .lbl{font-size:13px;color:var(--ink-2)}
@@ -542,6 +556,53 @@
   }
   footer.credits{max-width:1120px;margin:0 auto;padding:0 20px 40px;color:var(--ink-3);font-size:12.5px}
   footer.credits code{font-family:"IBM Plex Mono",monospace;font-size:12px}
+
+  /* ====== Al imprimir: la semana entera en una hoja apaisada ====== */
+  @media print{
+    @page{ size:A4 landscape; margin:8mm }
+    :root{ --surface:#fff; --ground:#fff; --line:#bbb; --line-strong:#999;
+           --ink:#000; --ink-2:#333; --ink-3:#666; --shadow:none; --veil:transparent }
+    body{ background:#fff }
+    /* Fuera todo lo que no es la semana. */
+    .top, .lead, .weeknav, .balance, .legend, .credits, .toast, .overlay,
+    .section-head > div:last-child, #panel-platos, #panel-compra,
+    #panel-ingredientes, #panel-historico, .puerta{ display:none !important }
+    .slot-add, .nino-add, .nino-quita{ display:none !important }
+    main{ padding:0; max-width:none }
+    #panel-semana{ display:block !important }
+    /* El encabezado lo pone el ::before con la semana: el "Reparto de la semana"
+       de la pantalla sobra en papel y se llevaba media línea de altura. */
+    .section-head{ display:none }
+
+    /* Siete columnas, una por día: es lo que hace que quepa en una hoja. */
+    .week{ display:grid !important; grid-template-columns:repeat(7, 1fr) !important;
+           gap:2mm; align-items:start }
+    .day{ border:1px solid #bbb; border-radius:2mm; break-inside:avoid; box-shadow:none }
+    .day > header{ padding:2mm 2.5mm; border-bottom:1px solid #bbb }
+    .day h3{ font-size:10pt }
+    .day .dnum{ font-size:8pt }
+    .momento-head{ padding:1.2mm 2.5mm; font-size:6.5pt; letter-spacing:.06em; border-top:1px solid #ddd;
+                   -webkit-print-color-adjust:exact; print-color-adjust:exact }
+    .slot{ border-top:1px solid #eee; -webkit-print-color-adjust:exact; print-color-adjust:exact }
+    .slot-main{ padding:1.6mm 2.5mm; min-height:0 }
+    .slot .orden{ width:4mm; font-size:7pt; margin-top:0 }
+    .slot .slot-dish{ font-size:8.5pt; line-height:1.2; font-weight:600 }
+    .slot .slot-meta{ display:none }
+    .nino-bloque{ padding:0; border-top:1px dashed #999;
+                  -webkit-print-color-adjust:exact; print-color-adjust:exact }
+    .nino-row{ padding:1mm 2.5mm 1mm 5mm; gap:1.2mm }
+    .nino-row .etq{ font-size:6pt; padding:0 1mm; border:0 }
+    .nino-row .ord{ font-size:6.5pt }
+    /* En pantalla el nombre del niño se corta con puntos suspensivos para no
+       ensanchar la columna; en papel eso deja "Tos..." y no se entiende nada. */
+    .nino-plato{ font-size:8pt; padding:0; font-weight:500;
+                 white-space:normal; overflow:visible; text-overflow:clip; line-height:1.12 }
+    .nino-row{ align-items:flex-start }
+    /* Un pie discreto con la semana, que si no la hoja no dice de cuándo es. */
+    #panel-semana::before{ content:attr(data-semana); display:block; font-size:11pt;
+                           font-weight:700; margin-bottom:3.5mm }
+  }
+
 </style>
 </head>
 <body>
@@ -629,6 +690,7 @@
 <script>
 (function(){
   "use strict";
+
 
 
 
@@ -886,6 +948,7 @@
     }
     estado.tab = (p.tab === "semana-adultos" || p.tab === "semana-nino") ? "semana" : (p.tab || "semana");
     estado.semana = p.semana || null;
+    estado.equilibrioAbierto = !!p.equilibrioAbierto;
     estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
     estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
     estado.compras = p.compras && typeof p.compras === "object" ? p.compras : {};
@@ -927,10 +990,17 @@
     }
   }
   // En el navegador ya solo viven las preferencias: qué pestaña y qué semana
-  // estabas mirando. Los datos son de la base, y suben en cuanto los tocas.
+  // estabas mirando, y si dejaste el equilibrio abierto.
+  function guardarPreferencias(){
+    try{
+      localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
+                                                  equilibrioAbierto:!!estado.equilibrioAbierto}));
+    }catch(e){}
+  }
   function guardar(){
     try{
-      localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana}));
+      localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
+                                                  equilibrioAbierto:!!estado.equilibrioAbierto}));
     }catch(e){}
     persistir();
   }
@@ -2240,6 +2310,9 @@
           const id = semanaActual();
           fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
         }}),
+        el("button", {class:"btn", text:"Imprimir",
+                      title:"La semana entera en una hoja apaisada",
+                      onclick:function(){ window.print(); }}),
         el("span", {class:"guardado hecho", id:"estado-guardado", text:"Guardado",
                     title:"Los cambios suben solos a la base de datos"})
       ])
@@ -2261,8 +2334,16 @@
         onclick:function(){ irASemana(iso(lunesDe(new Date()))); }})
     ]));
 
-    p.appendChild(el("div", {class:"balance"}, [
-      el("h3", {text:"Equilibrio de la semana"}),
+    // El equilibrio ocupaba cinco líneas de contadores aunque estuviera todo bien.
+    // Plegado resume en una lo que falla, que es lo único que hay que mirar casi
+    // siempre, y se despliega entero cuando quieres el detalle.
+    const resumen = el("summary", {class:"balance-cab"}, [
+      el("span", {class:"bal-tit", text:"Equilibrio"}),
+      el("span", {class:"bal-eco", id:"bal-eco", text:"—"}),
+      el("span", {class:"bal-chevron", "aria-hidden":"true", text:"⌄"})
+    ]);
+    const plegable = el("details", {class:"balance", id:"balance"}, [
+      resumen,
       el("p", {text:"Veces que aparece cada grupo en la mesa de casa, frente al objetivo semanal."}),
       el("div", {class:"meters", id:"meters"}),
       el("details", {class:"obj"}, [
@@ -2276,7 +2357,13 @@
           el("span", {class:"hint", text:"Los objetivos guían el reparto al pulsar «Generar semana»."})
         ])
       ])
-    ]));
+    ]);
+    plegable.open = !!estado.equilibrioAbierto;
+    plegable.addEventListener("toggle", function(){
+      estado.equilibrioAbierto = plegable.open;
+      guardarPreferencias();
+    });
+    p.appendChild(plegable);
 
     p.appendChild(el("div", {class:"week", id:"week"}));
     p.appendChild(el("div", {class:"legend", id:"legend"}));
@@ -2331,6 +2418,9 @@
 
     const etiqueta = $("wk-label");
     etiqueta.textContent = etiquetaSemana(lunes);
+    // Para la hoja impresa, que no lleva la barra de navegación de semanas.
+    $("panel-semana").setAttribute("data-semana",
+      "Menú semanal · " + etiquetaSemana(lunes) + " · " + subtituloSemana(lunes));
     $("wk-sub").textContent = subtituloSemana(lunes);
     if(id === hoyId) etiqueta.appendChild(el("span", {class:"now", text:"esta semana"}));
 
@@ -2345,6 +2435,22 @@
         if(dentro.some(function(p){ return cumple(p, o); })) cuenta[o.n]++;
       });
     });
+
+    // Lo que falla, en corto: "Fruta −4 · Lácteos −3". Un número negativo es lo
+    // que falta para el mínimo; uno positivo, lo que sobra del máximo.
+    const falla = [];
+    metas.forEach(function(o){
+      const c = cuenta[o.n];
+      if(c < o.min) falla.push(o.n + " −" + (o.min - c));
+      else if(c > o.max) falla.push(o.n + " +" + (c - o.max));
+    });
+    const eco = $("bal-eco");
+    if(eco){
+      eco.textContent = falla.length ? falla.join(" · ") : "todo en su sitio";
+      eco.className = "bal-eco" + (falla.length ? " mal" : " bien");
+      eco.title = falla.length ? falla.length + (falla.length === 1 ? " grupo fuera de rango" : " grupos fuera de rango")
+                               : "Los diecisiete objetivos, dentro de rango";
+    }
 
     const metros = $("meters"); metros.textContent = "";
     metas.forEach(function(o){
