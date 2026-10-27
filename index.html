@@ -363,6 +363,9 @@
   /* Lo del niño, debajo de los platos de ese momento. */
   .nino-bloque{border-top:1px dashed var(--line-strong);background:var(--surface);padding:3px 0}
   .nino-bloque.propio{background:var(--surface-2)}
+  .nino-guarde{display:flex;align-items:center;gap:5px;padding:1px 8px 3px 14px;
+    font-size:10.5px;color:var(--ink-3);cursor:pointer;user-select:none}
+  .nino-guarde input{width:12px;height:12px;margin:0;accent-color:var(--ink-3);cursor:pointer}
   .nino-row{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 14px}
   .nino-row .etq{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
     text-transform:uppercase;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);
@@ -488,6 +491,49 @@
   .editor-body textarea{min-height:86px;resize:vertical;font-size:14px;line-height:1.45}
   .editor > footer{padding:11px 18px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .editor > footer .der{display:flex;gap:8px;margin-left:auto}
+  /* La pantalla de revisión del menú de la guardería. */
+  .carga{max-width:780px}
+  .carga > header{align-items:flex-start}
+  .carga-body{overflow-y:auto;padding:14px 18px 18px}
+  .carga-pie{display:flex;gap:10px;align-items:center;flex-wrap:wrap;width:100%}
+  .carga-pie .der{display:flex;gap:8px;margin-left:auto}
+  .carga-tambien{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .carga-tambien input{width:auto;margin:0;accent-color:var(--accent);cursor:pointer}
+  .carga-tit{font-size:13px;font-weight:700;margin:20px 0 9px;display:flex;align-items:baseline;gap:8px}
+  .carga-tit:first-child{margin-top:0}
+  .carga-tit .om{font-size:11.5px;font-weight:400;color:var(--ink-3)}
+  .carga-mal{border:1px solid var(--pimenton);border-radius:10px;padding:12px 14px;margin-bottom:16px;
+    background:color-mix(in srgb, var(--pimenton) 8%, transparent)}
+  .carga-mal ul{margin:8px 0 6px 18px;font-size:12.5px;line-height:1.55}
+  .gp{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--ground)}
+  .gp-fuera{opacity:.62}
+  .gp-cab{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+  .gp-cab strong{font-size:13.5px}
+  .gp-estado{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.05em;
+    text-transform:uppercase;color:var(--ink-3);flex:none}
+  .gp-fuera .gp-estado{color:var(--accent)}
+  .gp-meta{font-size:11.5px;color:var(--ink-2);margin-top:3px}
+  .gp-ings{font-size:12px;color:var(--ink-3);margin-top:4px}
+  .gp-desc{font-size:12px;color:var(--ink-3);margin-top:3px;font-style:italic}
+  .gp-par{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:9px;
+    padding-top:8px;border-top:1px dashed var(--line)}
+  .gp-par .et{font-size:11px;color:var(--ink-3)}
+  .gp-otro{font-size:12px;padding:3px 9px;border:1px solid var(--line);border-radius:999px;
+    background:var(--surface);color:var(--ink);cursor:pointer}
+  .gp-otro:hover{border-color:var(--accent);color:var(--accent)}
+  .carga-resto{margin-top:10px}
+  .carga-resto summary{font-size:12.5px;color:var(--ink-2);cursor:pointer;padding:4px 0}
+  .carga-resto[open] summary{margin-bottom:8px}
+  .carga-ings{display:grid;gap:6px}
+  .carga-ing{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border:1px solid var(--line);
+    border-radius:8px;padding:5px 10px;background:var(--ground)}
+  .carga-ing .nm{font-size:13px;flex:1 1 140px}
+  .carga-ing select{width:auto;flex:0 1 190px}
+  .carga-roza{flex:1 1 100%;font-size:11px;color:var(--pimenton)}
+  .carga-dias{display:grid;gap:3px}
+  .carga-dia{display:flex;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
+  .carga-dia .fe{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);flex:none;width:62px}
+  .carga-dia .pl{color:var(--ink-2);min-width:0}
   .grupos{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px;margin-top:6px}
   .grupo-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:8px;padding:5px 10px;background:var(--ground)}
   .grupo-row .sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
@@ -604,6 +650,7 @@
     .slot .slot-meta{ display:none }
     .nino-bloque{ padding:0; border-top:1px dashed #999;
                   -webkit-print-color-adjust:exact; print-color-adjust:exact }
+    .nino-guarde{ display:none }
     .nino-row{ padding:1mm 2.5mm 1mm 5mm; gap:1.2mm }
     .nino-row .etq{ font-size:6pt; padding:0 1mm; border:0 }
     .nino-row .ord{ font-size:6.5pt }
@@ -772,20 +819,13 @@
   const FINDE = {"sábado":1, "domingo":1};
   const PESO_REPETICION = {siempre:2.5, alta:1.5, media:0.5, baja:-1, ocasional:-2.5, nunca:-999};
 
-  // Los dos repertorios tienen la misma estructura: 14 huecos con dos platos.
-  // El niño come entre semana en la guardería, y eso se dice con un plato más.
+  // Los dos repertorios tienen la misma estructura. Lo que el niño come en la
+  // guardería no se inventa aquí: se carga del menú que mandan cada mes.
   const PERFILES = [
     {id:"adultos", lbl:"Adultos", quien:"de los adultos", casa:true,
      semanas:"semanas"},
     {id:"nino", lbl:"Niño", quien:"del niño",
-     semanas:"semanas_nino",
-     // Lo que cubre la guardería de lunes a viernes. En la semana "corta" solo
-     // come allí; en la "larga" desayuna y almuerza allí también.
-     guarde:{dias:["lunes","martes","miércoles","jueves","viernes"],
-             corto:[{plato:"Menú guarde", momento:"comida"}],
-             largo:[{plato:"Desayuno guarde", momento:"desayuno"},
-                    {plato:"Almuerzo guarde", momento:"almuerzo"},
-                    {plato:"Menú guarde",     momento:"comida"}]}}
+     semanas:"semanas_nino"}
   ];
   function perfil(id){ return PERFILES.filter(function(p){ return p.id === id; })[0]; }
   // "de la comida", "del desayuno": el artículo cambia con el momento.
@@ -912,6 +952,12 @@
     };
     datos.semanas = deMenu("casa");
     datos.semanas_nino = deMenu("nino");
+    // La marca viaja por fila, pero manda por hueco: basta con que uno de los
+    // platos del hueco venga marcado para que el hueco entero sea de la guarde.
+    GUARDE = {};
+    semanas.forEach(function(x){
+      if(x.menu === "nino" && x.en_guarde) GUARDE[x.semana_id + "|" + x.dia + "|" + x.momento] = true;
+    });
     datos.compras = compras.map(function(x){
       return {semana_id:x.semana_id, ingrediente:x.ingrediente, en_casa:sn(x.en_casa)};
     });
@@ -1165,8 +1211,25 @@
   }
   function otroPerfil(pid){ return pid === "adultos" ? "nino" : "adultos"; }
 
+  // Un plato marcado como "guarde" en el catálogo: los tres comodines que había
+  // antes de poder cargar los menús de verdad. Quedan por las semanas viejas.
   function esGuarde(p){
     return !!p && tiposDe(p).some(function(t){ return claveDe(t) === "guarde"; });
+  }
+
+  // Qué huecos del niño son de la guardería. Va por hueco, no por plato: el
+  // mismo puré de verduras puede ser de allí un martes y de casa un sábado, y
+  // lo que decide si entra en la compra es dónde se come, no qué es. Se guarda
+  // en la columna en_guarde de cada fila de semanas.
+  let GUARDE = {};
+  function enGuarde(id, slot){
+    if(GUARDE[id + "|" + slot]) return true;
+    // Las semanas de antes de esto marcaban la guardería con un plato comodín.
+    return esGuarde(platoEnSemana("nino", huecos("nino", id)[slot + "|1"]));
+  }
+  function marcarGuarde(id, slot, si){
+    if(si) GUARDE[id + "|" + slot] = true; else delete GUARDE[id + "|" + slot];
+    guardar();
   }
 
   // Lo que le toca al niño cuando en casa se cocina `n`: el mismo plato si está
@@ -1197,25 +1260,19 @@
     return cands[0].n;
   }
 
-  // Qué huecos cubre la guardería esa semana. "largo" añade desayuno y almuerzo.
-  function huecosGuarde(modo){
-    const pf = perfil("nino"), salida = {};
-    if(!pf.guarde) return salida;
-    (pf.guarde[modo === "largo" ? "largo" : "corto"] || []).forEach(function(r){
-      const p = plato("nino", r.plato);
-      if(!p) return;
-      pf.guarde.dias.forEach(function(dia){ salida[dia + "|" + r.momento] = p.n; });
-    });
-    return salida;
-  }
-
-  // La semana del niño sale de la de la casa: copia lo que puede comer, pone la
-  // guardería donde toca y sustituye lo que no está en su menú.
-  function derivarSemana(id, modo){
-    const casa = huecos("adultos", id), guarde = huecosGuarde(modo), h = {};
+  // La semana del niño sale de la de la casa: copia lo que puede comer y
+  // sustituye lo que no está en su menú. Lo que come en la guardería se queda
+  // como está: lo puso el menú que mandan de allí, y no es nuestro para tocarlo.
+  function derivarSemana(id){
+    const casa = huecos("adultos", id), previo = huecos("nino", id), h = {};
     slotsDe().forEach(function(slot){
       const mom = slot.split("|")[1];
-      if(guarde[slot]){ h[slot + "|1"] = guarde[slot]; return; }
+      if(enGuarde(id, slot)){
+        ordenesDe().forEach(function(o){
+          if(previo[slot + "|" + o]) h[slot + "|" + o] = previo[slot + "|" + o];
+        });
+        return;
+      }
       ordenesDe().forEach(function(o){
         const x = espejoNino(casa[slot + "|" + o], mom);
         if(x) h[slot + "|" + o] = x;
@@ -1248,8 +1305,7 @@
     const casa = huecos("adultos", id), hn = huecos("nino", id);
     let propias = 0, guarde = 0;
     slotsDe().forEach(function(slot){
-      const suyo = hn[slot + "|1"] ? plato("nino", hn[slot + "|1"]) : null;
-      if(esGuarde(suyo)){ guarde++; return; }
+      if(enGuarde(id, slot)){ guarde++; return; }
       ordenesDe().forEach(function(o){
         const k = slot + "|" + o;
         if((casa[k] || "") !== (hn[k] || "")) propias++;
@@ -1315,6 +1371,15 @@
   }
   function fijarHuecos(pid, id, h){
     estado[pid].semanas[id] = h;
+    // Una marca sin platos debajo no significa nada, y además no se podría
+    // guardar: la columna vive en la fila del plato.
+    if(pid === "nino"){
+      Object.keys(GUARDE).forEach(function(k){
+        if(k.indexOf(id + "|") !== 0) return;
+        const slot = k.slice(id.length + 1);
+        if(!ordenesDe().some(function(o){ return !!h[slot + "|" + o]; })) delete GUARDE[k];
+      });
+    }
     // Volver a poner platos en una semana borrada la resucita: si no, quedaba
     // invisible en el histórico y no llegaba nunca al repositorio.
     if(Object.keys(h).some(function(k){ return !!h[k]; })){
@@ -1420,7 +1485,7 @@
   function elegible(p, mom){ return momentosDe(p).indexOf(mom) !== -1; }
 
   // Genera la semana de la casa. La del niño se deriva al final.
-  function generar(id, modo){
+  function generar(id){
     const pid = "adultos";
     const todos = platos(pid), metas = objetivos(), pf = perfil(pid);
     const h = {}, usados = {}, cuenta = {};
@@ -1639,7 +1704,7 @@
     repasa();
 
     fijarHuecos(pid, id, h);
-    derivarSemana(id, modo);
+    derivarSemana(id);
     return diferencias(id);
   }
 
@@ -2308,19 +2373,17 @@
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
         el("button", {class:"btn btn-primary", text:"Generar semana",
-          title:"El niño come en la guardería solo al mediodía, de lunes a viernes",
+          title:"Reparte el repertorio por los huecos que no sean de la guardería",
           onclick:function(){
-            const d = generar(semanaActual()); pintarTodo(); avisoGenerada(d, false);
-          }}),
-        el("button", {class:"btn", text:"Generar con guarde",
-          title:"El niño desayuna, almuerza y come en la guardería, de lunes a viernes",
-          onclick:function(){
-            const d = generar(semanaActual(), "largo"); pintarTodo(); avisoGenerada(d, true);
+            const d = generar(semanaActual()); pintarTodo(); avisoGenerada(d);
           }}),
         el("button", {class:"btn", text:"Vaciar", onclick:function(){
           const id = semanaActual();
           fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
         }}),
+        el("button", {class:"btn", text:"Cargar guarde\u2026",
+                      title:"El men\u00fa que mandan de la guarder\u00eda, en el JSON que devuelve el asistente",
+                      onclick:pedirFicheroGuarde}),
         el("button", {class:"btn", text:"Imprimir",
                       title:"La semana entera en una hoja apaisada",
                       onclick:function(){ window.print(); }}),
@@ -2374,7 +2437,7 @@
     p.appendChild(el("div", {class:"legend", id:"legend"}));
   }
 
-  function avisoGenerada(d, largo){
+  function avisoGenerada(d){
     const partes = ["Semana generada" + (objetivosTocados() ? " con tus objetivos" : "") + ": " +
                     etiquetaSemana(desdeIso(semanaActual()))];
     if(d.guarde) partes.push(d.guarde + " huecos en la guardería");
@@ -2600,6 +2663,21 @@
           onclick:function(){ quitaNino(id, slot, o); }})
       ]));
     });
+
+    // Donde come decide si se compra. Lo normal es que lo marque el cargador de
+    // menús de la guardería, pero un día que no vaya se quita aquí a mano.
+    if(suyos.length){
+      const marca = el("input", {type:"checkbox", id:"gd-" + sinTildes(slot).replace(/\|/g, "-")});
+      marca.checked = enGuarde(id, slot);
+      marca.addEventListener("change", function(){
+        marcarGuarde(id, slot, marca.checked);
+        pintarTodo();
+      });
+      caja.appendChild(el("label", {class:"nino-guarde", for:marca.id,
+        title:"Si come en la guardería, sus ingredientes no entran en la lista de la compra"}, [
+        marca, el("span", {text:"en la guarde"})
+      ]));
+    }
 
     // Y una línea más para el siguiente, mientras quepa. Si su primero se basta
     // solo, corta en dos igual que en la mesa, dejando sitio al postre.
@@ -3230,6 +3308,458 @@
     eNombre.focus();
   }
 
+  /* ============ Cargar el menú de la guardería ============ */
+  // Cada mes mandan un PDF con lo que come allí. Un asistente lo convierte en
+  // JSON con este formato, y aquí se revisa antes de tocar nada: el riesgo no
+  // es que falle la carga, es que entren veinte platos que ya tenías con otro
+  // nombre y el repertorio se llene de duplicados.
+
+  // Palabras que aparecen en medio recetario y no distinguen nada.
+  const VACIAS = {"de":1,"del":1,"la":1,"las":1,"el":1,"los":1,"con":1,"y":1,"a":1,
+                  "al":1,"en":1,"un":1,"una":1,"sin":1,"su":1,"o":1};
+
+  // El nombre de un plato partido en palabras comparables: sin tildes, sin
+  // plurales y sin las de relleno. "Albóndigas con verduras" -> albondiga, verdura.
+  function palabrasDe(nombre){
+    const vistas = {}, salida = [];
+    sinTildes(nombre).split(/[^a-z0-9]+/).forEach(function(w){
+      if(!w || VACIAS[w] || w.length < 3) return;
+      const raiz = w.replace(/(es|s)$/, "");
+      const k = raiz.length >= 3 ? raiz : w;
+      if(vistas[k]) return;
+      vistas[k] = 1; salida.push(k);
+    });
+    return salida;
+  }
+
+  // Cuánto distingue cada palabra. "Carne" está en veinte platos y no dice gran
+  // cosa; "carbonara" está en uno y lo dice todo. Sin esto, cualquier plato con
+  // pollo salía parecido a los otros quince con pollo y la revisión no servía.
+  function pesoPalabras(nombres){
+    const en = {};
+    nombres.forEach(function(n){
+      palabrasDe(n).forEach(function(w){ en[w] = (en[w] || 0) + 1; });
+    });
+    const total = Math.max(1, nombres.length), peso = {};
+    Object.keys(en).forEach(function(w){ peso[w] = Math.log(total / en[w]) + 0.25; });
+    return peso;
+  }
+
+  // Los platos del repertorio que se parecen a uno nuevo, de más a menos.
+  function parecidos(nombre, candidatos, peso){
+    const mias = palabrasDe(nombre);
+    if(!mias.length) return [];
+    const mio = mias.reduce(function(t, w){ return t + (peso[w] || 1); }, 0);
+    const salida = [];
+    candidatos.forEach(function(p){
+      const suyas = palabrasDe(p.n);
+      if(!suyas.length) return;
+      const suyo = suyas.reduce(function(t, w){ return t + (peso[w] || 1); }, 0);
+      let comun = 0;
+      mias.forEach(function(w){ if(suyas.indexOf(w) !== -1) comun += (peso[w] || 1); });
+      if(!comun) return;
+      // Contra el menor de los dos: "Sopa" y "Sopa de pollo" se parecen mucho
+      // aunque uno sea el doble de largo.
+      const tanto = comun / Math.max(0.001, Math.min(mio, suyo));
+      if(tanto < 0.42) return;
+      salida.push({p:p, tanto:tanto, comun:mias.filter(function(w){ return suyas.indexOf(w) !== -1; })});
+    });
+    salida.sort(function(a, b){ return b.tanto - a.tanto; });
+    return salida.slice(0, 5);
+  }
+
+  function mismoNombre(a, b){ return palabrasDe(a).join(" ") === palabrasDe(b).join(" "); }
+
+  // Lo que no se puede arreglar desde la pantalla de revisión: si algo de esto
+  // falla, el fichero está mal hecho y hay que volver a pedírselo al asistente.
+  function revisaGuarde(g){
+    const malo = [];
+    if(!g || typeof g !== "object") return ["Eso no es un fichero JSON."];
+    if(g.formato !== "menu-guarderia") return ["Eso no es un menú de guardería: falta «formato: menu-guarderia»."];
+    if(!Array.isArray(g.dias) || !g.dias.length) malo.push("No trae ni un día.");
+
+    const nuevos = Array.isArray(g.platos_nuevos) ? g.platos_nuevos : [];
+    const ingNuevos = Array.isArray(g.ingredientes_nuevos) ? g.ingredientes_nuevos : [];
+
+    const hayIng = {};
+    ingredientes().forEach(function(x){ hayIng[x.n] = 1; });
+    ingNuevos.forEach(function(x){ hayIng[x.ingrediente] = 1; });
+    const hayPlato = {};
+    repertorio().forEach(function(p){ hayPlato[p.n] = 1; });
+    nuevos.forEach(function(p){ hayPlato[p.nombre] = 1; });
+
+    ingNuevos.forEach(function(x){
+      if(!x.ingrediente) malo.push("Un ingrediente nuevo viene sin nombre.");
+      if(SECCIONES.indexOf(x.seccion) === -1)
+        malo.push("El ingrediente «" + x.ingrediente + "» dice ir en «" + x.seccion + "», que no es una sección del súper.");
+    });
+
+    nuevos.forEach(function(p){
+      if(!p.nombre){ malo.push("Un plato nuevo viene sin nombre."); return; }
+      (p.tipo || []).forEach(function(t){
+        if(TIPOS.indexOf(t) === -1) malo.push("«" + p.nombre + "» dice ser de tipo «" + t + "», que no existe.");
+      });
+      if(!(p.tipo || []).length) malo.push("«" + p.nombre + "» viene sin tipo.");
+      (p.momento || []).forEach(function(m){
+        if(IDS_MOMENTO.indexOf(m) === -1) malo.push("«" + p.nombre + "» dice comerse en «" + m + "», que no es un momento del día.");
+      });
+      if(!(p.momento || []).length) malo.push("«" + p.nombre + "» viene sin momento del día.");
+      (p.ingredientes || []).forEach(function(i){
+        if(!hayIng[i]) malo.push("«" + p.nombre + "» usa «" + i + "», que ni está en el catálogo ni viene declarado.");
+      });
+      if(!(p.ingredientes || []).length) malo.push("«" + p.nombre + "» viene sin ingredientes.");
+    });
+
+    const fechas = {};
+    (g.dias || []).forEach(function(d){
+      const f = desdeIso(d.fecha);
+      if(!d.fecha || isNaN(f.getTime())){ malo.push("Hay un día con la fecha mal: «" + d.fecha + "»."); return; }
+      if(fechas[d.fecha]) malo.push("El " + d.fecha + " viene dos veces.");
+      fechas[d.fecha] = 1;
+      if(FINDE[DIAS[(f.getDay() + 6) % 7]]) malo.push("El " + d.fecha + " cae en fin de semana, y la guardería no abre.");
+      let cuantos = 0;
+      Object.keys(d).forEach(function(k){
+        if(k === "fecha") return;
+        if(IDS_MOMENTO.indexOf(k) === -1){ malo.push("El " + d.fecha + " trae un «" + k + "» que no es un momento del día."); return; }
+        cuantos += (d[k] || []).length;
+        if((d[k] || []).length > PLATOS_POR_COMIDA)
+          malo.push("El " + d.fecha + " pone " + d[k].length + " platos en " + (MOMENTO_LBL[k] || k) + ", y solo caben " + PLATOS_POR_COMIDA + ".");
+        (d[k] || []).forEach(function(n){
+          if(!hayPlato[n]) malo.push("El " + d.fecha + " come «" + n + "», que no existe ni se crea.");
+        });
+      });
+      if(!cuantos) malo.push("El " + d.fecha + " no trae ningún plato.");
+    });
+
+    // Lo mismo repetido veinte veces no ayuda a nadie.
+    const unicos = [];
+    malo.forEach(function(m){ if(unicos.indexOf(m) === -1) unicos.push(m); });
+    return unicos.slice(0, 25);
+  }
+
+  function pedirFicheroGuarde(){
+    const f = el("input", {type:"file", accept:"application/json,.json", style:"display:none"});
+    document.body.appendChild(f);
+    f.addEventListener("change", async function(){
+      const fich = f.files && f.files[0];
+      f.remove();
+      if(!fich) return;
+      let g = null;
+      try{ g = JSON.parse(await fich.text()); }
+      catch(e){ aviso("Ese fichero no se puede leer como JSON."); return; }
+      abrirGuarde(g, fich.name);
+    });
+    f.click();
+  }
+
+  /* ============ La pantalla de revisión ============ */
+  let capaGuarde = null;
+  function cerrarGuarde(){
+    if(capaGuarde){ capaGuarde.remove(); capaGuarde = null; document.removeEventListener("keydown", escGuarde); }
+  }
+  function escGuarde(e){ if(e.key === "Escape") cerrarGuarde(); }
+
+  function abrirGuarde(g, nombreFichero){
+    cerrarGuarde();
+    const errores = revisaGuarde(g);
+    const nuevos = Array.isArray(g.platos_nuevos) ? g.platos_nuevos : [];
+    const ingNuevos = Array.isArray(g.ingredientes_nuevos) ? g.ingredientes_nuevos : [];
+    const dias = Array.isArray(g.dias) ? g.dias : [];
+
+    // El plan: qué se hace con cada plato nuevo. Empieza en "crear" salvo que
+    // el nombre ya esté cogido, que entonces no hay nada que decidir.
+    const sust = {};         // nombre nuevo -> nombre que se usa en su lugar
+    const secciones = {};    // ingrediente nuevo -> sección elegida
+    ingNuevos.forEach(function(x){ secciones[x.ingrediente] = x.seccion; });
+
+    const delRepertorio = repertorio();
+    const peso = pesoPalabras(delRepertorio.map(function(p){ return p.n; })
+                              .concat(nuevos.map(function(p){ return p.nombre; })));
+    const mirados = {};
+    nuevos.forEach(function(p){
+      mirados[p.nombre] = parecidos(p.nombre, delRepertorio, peso);
+      const igual = mirados[p.nombre].filter(function(x){ return mismoNombre(x.p.n, p.nombre); })[0];
+      if(igual) sust[p.nombre] = igual.p.n;
+    });
+
+    const cuerpo = el("div", {class:"carga-body"});
+    const pie = el("div", {class:"carga-pie"});
+
+    function resuelto(n){ return sust[n] || n; }
+    function seCrean(){ return nuevos.filter(function(p){ return !sust[p.nombre]; }); }
+    // Solo hacen falta los ingredientes de los platos que de verdad se crean.
+    function ingsQueHacenFalta(){
+      const usa = {};
+      seCrean().forEach(function(p){ (p.ingredientes || []).forEach(function(i){ usa[i] = 1; }); });
+      return ingNuevos.filter(function(x){ return usa[x.ingrediente]; });
+    }
+
+    function pinta(){
+      cuerpo.textContent = "";
+
+      if(errores.length){
+        cuerpo.appendChild(el("div", {class:"carga-mal"}, [
+          el("strong", {text: errores.length === 1 ? "Hay un problema en el fichero"
+                                                   : "Hay " + errores.length + " problemas en el fichero"}),
+          el("ul", null, errores.map(function(m){ return el("li", {text:m}); })),
+          el("p", {class:"hint", text:"No se carga nada hasta que el fichero venga bien. " +
+                                      "Vuelve a pedírselo al asistente con esto que pone aquí."})
+        ]));
+      }
+
+      /* --- Los platos, que es lo que hay que mirar --- */
+      const conDudas = nuevos.filter(function(p){ return mirados[p.nombre].length; });
+      const limpios = nuevos.filter(function(p){ return !mirados[p.nombre].length; });
+
+      cuerpo.appendChild(el("h4", {class:"carga-tit"}, [
+        document.createTextNode("Platos nuevos "),
+        el("span", {class:"om", text:seCrean().length + " de " + nuevos.length + " se crean"})
+      ]));
+
+      if(conDudas.length){
+        cuerpo.appendChild(el("p", {class:"hint", style:"margin:-4px 0 10px",
+          text:"Estos se parecen a algo que ya tienes. Si es el mismo plato con otro nombre, " +
+               "pulsa el que ya tienes y se usará ese en vez de crear uno nuevo."}));
+        conDudas.forEach(function(p){ cuerpo.appendChild(ficha(p)); });
+      }
+
+      if(limpios.length){
+        const dentro = el("div");
+        limpios.forEach(function(p){ dentro.appendChild(ficha(p)); });
+        const det = el("details", {class:"carga-resto"}, [
+          el("summary", {text:"Sin nada parecido en el repertorio: " + limpios.length +
+                              (limpios.length === 1 ? " plato" : " platos")}),
+          dentro
+        ]);
+        cuerpo.appendChild(det);
+      }
+
+      /* --- Los ingredientes --- */
+      const hacenFalta = ingsQueHacenFalta();
+      cuerpo.appendChild(el("h4", {class:"carga-tit"}, [
+        document.createTextNode("Ingredientes nuevos "),
+        el("span", {class:"om", text:hacenFalta.length + " se añaden al catálogo"})
+      ]));
+      if(!hacenFalta.length){
+        cuerpo.appendChild(el("p", {class:"hint", text:"Ninguno: todo lo que llevan estos platos ya lo tenías."}));
+      }else{
+        const caja = el("div", {class:"carga-ings"});
+        hacenFalta.forEach(function(x){
+          const sel = el("select", {"aria-label":"Sección de " + x.ingrediente});
+          SECCIONES.forEach(function(sec){
+            sel.appendChild(el("option", {value:sec, text:sec, selected: sec === secciones[x.ingrediente] ? "selected" : null}));
+          });
+          sel.addEventListener("change", function(){ secciones[x.ingrediente] = sel.value; });
+          const fila = el("div", {class:"carga-ing"}, [el("span", {class:"nm", text:x.ingrediente}), sel]);
+          // Un ingrediente que se parece a otro que ya tienes suele ser el mismo
+          // escrito de otra manera, y duplicarlo rompe la lista de la compra.
+          const roza = ingredientes().filter(function(y){
+            const a = sinTildes(y.n), b = sinTildes(x.ingrediente);
+            return a !== b && (a.indexOf(b) !== -1 || b.indexOf(a) !== -1);
+          }).map(function(y){ return y.n; });
+          if(roza.length) fila.appendChild(el("span", {class:"carga-roza", text:"parecido a " + roza.join(", ")}));
+          caja.appendChild(fila);
+        });
+        cuerpo.appendChild(caja);
+      }
+
+      /* --- Y los días, ya resueltos --- */
+      cuerpo.appendChild(el("h4", {class:"carga-tit"}, [
+        document.createTextNode("Días "),
+        el("span", {class:"om", text:dias.length + " en " + semanasDe(dias).length + " semanas"})
+      ]));
+      const tabla = el("div", {class:"carga-dias"});
+      dias.slice().sort(function(a, b){ return String(a.fecha).localeCompare(String(b.fecha)); })
+        .forEach(function(d){
+          const f = desdeIso(d.fecha);
+          if(isNaN(f.getTime())) return;
+          const trozos = [];
+          IDS_MOMENTO.forEach(function(m){
+            if(!d[m] || !d[m].length) return;
+            trozos.push((MOMENTO_LBL[m] || m) + ": " + d[m].map(resuelto).join(" · "));
+          });
+          tabla.appendChild(el("div", {class:"carga-dia"}, [
+            el("span", {class:"fe", text:DIAS[(f.getDay() + 6) % 7].slice(0, 3) + " " + f.getDate() + "/" + (f.getMonth() + 1)}),
+            el("span", {class:"pl", text:trozos.join("  |  ")})
+          ]));
+        });
+      cuerpo.appendChild(tabla);
+
+      pintaPie();
+    }
+
+    function ficha(p){
+      const usado = sust[p.nombre];
+      const caja = el("div", {class:"gp" + (usado ? " gp-fuera" : "")});
+      caja.appendChild(el("div", {class:"gp-cab"}, [
+        el("strong", {text:p.nombre}),
+        el("span", {class:"gp-estado", text: usado ? "usas «" + usado + "»" : "se crea"})
+      ]));
+      caja.appendChild(el("div", {class:"gp-meta",
+        text:(p.tipo || []).join(" · ") + "  ·  " + (p.momento || []).map(function(m){ return MOMENTO_LBL[m] || m; }).join(", ") +
+             (p.plato_unico ? "  ·  basta él solo" : "")}));
+      caja.appendChild(el("div", {class:"gp-ings", text:(p.ingredientes || []).join(", ")}));
+      if(p.descripcion) caja.appendChild(el("div", {class:"gp-desc", text:p.descripcion}));
+
+      if(usado){
+        caja.appendChild(el("button", {type:"button", class:"btn btn-sm", text:"No, créalo igualmente",
+          onclick:function(){ delete sust[p.nombre]; pinta(); }}));
+        return caja;
+      }
+
+      const lista = mirados[p.nombre];
+      if(lista.length){
+        const fila = el("div", {class:"gp-par"}, [el("span", {class:"et", text:"se parece a"})]);
+        lista.forEach(function(x){
+          fila.appendChild(el("button", {type:"button", class:"gp-otro",
+            title:"Comparten: " + x.comun.join(", ") + ". Pulsa para usar este en vez de crear uno nuevo.",
+            text:x.p.n,
+            onclick:function(){ sust[p.nombre] = x.p.n; pinta(); }}));
+        });
+        caja.appendChild(fila);
+      }
+      return caja;
+    }
+
+    const alAdulto = el("input", {type:"checkbox", id:"carga-adultos"});
+    alAdulto.checked = true;
+
+    function pintaPie(){
+      pie.textContent = "";
+      pie.appendChild(el("label", {class:"carga-tambien", for:"carga-adultos",
+        title:"Así el generador de la semana también puede proponerlos en la mesa"}, [
+        alAdulto, el("span", {text:"también en el menú de los adultos"})
+      ]));
+      const der = el("div", {class:"der"}, [
+        el("button", {class:"btn", text:"Cancelar", onclick:cerrarGuarde})
+      ]);
+      if(!errores.length){
+        der.appendChild(el("button", {class:"btn btn-primary",
+          text:"Cargar " + dias.length + (dias.length === 1 ? " día" : " días"),
+          onclick:function(){
+            aplicarGuarde(g, {sust:sust, secciones:secciones, adultos:alAdulto.checked});
+          }}));
+      }
+      pie.appendChild(der);
+    }
+
+    const caja = el("div", {class:"editor carga"}, [
+      el("header", null, [
+        el("div", null, [
+          el("h3", {text:"Menú de la guardería"}),
+          el("div", {class:"hint", text:(g.mes ? mesLargo(g.mes) + " · " : "") + (nombreFichero || "")})
+        ]),
+        el("button", {class:"btn btn-sm", text:"Cerrar", onclick:cerrarGuarde})
+      ]),
+      cuerpo,
+      el("footer", null, [pie])
+    ]);
+    pinta();
+
+    capaGuarde = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaGuarde) cerrarGuarde(); }}, [caja]);
+    document.body.appendChild(capaGuarde);
+    document.addEventListener("keydown", escGuarde);
+  }
+
+  function mesLargo(m){
+    const t = String(m).split("-");
+    return MESES[Number(t[1]) - 1] ? MESES[Number(t[1]) - 1] + " de " + t[0] : String(m);
+  }
+  function semanasDe(dias){
+    const s = {};
+    dias.forEach(function(d){
+      const f = desdeIso(d.fecha);
+      if(!isNaN(f.getTime())) s[iso(lunesDe(f))] = 1;
+    });
+    return Object.keys(s).sort();
+  }
+
+  /* ============ Y ahora sí, escribir ============ */
+  function aplicarGuarde(g, plan){
+    const nuevos = (g.platos_nuevos || []).filter(function(p){ return !plan.sust[p.nombre]; });
+
+    // Primero los ingredientes: un plato no se puede guardar con un ingrediente
+    // que todavía no existe.
+    const usa = {};
+    nuevos.forEach(function(p){ (p.ingredientes || []).forEach(function(i){ usa[i] = 1; }); });
+    const hayIng = {};
+    ingredientes().forEach(function(x){ hayIng[x.n] = 1; });
+    let cuantosIng = 0;
+    (g.ingredientes_nuevos || []).forEach(function(x){
+      if(!usa[x.ingrediente] || hayIng[x.ingrediente]) return;
+      estado.ing.extra.push({n:x.ingrediente, seccion:plan.secciones[x.ingrediente] || x.seccion});
+      hayIng[x.ingrediente] = 1;
+      cuantosIng++;
+    });
+
+    const hayPlato = {};
+    repertorio().forEach(function(p){ hayPlato[p.n] = 1; });
+    let cuantosPlatos = 0;
+    nuevos.forEach(function(p){
+      if(hayPlato[p.nombre]) return;   // alguien lo creó mientras tanto
+      estado.platos.extra.push({
+        uid:"g" + Date.now().toString(36) + cuantosPlatos,
+        custom:true,
+        n:p.nombre,
+        d:p.descripcion || "Del menú de la guardería.",
+        t:(p.tipo || []).slice(),
+        m:(p.momento || []).slice(),
+        tiempo:p.tiempo || "medio",
+        rep:p.repeticion || "media",
+        unico:!!p.plato_unico,
+        menus:{adultos:!!plan.adultos, nino:true},
+        i:(p.ingredientes || []).slice()
+      });
+      hayPlato[p.nombre] = 1;
+      cuantosPlatos++;
+    });
+
+    // Y los días, cada uno en su semana. Lo que ya hubiera en esos huecos se
+    // sustituye: manda el menú que mandan de allí.
+    const porSemana = {};
+    (g.dias || []).forEach(function(d){
+      const f = desdeIso(d.fecha);
+      if(isNaN(f.getTime())) return;
+      const id = iso(lunesDe(f)), dia = DIAS[(f.getDay() + 6) % 7];
+      if(!porSemana[id]) porSemana[id] = [];
+      porSemana[id].push({dia:dia, d:d});
+    });
+
+    const semanas = Object.keys(porSemana).sort();
+    let cuantosHuecos = 0;
+    semanas.forEach(function(id){
+      const h = {}, origen = huecos("nino", id);
+      Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
+      porSemana[id].forEach(function(x){
+        IDS_MOMENTO.forEach(function(m){
+          const platos = (x.d[m] || []).map(function(n){ return plan.sust[n] || n; });
+          if(!platos.length) return;
+          ordenesDe().forEach(function(o){ delete h[x.dia + "|" + m + "|" + o]; });
+          platos.slice(0, PLATOS_POR_COMIDA).forEach(function(n, i){
+            h[x.dia + "|" + m + "|" + String(i + 1)] = n;
+          });
+          cuantosHuecos++;
+        });
+      });
+      fijarHuecos("nino", id, h);
+      // Después de fijar: fijarHuecos limpia las marcas que se quedan sin platos.
+      porSemana[id].forEach(function(x){
+        IDS_MOMENTO.forEach(function(m){
+          if((x.d[m] || []).length) marcarGuarde(id, x.dia + "|" + m, true);
+        });
+      });
+    });
+
+    cerrarGuarde();
+    guardar();
+    // Que se vea lo cargado: a la primera semana del menú.
+    if(semanas.length){ estado.semana = semanas[0]; estado.tab = "semana"; }
+    pintarTodo();
+    aviso("Guardería cargada: " + cuantosHuecos + " comidas, " + cuantosPlatos +
+          " platos nuevos y " + cuantosIng + " ingredientes" +
+          (semanas.length > 1 ? " · " + semanas.length + " semanas" : ""));
+  }
+
   /* ============ Compra ============ */
   // Una sola lista: los ingredientes de las dos semanas, sin duplicar.
   function ingredientesDeSemana(id){
@@ -3237,6 +3767,8 @@
     PERFILES.forEach(function(pf){
       const h = huecos(pf.id, id);
       clavesDe().forEach(function(k){
+        // Lo que come en la guardería lo compran ellos.
+        if(pf.id === "nino" && enGuarde(id, k.split("|").slice(0, 2).join("|"))) return;
         const p = h[k] && platoEnSemana(pf.id, h[k]);
         if(!p) return;
         p.i.forEach(function(ing){
@@ -3467,7 +3999,8 @@
           if(!nombre || !hay[nombre]) return;
           const t = k.split("|");
           out.push({semana_id:id, menu:menu, dia:t[0], momento:t[1],
-                    orden:Number(t[2]), plato:nombre});
+                    orden:Number(t[2]), plato:nombre,
+                    en_guarde: menu === "nino" && !!GUARDE[id + "|" + t[0] + "|" + t[1]]});
         });
       });
     });

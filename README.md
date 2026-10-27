@@ -84,7 +84,7 @@ Dentro de cada día, cada momento abre con su banda de color — melocotón el d
   merienda**, donde repetir es lo normal: ahí manda la columna `repeticion` y un café con leche sale los siete días;
 - si el primer plato no es único, le busca un segundo que tampoco lo sea, y prefiere uno que no haya salido esa semana;
 - evita que la misma base caiga en la comida y la cena del mismo día;
-- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca* — el restaurante y los platos de guardería se ponen a mano o con su botón;
+- y al terminar **repasa lo colocado**: cambia platos sueltos mientras eso acerque la semana a los objetivos, porque colocar de una pasada deja objetivos fuera de rango. El repaso prueba antes con los platos del grupo que va corto que al azar, y si un plato único resuelve el hueco retira el segundo que sobraba. Nunca coloca lo marcado como *nunca* — el restaurante y los comodines viejos de guardería se ponen a mano;
 - pondera según la columna `repeticion`, de modo que un plato *siempre* sale mucho más que uno *ocasional*, y uno marcado como *nunca* no entra jamás en un reparto automático: se pone solo a mano;
 - reserva lo de preparación *alta* para el fin de semana y prefiere preparación *baja* en las cenas entre semana;
 - persigue estos objetivos, que salen de la tabla `equilibrio`. Se cuentan **veces por semana**, es decir
@@ -147,23 +147,33 @@ Las reglas son dos y no hay más:
 
 - **cambiar un plato de la mesa arrastra al niño** si en ese hueco comía lo mismo. Si tenía platos suyos
   puestos, se respetan;
-- **al generar, su semana se deriva de la de la casa**: copia lo que puede comer, pone la guardería donde toca
-  y, para lo que no está en su menú, busca el plato suyo más parecido — misma base, mismos tipos, misma
-  condición de plato único. Esa sustitución no tiene azar, y por eso el programa sabe después si un hueco suyo
-  es una excepción tuya o simplemente lo que le tocaba.
+- **al generar, su semana se deriva de la de la casa**: copia lo que puede comer y, para lo que no está en su
+  menú, busca el plato suyo más parecido — misma base, mismos tipos, misma condición de plato único. Esa
+  sustitución no tiene azar, y por eso el programa sabe después si un hueco suyo es una excepción tuya o
+  simplemente lo que le tocaba. Lo que come en la guardería no se toca: lo puso el menú que mandan de allí.
 
-Que coma en la guardería no es un caso especial del programa, sino tres platos más: **Desayuno guarde**,
-**Almuerzo guarde** y **Menú guarde**. Son platos únicos, no tienen ingredientes y por tanto no suman nada a la
-compra, y su repetición es *nunca*, así que no aparecen en ningún hueco por su cuenta. En la semana aparecen
-en su bloque como *en la guardería*, en gris: se pueden cambiar pulsando encima, para el día que no vaya.
+### La guardería
 
-Por eso hay **dos botones de generar**:
+Lo que come allí no se inventa: cada mes mandan un PDF, un asistente lo convierte en JSON con el formato que
+describe `prompt-guarderia.md`, y **Cargar guarde…** lo mete. Antes de escribir nada abre una pantalla de
+revisión, que es donde está el trabajo de verdad:
 
-- *Generar semana* — la guardería cubre **solo la comida** de lunes a viernes. Cinco huecos.
-- *Generar con guarde* — cubre **el desayuno, el almuerzo y la comida**. Quince huecos, y en casa quedan las
-  meriendas, las cenas y el fin de semana entero.
+- **los platos nuevos que se parecen a algo que ya tienes van primero**, con el parecido señalado. El parecido
+  se mide por palabras del nombre, pesadas por lo que distinguen: *carne* está en veinte platos y no dice nada,
+  *carbonara* está en uno y lo dice todo. Pulsar el plato que ya tienes lo usa en su lugar — no se crea el
+  nuevo, y todos los días que lo mencionaban pasan a apuntar al tuyo;
+- los que no se parecen a nada quedan plegados debajo, contados;
+- **los ingredientes nuevos** salen con la sección del súper que propone el asistente, editable, y avisa si
+  alguno roza a uno que ya tienes. Solo se crean los de los platos que de verdad se crean;
+- y los **días**, ya con las sustituciones aplicadas, para leer de un vistazo lo que va a quedar.
 
-Si un día no va a la guardería, se cambia ese plato por uno normal desde su propia línea. No hay nada que habilitar.
+Si el fichero trae algo que la pantalla no puede arreglar — un tipo que no existe, un ingrediente sin declarar,
+una fecha en fin de semana, un plato que no se crea ni existe — se listan todos y **no se carga nada**.
+
+Cada hueco cargado así queda marcado con **en la guarde** (la columna `en_guarde` de la tabla `semanas`), y eso
+tiene una consecuencia: **sus ingredientes no entran en la lista de la compra**, porque los compran ellos. La
+marca va por hueco y no por plato — el mismo puré puede ser de allí un martes y de casa un sábado — y se
+quita a mano desde el propio hueco el día que no vaya.
 
 El aviso al generar dice cómo ha quedado el reparto: cuántos huecos cubre la guardería y en cuántos come el niño
 algo distinto. **El equilibrio mide la mesa de casa**, no las excepciones del niño.
