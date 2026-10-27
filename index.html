@@ -3589,7 +3589,9 @@
     }catch(e){
       ultimoFallo = (e && (e.message || e.details)) || String(e);
       pintarGuardado("mal");
-      aviso("No se ha podido guardar: " + ultimoFallo);
+      aviso(noContesta(e)
+        ? "No se ha podido guardar: la base no responde. Puede estar pausada — míralo en Configuración."
+        : "No se ha podido guardar: " + ultimoFallo);
     }
     guardando = null;
     return null;
@@ -3852,6 +3854,39 @@
     return t.indexOf("42501") !== -1 || t.indexOf("permission denied") !== -1;
   }
 
+  // Un proyecto gratuito de Supabase se pausa tras una semana sin actividad. Deja
+  // de responder, y lo que llega aquí es un error de red, no de permisos. Merece
+  // su propio mensaje: con el genérico parecería que la aplicación está rota.
+  function noContesta(e){
+    if(esSinPermiso(e)) return false;
+    const t = String((e && (e.message || e.name)) || e).toLowerCase();
+    return t.indexOf("fetch") !== -1 || t.indexOf("network") !== -1 ||
+           t.indexOf("load failed") !== -1 || t.indexOf("timeout") !== -1 ||
+           t.indexOf("503") !== -1 || t.indexOf("502") !== -1;
+  }
+
+  // Pantalla propia: ni puerta de entrar ni aplicación, porque no hay a qué entrar.
+  function pantallaPausado(){
+    cerrarPuerta();
+    const reintentar = el("button", {class:"btn btn-primary", text:"Volver a intentarlo"});
+    reintentar.addEventListener("click", function(){ location.reload(); });
+    capaPuerta = el("div", {class:"puerta"}, [
+      el("div", {class:"caja"}, [
+        el("h2", {text:"La base de datos no responde"}),
+        el("p", {text:"Lo más probable es que el proyecto de Supabase se haya pausado: el plan gratuito " +
+                      "los pausa tras una semana sin usarlos. No se pierde nada — se reactiva desde el " +
+                      "panel con un botón y vuelve todo."}),
+        PANEL ? el("a", {class:"btn btn-primary", href:PANEL, target:"_blank", rel:"noopener",
+                         style:"width:100%;margin-top:16px;justify-content:center",
+                         text:"Abrir el panel y reactivarlo"}) : null,
+        reintentar,
+        el("div", {class:"p-aviso", text:"Si acabas de reactivarlo, espera un minuto y vuelve a intentarlo. " +
+                                         "También puede ser que te hayas quedado sin conexión."})
+      ])
+    ]);
+    document.body.appendChild(capaPuerta);
+  }
+
   async function entrar(){
     // El cerrojo se cierra ANTES de esperar nada: si no, la llamada directa y la
     // del aviso de sesión se cuelan las dos y la aplicación se monta por
@@ -3864,19 +3899,39 @@
     return entrando;
   }
 
+  // Mientras se pregunta por la sesión no hay nada que enseñar, y si la base no
+  // responde la librería reintenta durante un buen rato: sin esto son quince
+  // segundos de pantalla en blanco preguntándote si se ha roto algo.
+  function pantallaCargando(){
+    cerrarPuerta();
+    capaPuerta = el("div", {class:"puerta"}, [
+      el("div", {class:"caja", style:"text-align:center"}, [
+        el("h2", {text:"Menú Semanal"}),
+        el("p", {text:"Abriendo…"})
+      ])
+    ]);
+    document.body.appendChild(capaPuerta);
+  }
+
   async function abrir(){
     if(arrancado) return;
+    pantallaCargando();
     let usuario = null;
     try{
       const { data } = await db.auth.getSession();
       usuario = data && data.session ? data.session.user : null;
-    }catch(e){ /* sin red: se pide el correo igual */ }
+    }catch(e){
+      if(noContesta(e)){ pantallaPausado(); return; }
+    }
     if(!usuario){ puerta(); return; }
     sesion = usuario;
 
     try{
       await cargar();
     }catch(e){
+      // Si no contesta, la sesión no tiene la culpa: no se cierra, que al volver
+      // sería un fastidio tener que entrar otra vez.
+      if(noContesta(e)){ pantallaPausado(); return; }
       const correo = usuario.email;
       await db.auth.signOut();
       sesion = null;
