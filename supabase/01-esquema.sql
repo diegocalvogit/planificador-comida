@@ -52,6 +52,14 @@ create table if not exists public.equilibrio (
   minimo   int    not null default 0,
   maximo   int    not null default 0,
   orden    int    not null,
+  -- Una regla es una frase: entre minimo y maximo comidas o platos de estos
+  -- tipos, en estos momentos del día, cada día o a la semana, para un menú o
+  -- para los dos. Los objetivos de siempre son esa frase con los valores por
+  -- defecto, y por eso no hacen falta dos mecanismos.
+  momentos text[] not null default '{}',
+  ambito   text   not null default 'semana' check (ambito in ('semana','dia')),
+  cuenta   text   not null default 'comidas' check (cuenta in ('comidas','platos')),
+  perfil   text   not null default 'ambos'  check (perfil in ('ambos','adultos','nino')),
   check (maximo >= minimo)
 );
 

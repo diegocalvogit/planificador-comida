@@ -117,15 +117,41 @@ El bloque va **plegado en una línea** con lo que incumple —*Fruta −4 · Lá
 
 El botón **Imprimir** saca la semana entera en **una hoja A4 apaisada**: siete columnas, una por día, sin barras ni botones. Medido sobre seis semanas generadas, la más llena ocupa 674 px de los 733 que caben.
 
-El equilibrio se mide **por menú**: el bloque tiene dos pestañas, *Mesa de casa* y *Niño*, y el resumen
-plegado habla de las dos. Los objetivos son los mismos para los dos — lo que come un niño en una semana no es
+El equilibrio se mide **por menú**, y hay **dos bloques**, *Equilibrio adulto* y *Equilibrio niño*, cada uno
+con su resumen en una línea y sus contadores al desplegar. Los objetivos son los mismos para los dos — lo que come un niño en una semana no es
 otra cosa que lo que coman sus padres, en menor cantidad — pero las dos semanas no son la misma, sobre todo
 desde que lo de la guardería se carga en vez de derivarse. **Lo que come allí cuenta**: si le dan legumbre
 dos veces, en casa toca menos. Si algún día hicieran falta objetivos distintos para él, es una columna más
 en `equilibrio` y nada más; de momento duplicar diecisiete pares de números iguales no compensa.
 
 Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con un solo plato de pasta en el menú de adultos, pedir *2 a 4 comidas con pasta* deja ese objetivo en rojo de
-vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos se ajustan en **Configuración → Objetivos de equilibrio**: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
+vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. ### Las reglas de equilibrio
+
+Una regla es **una frase con seis huecos**:
+
+> entre **[1]** y **[2]** **[platos]** de **[Fruta]**, en **[la merienda]**, **[cada día]**, para **[el niño]**
+
+Los diecisiete objetivos de siempre son esa misma frase con los valores por defecto — todos los momentos, a
+la semana, contando comidas, para los dos — así que no hay dos mecanismos, hay uno. En la tabla `equilibrio`
+son cuatro columnas con su valor por defecto (`momentos`, `ambito`, `cuenta`, `perfil`), y por eso una regla
+que se te ocurra mañana cabe sin tocar código.
+
+Los seis huecos:
+
+- **cuánto** — un mínimo y un máximo;
+- **de qué** — los tipos de alimento que cuentan, heredados del grupo que elijas;
+- **contando qué** — *comidas* o *platos*. No es lo mismo: «dos piezas de fruta en la merienda» solo se
+  puede decir contando platos, porque una comida cuenta una vez aunque la cubran sus tres platos;
+- **dónde** — en qué momentos del día. Ninguno marcado quiere decir todos;
+- **cada cuánto** — *a la semana* o *cada día*. Una regla diaria se mide siete veces, y en los contadores
+  sale como los días que cumple: *5 / 7 días*;
+- **para quién** — los dos menús, solo la mesa o solo el niño.
+
+El generador persigue todas igual: el desvío que minimiza es la suma de lo que falta y lo que sobra en cada
+cubo de cada regla, y una regla semanal tiene un cubo mientras que una diaria tiene siete.
+
+Las reglas se ajustan en **Configuración → Reglas de equilibrio**, cada una desplegable, con la frase escrita
+debajo mientras la editas, y un *Añadir una regla* al final: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 **El plato que falta se da de alta ahí mismo.** En el buscador del selector se escribe `Nombre del plato; ingrediente, ingrediente` y aparece un botón *Crear plato*. Si algún ingrediente no está en el catálogo, primero pregunta en qué parte del súper va. Después abre el editor con el nombre, los ingredientes y el momento del hueco ya puestos, y con **los tipos de alimento propuestos**: los deduce de los platos que ya usan esos ingredientes, quedándose con los ingredientes específicos —el aceite de oliva, que está en diecisiete platos, no opina— y con los tipos que destacan sobre su frecuencia normal. Solo hay que repasar la propuesta y guardar; el plato queda creado y puesto en el hueco.
 
