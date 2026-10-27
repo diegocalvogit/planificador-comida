@@ -60,6 +60,11 @@ create table if not exists public.equilibrio (
   ambito   text   not null default 'semana' check (ambito in ('semana','dia')),
   cuenta   text   not null default 'comidas' check (cuenta in ('comidas','platos')),
   perfil   text   not null default 'ambos'  check (perfil in ('ambos','adultos','nino')),
+  dias     text[] not null default '{}',
+  -- Una regla puede apuntar a un plato con nombre y apellidos en vez de a un
+  -- grupo de tipos: paella los domingos. La clave ajena se añade más abajo,
+  -- porque platos todavía no existe a estas alturas del fichero.
+  plato    text,
   check (maximo >= minimo)
 );
 
@@ -84,6 +89,12 @@ create table if not exists public.platos (
 -- Una sola tabla para los dos menús: `menu` dice cuál. El identificador de la
 -- semana es el lunes, y la etiqueta ("3ª semana de septiembre") se calcula en
 -- la página: guardarla sería repetirse.
+-- Renombrar el plato arrastra la regla que lo nombra, y borrarlo se la lleva.
+alter table public.equilibrio drop constraint if exists equilibrio_plato_fkey;
+alter table public.equilibrio add constraint equilibrio_plato_fkey
+  foreign key (plato) references public.platos(nombre)
+  on update cascade on delete cascade;
+
 create table if not exists public.semanas (
   semana_id date     not null,
   menu      text     not null check (menu in ('casa','nino')),

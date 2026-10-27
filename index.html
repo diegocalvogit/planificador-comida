@@ -342,6 +342,10 @@
   .obj-rango{display:flex;align-items:center;gap:6px}
   .obj-frase{font-size:12.5px;color:var(--ink-2);font-style:italic;
     border-left:2px solid var(--accent);padding-left:9px}
+  .obj-grupo{grid-column:1/-1;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);font-weight:500;
+    border-top:1px solid var(--line);padding-top:10px;margin-top:4px}
+  .obj-grupo:first-child{border-top:0;padding-top:0;margin-top:0}
   .obj-nueva{grid-column:1/-1;margin-top:11px;border-style:dashed}
   .obj-mas{display:block;padding:9px 12px;font-size:13px;font-weight:600;color:var(--accent-ink)}
   .obj-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);
@@ -945,6 +949,14 @@
     return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   }
   function colorDe(g){ return "var(--g-" + g + ", var(--surface-2))"; }
+  // El color de una regla sale de su primer tipo; si apunta a un plato suelto,
+  // del primer tipo de ese plato.
+  function colorRegla(r){
+    if(r.tipos && r.tipos.length) return colorDe(claveDe(r.tipos[0]));
+    const p = r.plato ? platoPorNombre(r.plato) : null;
+    const t = p ? tiposDe(p)[0] : null;
+    return t ? colorDe(claveDe(t)) : "var(--surface-2)";
+  }
 
   function lista(s){ return String(s || "").split("|").map(function(x){ return x.trim(); }).filter(Boolean); }
 
@@ -998,7 +1010,8 @@
       return {objetivo:x.objetivo, tipos:tubo(x.tipos),
               minimo:String(x.minimo), maximo:String(x.maximo),
               momentos:tubo(x.momentos), ambito:x.ambito || "semana",
-              cuenta:x.cuenta || "comidas", perfil:x.perfil || "ambos"};
+              cuenta:x.cuenta || "comidas", perfil:x.perfil || "ambos",
+              dias:tubo(x.dias), plato:x.plato || ""};
     });
     datos.platos = platos.map(function(x){
       return {nombre:x.nombre, adultos:sn(x.adultos), nino:sn(x.nino),
@@ -1174,7 +1187,8 @@
     OBJETIVOS = (datos.equilibrio || []).filter(function(x){ return x.objetivo; }).map(function(x){
       return reglaDe({ n:x.objetivo, tipos:lista(x.tipos),
                        min:Number(x.minimo) || 0, max:Number(x.maximo) || 0,
-                       moms:lista(x.momentos), ambito:x.ambito, cuenta:x.cuenta, perfil:x.perfil });
+                       moms:lista(x.momentos), ambito:x.ambito, cuenta:x.cuenta, perfil:x.perfil,
+                       dias:lista(x.dias), plato:x.plato });
     });
 
     PERFILES.forEach(function(pf){
@@ -1213,6 +1227,7 @@
 
   /* ============ Consultas ============ */
   // Los objetivos son de la casa entera: una sola tabla, datos/equilibrio.csv.
+  const PLATO_SUELTO = "\u0000plato";
   const AMBITOS_REGLA = [{id:"semana", lbl:"a la semana"}, {id:"dia", lbl:"cada día"}];
   const CUENTAS_REGLA  = [{id:"comidas", lbl:"comidas"}, {id:"platos", lbl:"platos"}];
   const PERFILES_REGLA = [{id:"ambos", lbl:"los dos"}, {id:"adultos", lbl:"la mesa"},
@@ -1220,8 +1235,9 @@
 
   // Una regla con todos sus huecos rellenos, vengan o no de la base.
   function reglaDe(r){
-    return { n:r.n, tipos:(r.tipos || []).slice(),
+    return { n:r.n, tipos:(r.tipos || []).slice(), plato:r.plato || "",
              min:Number(r.min) || 0, max:Number(r.max) || 0,
+             dias:(r.dias || []).filter(function(d){ return DIAS.indexOf(d) !== -1; }),
              moms:(r.moms || []).filter(function(m){ return IDS_MOMENTO.indexOf(m) !== -1; }),
              ambito: r.ambito === "dia" ? "dia" : "semana",
              cuenta: r.cuenta === "platos" ? "platos" : "comidas",
@@ -1233,25 +1249,57 @@
   // día, platos en vez de comidas, o un solo menú. Son las específicas, las que
   // se tocan, y por eso van delante.
   function reglaEspecifica(r){
-    return !!(r.moms.length || r.ambito === "dia" || r.cuenta === "platos" || r.perfil !== "ambos");
+    return !!(r.moms.length || r.dias.length || r.plato || r.ambito === "dia" ||
+              r.cuenta === "platos" || r.perfil !== "ambos");
+  }
+
+  // Los días en los que una regla tiene algo que decir. Vacío quiere decir todos,
+  // y así "pasta los martes" no sale en rojo los otros seis días.
+  function diasDe(r){ return r.dias.length ? r.dias : DIAS; }
+
+  // Cuánto pesa incumplir una regla. No todas valen lo mismo: "verduras entre 8
+  // y 16 a la semana" es un objetivo nutricional difuso, y "paella los domingos"
+  // es una decisión que has tomado tú. Con el mismo peso, poner la paella —que
+  // es plato único y se lleva por delante el segundo y el postre— empeoraba dos
+  // objetivos para arreglar uno, así que el reparto la descartaba siempre y la
+  // regla salía en rojo haciendo lo que le pedías imposible.
+  function pesoRegla(r){
+    if(r.plato) return 5;
+    if(r.dias.length || r.moms.length) return 2;
+    return 1;
   }
 
   // La regla en una frase, que es como se entiende y como se edita.
   function fraseRegla(r){
-    const partes = [r.min === r.max ? String(r.min) : r.min + " a " + r.max,
-                    r.cuenta === "platos" ? (r.max === 1 ? "plato" : "platos") :
-                                            (r.max === 1 ? "comida" : "comidas"),
-                    // Por los tipos y no por el nombre: el nombre de una regla
-                    // tuya puede ser "Fruta en la merienda", y la frase saldría
-                    // diciendo dos veces lo mismo.
-                    "de " + (r.tipos.length ? r.tipos.join(" o ").toLowerCase() : "nada")];
+    // El sujeto primero. Por los tipos y no por el nombre: una regla tuya puede
+    // llamarse "Fruta en la merienda", y la frase diría dos veces lo mismo.
+    const que = r.plato ? "«" + r.plato + "»"
+                        : (r.tipos.length ? r.tipos.join(" o ").toLowerCase() : "nada");
+    const cuantos = r.min === r.max ? String(r.min) : r.min + " a " + r.max;
+
+    // "Una comida en la comida" no lo dice nadie: con un momento puesto, lo que
+    // se cuentan son veces.
+    const unidad = r.cuenta === "platos" ? (r.max === 1 ? "plato" : "platos")
+                 : r.moms.length         ? (r.max === 1 ? "vez" : "veces")
+                                         : (r.max === 1 ? "comida" : "comidas");
+
+    const partes = [que + ", " + cuantos + " " + unidad];
     if(r.moms.length){
       partes.push("en " + r.moms.map(function(m){
         const l = (MOMENTO_LBL[m] || m).toLowerCase();
         return (m === "comida" || m === "cena" || m === "merienda" ? "la " : "el ") + l;
       }).join(" o "));
     }
-    partes.push(r.ambito === "dia" ? "cada día" : "a la semana");
+    if(r.dias.length){
+      const l = r.dias.map(function(d){ return d + (d === "sábado" || d === "domingo" ? "s" : ""); });
+      partes.push((r.moms.length ? "de los " : "los ") +
+                  (l.length > 1 ? l.slice(0, -1).join(", ") + " y " + l[l.length - 1] : l[0]));
+    }
+    // Con un solo día marcado, "cada día" sobra: ya lo dice "los domingos".
+    if(r.ambito !== "dia") partes.push("a la semana");
+    else if(!r.dias.length) partes.push("cada día");
+    else if(r.dias.length > 1) partes.push("cada uno de esos días");
+
     if(r.perfil !== "ambos") partes.push("solo para " + (r.perfil === "nino" ? "el niño" : "la mesa"));
     return partes.join(" ");
   }
@@ -1341,6 +1389,9 @@
   function base(p){ const t = tiposDe(p); return t.length ? claveDe(t[0]) : ""; }
   // Cuántas veces cubre un plato un objetivo: o una o ninguna.
   function cumple(p, obj){
+    // Una regla puede apuntar a un plato con nombre y apellidos — paella los
+    // domingos — en vez de a un grupo de tipos.
+    if(obj.plato) return (p && p.n === obj.plato) ? 1 : 0;
     const t = tiposDe(p);
     return obj.tipos.some(function(x){ return t.indexOf(x) !== -1; }) ? 1 : 0;
   }
@@ -1629,12 +1680,20 @@
     // calcula aquí una vez y luego sólo se consulta.
     const SLOTS = slotsDe(), CLAVES = clavesDe();
     const ORD = {}, APTOS = {}, PORNOMBRE = {}, CUBRE = {};
-    const ORDS = ordenesDe(), SEM = DIAS, DIA_DE = {}, MOM_DE = {};
+    const ORDS = ordenesDe(), DIA_NOM = {}, MOM_DE = {};
     SLOTS.forEach(function(x){
       ORD[x] = ORDS;
       const t = x.split("|");
-      DIA_DE[x] = DIAS.indexOf(t[0]);
+      DIA_NOM[x] = t[0];
       MOM_DE[x] = t[1];
+    });
+    // En qué cubo cae cada día para cada regla, o nada si la regla no habla de
+    // ese día. Se consulta en el bucle más caliente del programa.
+    const PESOS = metas.map(pesoRegla);
+    const CUAL_DIA = metas.map(function(m){
+      const mapa = {};
+      diasDe(m).forEach(function(d, i){ mapa[d] = i; });
+      return mapa;
     });
     IDS_MOMENTO.forEach(function(m){
       APTOS[m] = todos.filter(function(p){ return elegible(p, m); });
@@ -1661,12 +1720,14 @@
 
     function puntua(p, dia, momento){
       let punt = Math.random() * 0.9;
-      const d = DIAS.indexOf(dia);
       metas.forEach(function(o, i){
         if(!cumple(p, o)) return;
         if(o.moms.length && o.moms.indexOf(momento) === -1) return;
+        const d = CUAL_DIA[i][dia];
+        if(d === undefined) return;
         const v = cuentas0[i][o.ambito === "dia" ? d : 0];
-        if(v < o.min) punt += 4;
+        const w = PESOS[i];
+        if(v < o.min) punt += 4 * w;
         else if(v < o.max) punt += 1.2;
         else punt -= 10;   // pasarse de un máximo pesa más que quedarse corto
       });
@@ -1731,13 +1792,15 @@
     // semana" se miden con el mismo código y el repaso no se entera.
     function conteo(hh){
       const c = metas.map(function(m){
-        return m.ambito === "dia" ? new Array(SEM.length).fill(0) : [0];
+        return m.ambito === "dia" ? new Array(diasDe(m).length).fill(0) : [0];
       });
       for(let si = 0; si < SLOTS.length; si++){
-        const slot = SLOTS[si], ords = ORD[slot], d = DIA_DE[slot], mom = MOM_DE[slot];
+        const slot = SLOTS[si], ords = ORD[slot], dia = DIA_NOM[slot], mom = MOM_DE[slot];
         for(let i = 0; i < metas.length; i++){
           const m = metas[i];
           if(m.moms.length && m.moms.indexOf(mom) === -1) continue;
+          const d = CUAL_DIA[i][dia];
+          if(d === undefined) continue;
           const donde = m.ambito === "dia" ? d : 0;
           let aquí = 0;
           for(let oi = 0; oi < ords.length; oi++){
@@ -1752,9 +1815,9 @@
     function desvioDe(c){
       let t = 0;
       for(let i = 0; i < metas.length; i++){
-        const m = metas[i], fila = c[i];
+        const m = metas[i], fila = c[i], w = PESOS[i];
         for(let j = 0; j < fila.length; j++){
-          t += Math.max(0, m.min - fila[j]) + Math.max(0, fila[j] - m.max);
+          t += w * (Math.max(0, m.min - fila[j]) + Math.max(0, fila[j] - m.max));
         }
       }
       return t;
@@ -1815,28 +1878,43 @@
         const enUso = {};
         CLAVES.forEach(function(x){ if(h[x] && x !== k) enUso[h[x]] = 1; });
 
+        // Qué reglas van cortas *aquí*: una que pide pasta los martes no la
+        // arregla un plato puesto un jueves, así que solo cuentan las que hablan
+        // de este día y de este momento, y del cubo que les toca.
+        const cortos = [];
+        for(let i = 0; i < metas.length; i++){
+          const m = metas[i];
+          if(m.moms.length && m.moms.indexOf(momento) === -1) continue;
+          const d = CUAL_DIA[i][dia];
+          if(d === undefined) continue;
+          if(cuentas[i][m.ambito === "dia" ? d : 0] < m.min) cortos.push(i);
+        }
+        const tapaAlgo = function(c){
+          const v = CUBRE[c.n];
+          return !!v && cortos.some(function(i){ return v[i]; });
+        };
+
         const cands = (APTOS[momento] || []).filter(function(c){
           if(actual && c.n === actual.n) return false;
           if(otros.indexOf(c.n) !== -1) return false;
           // Lo marcado como "nunca" (guarde, restaurante) solo se pone a mano.
           if(c.rep === "nunca") return false;
-          if(enUso[c.n] && !LIGEROS[momento]) return false;
+          // No repetir plato en la semana es una preferencia; una regla que pide
+          // paella el domingo es una orden. Si el plato tapa algo que va corto
+          // justo en este hueco, entra aunque ya esté puesto en otro sitio: si
+          // no, la regla no se puede cumplir nunca y sale siempre en rojo.
+          if(enUso[c.n] && !LIGEROS[momento] && !tapaAlgo(c)) return false;
           // De primero vale cualquiera: si es único, lo que sobre se retira abajo.
           // Del segundo en adelante, nunca uno que se baste solo.
           return orden === "1" ? true : !c.unico;
         });
         if(!cands.length) continue;
 
-        // Probar al azar entre cuarenta platos tarda mucho en dar con el único que
-        // tapa un hueco: si algún objetivo va corto, se prueba antes con los suyos.
+        // Probar al azar entre cuarenta platos tarda mucho en dar con el único
+        // que tapa un hueco: si alguna regla va corta, se prueba antes con los suyos.
         let urna = cands;
-        const cortos = [];
-        for(let i = 0; i < metas.length; i++) if(cuentas[i] < metas[i].min) cortos.push(i);
         if(cortos.length){
-          const tapan = cands.filter(function(c){
-            const v = CUBRE[c.n];
-            return v && cortos.some(function(i){ return v[i]; });
-          });
+          const tapan = cands.filter(tapaAlgo);
           if(tapan.length) urna = tapan;
         }
 
@@ -2710,8 +2788,9 @@
   // mismo — "dos piezas de fruta en la merienda" solo se puede decir contando
   // platos — y por eso la regla lo lleva escrito.
   function cubosDe(r, pid, h){
-    const cubos = r.ambito === "dia" ? DIAS.map(function(){ return 0; }) : [0];
-    DIAS.forEach(function(dia, d){
+    const dias = diasDe(r);
+    const cubos = r.ambito === "dia" ? dias.map(function(){ return 0; }) : [0];
+    dias.forEach(function(dia, d){
       const donde = r.ambito === "dia" ? d : 0;
       MOMENTOS.forEach(function(mo){
         if(r.moms.length && r.moms.indexOf(mo.id) === -1) return;
@@ -2744,9 +2823,10 @@
       return {valor:cubos[0], min:r.min, max:r.max, unidad:"",
               corto:cubos[0] < r.min, pasado:cubos[0] > r.max};
     }
+    const cuantos = diasDe(r).length;
     const bien = cubos.filter(function(v){ return v >= r.min && v <= r.max; }).length;
-    return {valor:bien, min:DIAS.length, max:DIAS.length, unidad:" días",
-            corto:bien < DIAS.length, pasado:false};
+    return {valor:bien, min:cuantos, max:cuantos, unidad:cuantos === 1 ? " día" : " días",
+            corto:bien < cuantos, pasado:false};
   }
 
   function cuentaEquilibrio(pid, id){
@@ -2805,7 +2885,7 @@
           title: fraseRegla(r) + (m.corto ? " \u2014 faltan " + (m.min - m.valor)
                                           : (m.pasado ? " \u2014 se pasa en " + (m.valor - m.max) : " \u2014 cumplida"))
         }, [
-          el("span", {class:"swatch", style:"background:" + colorDe(claveDe(r.tipos[0]))}),
+          el("span", {class:"swatch", style:"background:" + colorRegla(r)}),
           el("span", {class:"lbl", text:r.n}),
           el("span", {class:"val", text:String(m.valor)}),
           m.corto ? el("span", {class:"flecha", text:"\u2193"})
@@ -2833,7 +2913,21 @@
         text: objetivosTocados() ? "Hay objetivos cambiados a mano."
                                  : "Ahora mismo son los del documento, sin tocar."}));
     }
-    objetivos().forEach(function(o){ cont.appendChild(filaRegla(o)); });
+    // Las dos clases de regla no se mezclan: las de un día o un momento
+    // concretos se leen una a una, y las diecisiete de la semana son una tabla
+    // de números que se mira entera. Juntas no se lee ninguna de las dos.
+    const todas = objetivos();
+    const sueltas = todas.filter(reglaEspecifica);
+    const anchas = todas.filter(function(o){ return !reglaEspecifica(o); });
+
+    if(sueltas.length){
+      cont.appendChild(el("h4", {class:"obj-grupo", text:"Reglas concretas"}));
+      sueltas.forEach(function(o){ cont.appendChild(filaRegla(o)); });
+    }
+    if(anchas.length){
+      cont.appendChild(el("h4", {class:"obj-grupo", text:"Objetivos de la semana"}));
+      anchas.forEach(function(o){ cont.appendChild(filaRegla(o)); });
+    }
     montarReglaNueva();
   }
 
@@ -2868,13 +2962,15 @@
     max.addEventListener("change", cambiaNum);
 
     const cabeza = el("div", {class:"obj-row"}, [
-      el("span", {class:"swatch", style:"background:" + colorDe(claveDe(o.tipos[0]))}),
+      el("span", {class:"swatch", style:"background:" + colorRegla(o)}),
       el("span", {class:"name", text:o.n}),
       min, el("span", {class:"sep", text:"–"}), max
     ]);
 
     // Lo que no es por defecto se dice en la propia fila, sin abrir nada.
     const marcas = [];
+    if(o.plato) marcas.push("«" + o.plato + "»");
+    if(o.dias.length) marcas.push(o.dias.map(function(d){ return d.slice(0, 3); }).join("/"));
     if(o.moms.length) marcas.push(o.moms.map(function(m){ return MOMENTO_LBL[m] || m; }).join("/"));
     if(o.ambito === "dia") marcas.push("cada día");
     if(o.cuenta === "platos") marcas.push("platos");
@@ -2924,7 +3020,24 @@
       return e;
     };
 
+    const dias = el("div", {class:"obj-moms"});
+    DIAS.forEach(function(d){
+      const cb = el("input", {type:"checkbox"});
+      cb.checked = o.dias.indexOf(d) !== -1;
+      cb.addEventListener("change", function(){
+        const l = [];
+        dias.querySelectorAll("input").forEach(function(x, i){ if(x.checked) l.push(DIAS[i]); });
+        alCambiar({dias:l});
+      });
+      dias.appendChild(el("label", {class:"obj-mom"}, [cb, el("span", {text:d.slice(0, 3)})]));
+    });
+
     const hijos = [
+      el("label", {class:"obj-campo full"}, [
+        el("span", {class:"obj-lbl", text:"Qué días"}),
+        dias,
+        el("span", {class:"hint", text:"Ninguno marcado quiere decir todos."})
+      ]),
       el("label", {class:"obj-campo full"}, [
         el("span", {class:"obj-lbl", text:"En qué momentos del día"}),
         moms,
@@ -2965,19 +3078,37 @@
     const nombre = el("input", {type:"text", placeholder:"Fruta en la merienda"});
     const base = el("select");
     objetivos().forEach(function(o){
-      base.appendChild(el("option", {value:o.n, text:o.n}));
+      if(!o.plato) base.appendChild(el("option", {value:o.n, text:o.n}));
     });
+    // Una regla puede apuntar a un plato con nombre: paella los domingos.
+    base.appendChild(el("option", {value:PLATO_SUELTO, text:"— un plato concreto —"}));
+
+    const cualPlato = el("select");
+    repertorio().slice().sort(function(a, b){ return a.n.localeCompare(b.n, "es"); })
+      .forEach(function(p){ cualPlato.appendChild(el("option", {value:p.n, text:p.n})); });
 
     // El grupo decide qué tipos cuenta la regla, y la frase de abajo tiene que
     // decirlo mientras la escribes: si no, no sabes lo que estás creando.
-    const tiposDelGrupo = function(){
+    const loQueCuenta = function(){
+      if(base.value === PLATO_SUELTO) return {tipos:[], plato:cualPlato.value};
       const o = objetivos().filter(function(x){ return x.n === base.value; })[0];
-      return o ? o.tipos.slice() : [];
+      return {tipos:o ? o.tipos.slice() : [], plato:""};
     };
-    let borrador = reglaDe({n:"", tipos:tiposDelGrupo(), min:1, max:1,
-                            ambito:"dia", cuenta:"platos"});
+    let borrador = reglaDe(Object.assign({n:"", min:1, max:1, ambito:"dia", cuenta:"platos"},
+                                         loQueCuenta()));
     base.addEventListener("change", function(){
-      borrador = reglaDe(Object.assign({}, borrador, {tipos:tiposDelGrupo()}));
+      borrador = reglaDe(Object.assign({}, borrador, loQueCuenta()));
+      // Un plato concreto un día concreto se cuenta por comidas, no por raciones.
+      if(borrador.plato) borrador = reglaDe(Object.assign({}, borrador, {cuenta:"comidas"}));
+      if(!nombre.value.trim() && borrador.plato) nombre.value = borrador.plato;
+      repinta();
+    });
+    cualPlato.addEventListener("change", function(){
+      // El nombre que venía puesto solo se pisa si era el del plato anterior,
+      // y hay que mirarlo antes de actualizar el borrador, no después.
+      const antes = borrador.plato;
+      borrador = reglaDe(Object.assign({}, borrador, loQueCuenta()));
+      if(!nombre.value.trim() || nombre.value === antes) nombre.value = cualPlato.value;
       repinta();
     });
     const cuerpo = el("div", {class:"obj-detalle"});
@@ -2989,6 +3120,11 @@
       cuerpo.appendChild(el("label", {class:"obj-campo"}, [
         el("span", {class:"obj-lbl", text:"Qué cuenta"}), base
       ]));
+      if(base.value === PLATO_SUELTO){
+        cuerpo.appendChild(el("label", {class:"obj-campo"}, [
+          el("span", {class:"obj-lbl", text:"Qué plato"}), cualPlato
+        ]));
+      }
       const min = el("input", {type:"number", min:"0", max:"35", value:String(borrador.min)});
       const max = el("input", {type:"number", min:"0", max:"35", value:String(borrador.max)});
       function num(){
@@ -3015,7 +3151,7 @@
           if(objetivos().some(function(x){ return x.n === n; })){
             aviso("Ya hay una regla con ese nombre"); nombre.focus(); return;
           }
-          if(!borrador.tipos.length){ aviso("Elige qué cuenta la regla"); return; }
+          if(!borrador.tipos.length && !borrador.plato){ aviso("Elige qué cuenta la regla"); return; }
           estado.reglasExtra.push(reglaDe(Object.assign({}, borrador, {n:n, propia:true})));
           guardar(); pintarObjetivos(); pintarSemana();
           aviso("Regla añadida: " + fraseRegla(estado.reglasExtra[estado.reglasExtra.length - 1]));
@@ -4729,7 +4865,8 @@
   function filasEquilibrio(){
     return objetivos().map(function(o, i){
       return {objetivo:o.n, tipos:o.tipos.slice(), minimo:o.min, maximo:o.max, orden:i,
-              momentos:o.moms.slice(), ambito:o.ambito, cuenta:o.cuenta, perfil:o.perfil};
+              momentos:o.moms.slice(), ambito:o.ambito, cuenta:o.cuenta, perfil:o.perfil,
+              dias:o.dias.slice(), plato:o.plato || null};
     });
   }
   function filasPlatos(){

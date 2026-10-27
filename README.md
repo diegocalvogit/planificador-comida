@@ -136,10 +136,13 @@ la semana, contando comidas, para los dos — así que no hay dos mecanismos, ha
 son cuatro columnas con su valor por defecto (`momentos`, `ambito`, `cuenta`, `perfil`), y por eso una regla
 que se te ocurra mañana cabe sin tocar código.
 
-Los seis huecos:
+Los huecos:
 
 - **cuánto** — un mínimo y un máximo;
-- **de qué** — los tipos de alimento que cuentan, heredados del grupo que elijas;
+- **de qué** — los tipos de alimento que cuentan, heredados del grupo que elijas, **o un plato con nombre
+  y apellidos**: paella los domingos;
+- **qué días** — ninguno marcado quiere decir todos. Una regla que habla de los martes no sale en rojo los
+  otros seis días;
 - **contando qué** — *comidas* o *platos*. No es lo mismo: «dos piezas de fruta en la merienda» solo se
   puede decir contando platos, porque una comida cuenta una vez aunque la cubran sus tres platos;
 - **dónde** — en qué momentos del día. Ninguno marcado quiere decir todos;
@@ -147,13 +150,23 @@ Los seis huecos:
   sale como los días que cumple: *5 / 7 días*;
 - **para quién** — los dos menús, solo la mesa o solo el niño.
 
-El generador persigue todas igual: el desvío que minimiza es la suma de lo que falta y lo que sobra en cada
-cubo de cada regla, y una regla semanal tiene un cubo mientras que una diaria tiene siete.
+El generador persigue todas: el desvío que minimiza es la suma de lo que falta y lo que sobra en cada cubo
+de cada regla, y una regla semanal tiene un cubo mientras que una diaria tiene uno por día del que hable.
+
+Pero **no todas pesan lo mismo**. «Verduras entre 8 y 16 a la semana» es un objetivo nutricional difuso;
+«paella los domingos» es una decisión que has tomado tú. Con el mismo peso, poner la paella —que es plato
+único y se lleva por delante el segundo y el postre— empeoraba dos objetivos para arreglar uno, así que el
+reparto la descartaba siempre y la regla salía en rojo pidiendo algo imposible. Una regla que nombra un
+plato pesa cinco; una que nombra un día o un momento, dos; un objetivo semanal, uno.
+
+Por lo mismo, **no repetir plato en la semana es una preferencia y una regla es una orden**: si un plato tapa
+algo que va corto justo en ese hueco, entra aunque ya esté puesto en otro día.
 
 Las reglas se ajustan en **Configuración → Reglas de equilibrio**, cada una desplegable, con la frase escrita
-debajo mientras la editas, y un *Añadir una regla* al final. **Las específicas van primero** — las que
-nombran un momento, van por día, cuentan platos o apuntan a un solo menú — porque son las que se tocan; las
-diecisiete genéricas, que casi nunca cambian, quedan detrás. Cada una lleva debajo del nombre una línea gris
+debajo mientras la editas, y un *Añadir una regla* al final. Van **en dos grupos separados**: *Reglas
+concretas* — las que nombran un plato, un día, un momento, cuentan platos o apuntan a un solo menú — y
+*Objetivos de la semana*, los diecisiete de siempre. Se leen distinto: las primeras una a una, los segundos
+como una tabla de números que se mira entera, y juntos no se lee ninguno de los dos. Cada una lleva debajo del nombre una línea gris
 con lo que tiene de particular, del tipo `Merienda · cada día · platos`: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 **El plato que falta se da de alta ahí mismo.** En el buscador del selector se escribe `Nombre del plato; ingrediente, ingrediente` y aparece un botón *Crear plato*. Si algún ingrediente no está en el catálogo, primero pregunta en qué parte del súper va. Después abre el editor con el nombre, los ingredientes y el momento del hueco ya puestos, y con **los tipos de alimento propuestos**: los deduce de los platos que ya usan esos ingredientes, quedándose con los ingredientes específicos —el aceite de oliva, que está en diecisiete platos, no opina— y con los tipos que destacan sobre su frecuencia normal. Solo hay que repasar la propuesta y guardar; el plato queda creado y puesto en el hueco.
