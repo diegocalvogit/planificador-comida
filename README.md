@@ -181,10 +181,28 @@ solo las comidas que trae el fichero; marcada, la semana del niño se queda úni
 guardería. La de los adultos no se toca en ninguno de los dos casos. Si las semanas de destino ya tienen
 platos del niño, la revisión lo dice antes, semana por semana.
 
-Cada hueco cargado así queda marcado con **en la guarde** (la columna `en_guarde` de la tabla `semanas`), y eso
-tiene una consecuencia: **sus ingredientes no entran en la lista de la compra**, porque los compran ellos. La
-marca va por hueco y no por plato — el mismo puré puede ser de allí un martes y de casa un sábado — y se
-quita a mano desde el propio hueco el día que no vaya.
+Lo cargado así entra **desmarcado de la compra**, porque esos ingredientes los pone la guardería.
+
+### Qué hay que comprar
+
+Cada plato de la semana lleva una casilla, en los dos menús. Es la columna `es_para_comprar` de la tabla
+`semanas`, y nace **marcada**: lo normal es que lo que se come haya que comprarlo, y lo normal no debería tener
+que decirse en ningún sitio. Lo que se guarda son las excepciones, que son dos: lo que el niño come en la
+guardería y lo que ya está en la nevera.
+
+Va **por plato y no por comida**, porque dentro de un mismo mediodía puede haber un primero de la guardería y
+un postre que sí hay que traer. Desmarcado, el plato sale tachado y en gris, y sus ingredientes dejan de
+contar en la lista de la compra — pero solo los suyos: si otro plato de la semana usa el mismo tomate, el
+tomate sigue en la lista, con los platos que de verdad lo piden.
+
+Dos reglas para que la casilla no mienta:
+
+- **el mismo plato en la misma comida y en el otro menú va junto.** Son el mismo plato encima de la mesa, y
+  comprarlo por uno y no por el otro no significa nada;
+- mientras el niño come lo mismo que en la mesa no tiene línea propia, así que tampoco casilla propia: manda
+  la de la mesa.
+
+En papel no sale ninguna casilla: el menú impreso dice lo que se come, no lo que se trae del súper.
 
 El aviso al generar dice cómo ha quedado el reparto: cuántos huecos cubre la guardería y en cuántos come el niño
 algo distinto. **El equilibrio mide la mesa de casa**, no las excepciones del niño.

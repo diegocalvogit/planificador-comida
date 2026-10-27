@@ -84,6 +84,10 @@ create table if not exists public.semanas (
   orden     smallint not null check (orden in (1,2,3)),
   plato     text     not null references public.platos(nombre)
                           on update cascade on delete cascade,
+  -- Si sus ingredientes entran en la lista de la compra. Lo normal es que sí,
+  -- de ahí el default: las excepciones son lo que el niño come en la guardería
+  -- y lo que ya está en la nevera.
+  es_para_comprar boolean not null default true,
   primary key (semana_id, menu, dia, momento, orden)
 );
 -- Renombrar un plato arrastra solo sus semanas, y borrarlo las limpia. Eso

@@ -356,17 +356,24 @@
   .momento-head.cena{background:var(--m-cena);color:var(--m-cena-ink)}
   .momento-head.cena::before{background:var(--m-cena-ink)}
 
-  .slot{position:relative;border-top:1px solid var(--line);background-color:var(--surface)}
-  .slot-main{display:flex;gap:9px;align-items:flex-start;width:100%;text-align:left;border:0;
-    background:transparent;color:inherit;font:inherit;padding:9px 14px;cursor:pointer;min-height:40px}
+  .slot{position:relative;border-top:1px solid var(--line);background-color:var(--surface);
+    display:flex;align-items:flex-start}
+  .slot-main{display:flex;gap:9px;align-items:flex-start;flex:1 1 auto;min-width:0;text-align:left;border:0;
+    background:transparent;color:inherit;font:inherit;padding:9px 14px 9px 4px;cursor:pointer;min-height:40px}
+  /* Marcada es lo normal, así que se ve poco; lo que canta es quitarla. */
+  .compra-check{flex:none;width:13px;height:13px;margin:13px 0 0 10px;cursor:pointer;
+    accent-color:var(--accent);opacity:.5}
+  .compra-check:hover, .compra-check:not(:checked){opacity:1}
+  .compra-check:not(:checked){accent-color:var(--ink-3)}
+  .sin-compra .slot-dish, .sin-compra .nino-plato{text-decoration:line-through;
+    text-decoration-color:var(--ink-3);text-decoration-thickness:1px}
+  .sin-compra{opacity:.72}
   .slot-main:hover{background-image:linear-gradient(var(--veil), var(--veil))}
   /* Lo del niño, debajo de los platos de ese momento. */
   .nino-bloque{border-top:1px dashed var(--line-strong);background:var(--surface);padding:3px 0}
   .nino-bloque.propio{background:var(--surface-2)}
-  .nino-guarde{display:flex;align-items:center;gap:5px;padding:1px 8px 3px 14px;
-    font-size:10.5px;color:var(--ink-3);cursor:pointer;user-select:none}
-  .nino-guarde input{width:12px;height:12px;margin:0;accent-color:var(--ink-3);cursor:pointer}
-  .nino-row{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 14px}
+  .nino-row{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 4px}
+  .nino-row .compra-check{margin:0 0 0 6px}
   .nino-row .etq{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
     text-transform:uppercase;color:var(--ink-2);background:var(--surface);border:1px solid var(--line);
     border-radius:20px;padding:1px 7px;flex:none}
@@ -661,7 +668,10 @@
     .slot .slot-meta{ display:none }
     .nino-bloque{ padding:0; border-top:1px dashed #999;
                   -webkit-print-color-adjust:exact; print-color-adjust:exact }
-    .nino-guarde{ display:none }
+    .compra-check{ display:none }
+    .sin-compra{ opacity:1 }
+    .sin-compra .slot-dish, .sin-compra .nino-plato{ text-decoration:none }
+    .slot-main{ padding-left:2.5mm }
     .nino-row{ padding:1mm 2.5mm 1mm 5mm; gap:1.2mm }
     .nino-row .etq{ font-size:6pt; padding:0 1mm; border:0 }
     .nino-row .ord{ font-size:6.5pt }
@@ -963,11 +973,13 @@
     };
     datos.semanas = deMenu("casa");
     datos.semanas_nino = deMenu("nino");
-    // La marca viaja por fila, pero manda por hueco: basta con que uno de los
-    // platos del hueco venga marcado para que el hueco entero sea de la guarde.
-    GUARDE = {};
+    // Una fila por plato, y la marca va con ella.
+    NO_COMPRA = {};
     semanas.forEach(function(x){
-      if(x.menu === "nino" && x.en_guarde) GUARDE[x.semana_id + "|" + x.dia + "|" + x.momento] = true;
+      if(x.es_para_comprar === false){
+        NO_COMPRA[x.semana_id + "|" + (x.menu === "casa" ? "adultos" : "nino") + "|" +
+                  x.dia + "|" + x.momento + "|" + String(x.orden)] = true;
+      }
     });
     datos.compras = compras.map(function(x){
       return {semana_id:x.semana_id, ingrediente:x.ingrediente, en_casa:sn(x.en_casa)};
@@ -1228,19 +1240,36 @@
     return !!p && tiposDe(p).some(function(t){ return claveDe(t) === "guarde"; });
   }
 
-  // Qué huecos del niño son de la guardería. Va por hueco, no por plato: el
-  // mismo puré de verduras puede ser de allí un martes y de casa un sábado, y
-  // lo que decide si entra en la compra es dónde se come, no qué es. Se guarda
-  // en la columna en_guarde de cada fila de semanas.
-  let GUARDE = {};
-  function enGuarde(id, slot){
-    if(GUARDE[id + "|" + slot]) return true;
-    // Las semanas de antes de esto marcaban la guardería con un plato comodín.
-    return esGuarde(platoEnSemana("nino", huecos("nino", id)[slot + "|1"]));
-  }
-  function marcarGuarde(id, slot, si){
-    if(si) GUARDE[id + "|" + slot] = true; else delete GUARDE[id + "|" + slot];
+  // Qué platos de la semana hay que comprar. Casi todos, así que lo que se
+  // guarda aquí son las excepciones: lo que el niño come en la guardería y lo
+  // que ya está en la nevera. Va por plato y no por hueco, porque dentro de una
+  // misma comida puede haber un primero de allí y un postre que sí hay que traer.
+  // En la base es la columna es_para_comprar, en positivo y con true por defecto:
+  // lo normal no debería tener que decirse en ningún sitio.
+  let NO_COMPRA = {};
+  function marcaDeCompra(id, pid, k){ return id + "|" + pid + "|" + k; }
+  function paraComprar(id, pid, k){ return !NO_COMPRA[marcaDeCompra(id, pid, k)]; }
+  function marcarCompra(id, pid, k, si){
+    const c = marcaDeCompra(id, pid, k);
+    if(si) delete NO_COMPRA[c]; else NO_COMPRA[c] = true;
     guardar();
+  }
+  // Mientras el niño come lo mismo que en la mesa no tiene línea propia en la
+  // semana, y por tanto tampoco casilla propia: manda la de la mesa. Si no, al
+  // desmarcar un plato seguiría en la compra por una casilla que no se ve.
+  function marcaEfectiva(id, pid, k){
+    if(pid !== "nino") return paraComprar(id, pid, k);
+    const hn = huecos("nino", id), ha = huecos("adultos", id);
+    const slot = k.split("|").slice(0, 2).join("|");
+    const propio = ordenesDe().some(function(o){
+      return (hn[slot + "|" + o] || "") !== (ha[slot + "|" + o] || "");
+    });
+    return paraComprar(id, propio ? "nino" : "adultos", k);
+  }
+
+  // Un hueco del niño con algo fuera de la compra: casi siempre, la guardería.
+  function fueraDeCompra(id, pid, slot){
+    return ordenesDe().some(function(o){ return !paraComprar(id, pid, slot + "|" + o); });
   }
 
   // Lo que le toca al niño cuando en casa se cocina `n`: el mismo plato si está
@@ -1278,7 +1307,9 @@
     const casa = huecos("adultos", id), previo = huecos("nino", id), h = {};
     slotsDe().forEach(function(slot){
       const mom = slot.split("|")[1];
-      if(enGuarde(id, slot)){
+      // Un hueco suyo que dejaste fuera de la compra lo pusiste a mano o lo trajo
+      // el menú de la guardería: en los dos casos sabes tú más que el generador.
+      if(fueraDeCompra(id, "nino", slot)){
         ordenesDe().forEach(function(o){
           if(previo[slot + "|" + o]) h[slot + "|" + o] = previo[slot + "|" + o];
         });
@@ -1316,7 +1347,7 @@
     const casa = huecos("adultos", id), hn = huecos("nino", id);
     let propias = 0, guarde = 0;
     slotsDe().forEach(function(slot){
-      if(enGuarde(id, slot)){ guarde++; return; }
+      if(fueraDeCompra(id, "nino", slot)){ guarde++; return; }
       ordenesDe().forEach(function(o){
         const k = slot + "|" + o;
         if((casa[k] || "") !== (hn[k] || "")) propias++;
@@ -1382,15 +1413,13 @@
   }
   function fijarHuecos(pid, id, h){
     estado[pid].semanas[id] = h;
-    // Una marca sin platos debajo no significa nada, y además no se podría
+    // Una marca sin plato debajo no significa nada, y además no se podría
     // guardar: la columna vive en la fila del plato.
-    if(pid === "nino"){
-      Object.keys(GUARDE).forEach(function(k){
-        if(k.indexOf(id + "|") !== 0) return;
-        const slot = k.slice(id.length + 1);
-        if(!ordenesDe().some(function(o){ return !!h[slot + "|" + o]; })) delete GUARDE[k];
-      });
-    }
+    const prefijo = id + "|" + pid + "|";
+    Object.keys(NO_COMPRA).forEach(function(c){
+      if(c.indexOf(prefijo) !== 0) return;
+      if(!h[c.slice(prefijo.length)]) delete NO_COMPRA[c];
+    });
     // Volver a poner platos en una semana borrada la resucita: si no, quedaba
     // invisible en el histórico y no llegaba nunca al repositorio.
     if(Object.keys(h).some(function(k){ return !!h[k]; })){
@@ -2393,7 +2422,7 @@
                       onclick:function(){
           const id = semanaActual();
           // Por lo mismo que al borrar: sin tocar REPO, "vaciar" solo tapaba.
-          Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
+          Object.keys(NO_COMPRA).forEach(function(c){ if(c.indexOf(id + "|") === 0) delete NO_COMPRA[c]; });
           PERFILES.forEach(function(pf){ delete REP[pf.id].REPO[id]; });
           fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
         }}),
@@ -2456,7 +2485,7 @@
   function avisoGenerada(d){
     const partes = ["Semana generada" + (objetivosTocados() ? " con tus objetivos" : "") + ": " +
                     etiquetaSemana(desdeIso(semanaActual()))];
-    if(d.guarde) partes.push(d.guarde + " huecos en la guardería");
+    if(d.guarde) partes.push(d.guarde + " huecos suyos fuera de la compra");
     partes.push(d.propias ? "el niño come distinto en " + d.propias + (d.propias === 1 ? " hueco" : " huecos")
                           : "el niño come lo mismo que vosotros");
     aviso(partes.join(" · "));
@@ -2608,7 +2637,9 @@
           }
 
           card.appendChild(el("div", {class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) +
-                                             (ajeno ? " ajeno" : "")}, [
+                                             (ajeno ? " ajeno" : "") +
+                                             (paraComprar(id, "adultos", clave) ? "" : " sin-compra")}, [
+            checkCompra(id, "adultos", clave, p ? p.n : null),
             el("button", {
               type:"button", class:"slot-main",
               "aria-label": ORDEN_LBL[o] + " plato " + deMomento(momento) + " del " + dia +
@@ -2644,6 +2675,31 @@
 
   }
 
+  // La casilla de "esto hay que comprarlo". Nace marcada y casi nunca se toca:
+  // solo para lo que come en la guardería y para lo que ya está en la nevera.
+  // Va en cada plato porque dentro de una comida puede haber de los dos.
+  function checkCompra(id, pid, clave, nombre){
+    const cb = el("input", {type:"checkbox", class:"compra-check",
+      id:"c-" + pid + "-" + sinTildes(clave).replace(/[^a-z0-9]+/g, "-")});
+    cb.checked = paraComprar(id, pid, clave);
+    cb.title = nombre ? "Comprar lo de «" + nombre + "». Quítalo si no hay que traerlo: " +
+                        "la guardería, o lo que ya tengas en la nevera."
+                      : "Comprar los ingredientes de este plato";
+    cb.setAttribute("aria-label", "Comprar los ingredientes de " + (nombre || "este plato"));
+    cb.addEventListener("click", function(e){ e.stopPropagation(); });
+    cb.addEventListener("change", function(){
+      marcarCompra(id, pid, clave, cb.checked);
+      // El mismo plato en la misma comida y en el otro menú es el mismo plato
+      // encima de la mesa: comprarlo por uno y no por el otro no significa nada.
+      const otro = otroPerfil(pid);
+      if(huecos(otro, id)[clave] && huecos(otro, id)[clave] === huecos(pid, id)[clave]){
+        marcarCompra(id, otro, clave, cb.checked);
+      }
+      pintarTodo();
+    });
+    return cb;
+  }
+
   // Lo del niño va junto, debajo de los platos de ese momento. Mientras coma lo
   // mismo que en la mesa solo hay un botón; en cuanto le pones un plato suyo, el
   // momento pasa a ser suyo y el botón reaparece para el siguiente, hasta llenar
@@ -2664,7 +2720,9 @@
     suyos.forEach(function(o){
       const crudo = hn[slot + "|" + o], p = platoEnSemana("nino", crudo);
       const guarde = esGuarde(p);
-      caja.appendChild(el("div", {class:"nino-row" + (guarde ? " guarde" : "")}, [
+      caja.appendChild(el("div", {class:"nino-row" + (guarde ? " guarde" : "") +
+                                         (paraComprar(id, "nino", slot + "|" + o) ? "" : " sin-compra")}, [
+        checkCompra(id, "nino", slot + "|" + o, p ? p.n : crudo),
         el("span", {class:"etq", text:"niño"}),
         el("span", {class:"ord", text:ORDEN_LBL[o]}),
         el("button", {type:"button", class:"nino-plato" + (!p ? " roto" : "") + (guarde ? " suave" : ""),
@@ -2679,21 +2737,6 @@
           onclick:function(){ quitaNino(id, slot, o); }})
       ]));
     });
-
-    // Donde come decide si se compra. Lo normal es que lo marque el cargador de
-    // menús de la guardería, pero un día que no vaya se quita aquí a mano.
-    if(suyos.length){
-      const marca = el("input", {type:"checkbox", id:"gd-" + sinTildes(slot).replace(/\|/g, "-")});
-      marca.checked = enGuarde(id, slot);
-      marca.addEventListener("change", function(){
-        marcarGuarde(id, slot, marca.checked);
-        pintarTodo();
-      });
-      caja.appendChild(el("label", {class:"nino-guarde", for:marca.id,
-        title:"Si come en la guardería, sus ingredientes no entran en la lista de la compra"}, [
-        marca, el("span", {text:"en la guarde"})
-      ]));
-    }
 
     // Y una línea más para el siguiente, mientras quepa. Si su primero se basta
     // solo, corta en dos igual que en la mesa, dejando sitio al postre.
@@ -3951,7 +3994,9 @@
     semanas.forEach(function(id){
       const h = {};
       if(plan.soloEsto){
-        Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
+        Object.keys(NO_COMPRA).forEach(function(c){
+          if(c.indexOf(id + "|nino|") === 0) delete NO_COMPRA[c];
+        });
         delete REP.nino.REPO[id];
       }else{
         const origen = huecos("nino", id);
@@ -3969,10 +4014,12 @@
         });
       });
       fijarHuecos("nino", id, h);
-      // Después de fijar: fijarHuecos limpia las marcas que se quedan sin platos.
+      // Después de fijar: fijarHuecos limpia las marcas que se quedan sin plato.
       porSemana[id].forEach(function(x){
         IDS_MOMENTO.forEach(function(m){
-          if((x.d[m] || []).length) marcarGuarde(id, x.dia + "|" + m, true);
+          (x.d[m] || []).slice(0, PLATOS_POR_COMIDA).forEach(function(n, i){
+            marcarCompra(id, "nino", x.dia + "|" + m + "|" + String(i + 1), false);
+          });
         });
       });
     });
@@ -3994,8 +4041,9 @@
     PERFILES.forEach(function(pf){
       const h = huecos(pf.id, id);
       clavesDe().forEach(function(k){
-        // Lo que come en la guardería lo compran ellos.
-        if(pf.id === "nino" && enGuarde(id, k.split("|").slice(0, 2).join("|"))) return;
+        // Lo de la guardería lo compran ellos, y lo que ya está en la nevera no
+        // hace falta traerlo otra vez.
+        if(!marcaEfectiva(id, pf.id, k)) return;
         const p = h[k] && platoEnSemana(pf.id, h[k]);
         if(!p) return;
         p.i.forEach(function(ing){
@@ -4185,7 +4233,7 @@
     });
     delete estado.compras[id];
     delete REPO_COMPRAS[id];
-    Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
+    Object.keys(NO_COMPRA).forEach(function(c){ if(c.indexOf(id + "|") === 0) delete NO_COMPRA[c]; });
   }
 
   /* ============ Guardado ============ */
@@ -4243,7 +4291,7 @@
           const t = k.split("|");
           out.push({semana_id:id, menu:menu, dia:t[0], momento:t[1],
                     orden:Number(t[2]), plato:nombre,
-                    en_guarde: menu === "nino" && !!GUARDE[id + "|" + t[0] + "|" + t[1]]});
+                    es_para_comprar: paraComprar(id, pf.id, k)});
         });
       });
     });
