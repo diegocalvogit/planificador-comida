@@ -531,6 +531,8 @@
   .carga-ing .nm{font-size:13px;flex:1 1 140px}
   .carga-ing select{width:auto;flex:0 1 190px}
   .carga-roza{flex:1 1 100%;font-size:11px;color:var(--pimenton)}
+  .carga-ojo{font-size:12.5px;line-height:1.5;color:var(--ink-2);margin:-4px 0 10px;
+    border-left:2px solid var(--pimenton);padding-left:9px}
   .carga-dias{display:grid;gap:3px}
   .carga-dia{display:flex;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
   .carga-dia .fe{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);flex:none;width:62px}
@@ -2386,8 +2388,13 @@
           onclick:function(){
             const d = generar(semanaActual()); pintarTodo(); avisoGenerada(d);
           }}),
-        el("button", {class:"btn", text:"Vaciar", onclick:function(){
+        el("button", {class:"btn", text:"Vaciar",
+                      title:"Deja la semana en blanco, los dos menús",
+                      onclick:function(){
           const id = semanaActual();
+          // Por lo mismo que al borrar: sin tocar REPO, "vaciar" solo tapaba.
+          Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
+          PERFILES.forEach(function(pf){ delete REP[pf.id].REPO[id]; });
           fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
         }}),
         el("button", {class:"btn", text:"Cargar guarde\u2026",
@@ -3697,6 +3704,26 @@
         document.createTextNode("Días "),
         el("span", {class:"om", text:dias.length + " en " + semanasDe(dias).length + " semanas"})
       ]));
+
+      // Lo que ya hay en esas semanas. Cargar encima de una semana con cosas es
+      // legítimo, pero enterarse después de que han quedado mezcladas no.
+      const ocupadas = semanasDe(dias).map(function(id){
+        const h = huecos("nino", id);
+        const cuantos = clavesDe().filter(function(k){ return !!h[k]; }).length;
+        return {id:id, cuantos:cuantos};
+      }).filter(function(x){ return x.cuantos; });
+
+      if(ocupadas.length){
+        cuerpo.appendChild(el("p", {class:"carga-ojo"}, [
+          el("strong", {text: soloEsto.checked ? "Se vacía lo que ya había. " : "Ojo: ya hay platos ahí. "}),
+          document.createTextNode(ocupadas.map(function(x){
+            return etiquetaSemana(desdeIso(x.id)) + " tiene " + x.cuantos +
+                   (x.cuantos === 1 ? " plato" : " platos") + " del niño";
+          }).join("; ") + ". " + (soloEsto.checked
+            ? "La casilla de abajo está marcada: la semana del niño se queda solo con este menú."
+            : "Se sustituyen las comidas que trae este menú; el resto se queda como está."))
+        ]));
+      }
       const tabla = el("div", {class:"carga-dias"});
       dias.slice().sort(function(a, b){ return String(a.fecha).localeCompare(String(b.fecha)); })
         .forEach(function(d){
@@ -3808,11 +3835,20 @@
     const alAdulto = el("input", {type:"checkbox", id:"carga-adultos"});
     alAdulto.checked = true;
 
+    // Cargar encima o empezar de cero. Lo segundo es lo que quieres cuando el
+    // menú de la guardería es toda la semana del niño y lo de antes sobra.
+    const soloEsto = el("input", {type:"checkbox", id:"carga-solo"});
+    soloEsto.addEventListener("change", function(){ pinta(); });
+
     function pintaPie(){
       pie.textContent = "";
       pie.appendChild(el("label", {class:"carga-tambien", for:"carga-adultos",
         title:"Así el generador de la semana también puede proponerlos en la mesa"}, [
         alAdulto, el("span", {text:"también en el menú de los adultos"})
+      ]));
+      pie.appendChild(el("label", {class:"carga-tambien", for:"carga-solo",
+        title:"Borra lo que hubiera en la semana del niño. La de los adultos no se toca"}, [
+        soloEsto, el("span", {text:"dejar solo este menú"})
       ]));
       const der = el("div", {class:"der"}, [
         el("button", {class:"btn", text:"Cancelar", onclick:cerrarGuarde})
@@ -3821,7 +3857,8 @@
         der.appendChild(el("button", {class:"btn btn-primary",
           text:"Cargar " + dias.length + (dias.length === 1 ? " día" : " días"),
           onclick:function(){
-            aplicarGuarde(g, {sust:sust, secciones:secciones, adultos:alAdulto.checked});
+            aplicarGuarde(g, {sust:sust, secciones:secciones, adultos:alAdulto.checked,
+                              soloEsto:soloEsto.checked});
           }}));
       }
       pie.appendChild(der);
@@ -3912,8 +3949,14 @@
     const semanas = Object.keys(porSemana).sort();
     let cuantosHuecos = 0;
     semanas.forEach(function(id){
-      const h = {}, origen = huecos("nino", id);
-      Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
+      const h = {};
+      if(plan.soloEsto){
+        Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
+        delete REP.nino.REPO[id];
+      }else{
+        const origen = huecos("nino", id);
+        Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
+      }
       porSemana[id].forEach(function(x){
         IDS_MOMENTO.forEach(function(m){
           const platos = (x.d[m] || []).map(function(n){ return plan.sust[n] || n; });
@@ -4118,15 +4161,31 @@
 
   // Borrar una semana del histórico. Ya no hay nada que "guardar después": al
   // quedarse fuera de idsSemanas, sus filas salen de la base en la misma pasada.
+  //
+  // Hay que vaciar también REPO, la foto de la base con la que arrancó la página.
+  // Marcar la semana como borrada basta para que no se guarde, pero no para que
+  // no se lea: huecos() cae en REPO cuando estado no tiene nada, así que la
+  // semana seguía ahí para cualquiera que preguntara por ella. Volver a poner un
+  // plato en ella la sacaba de la lista de borradas y resucitaba de golpe los dos
+  // menús enteros, con todo lo viejo dentro.
   function borrarSemana(id){
     if(!window.confirm("¿Borrar " + etiquetaSemana(desdeIso(id)) + " del histórico? " +
                        "Se van sus dos menús, su compra y sus filas de la base de datos."))
       return;
-    if(estado.semanasBorradas.indexOf(id) === -1) estado.semanasBorradas.push(id);
-    PERFILES.forEach(function(pf){ delete estado[pf.id].semanas[id]; });
-    delete estado.compras[id];
+    vaciarSemana(id);
     guardar(); pintarTodo();
     aviso("Semana borrada del histórico");
+  }
+
+  function vaciarSemana(id){
+    if(estado.semanasBorradas.indexOf(id) === -1) estado.semanasBorradas.push(id);
+    PERFILES.forEach(function(pf){
+      delete estado[pf.id].semanas[id];
+      delete REP[pf.id].REPO[id];
+    });
+    delete estado.compras[id];
+    delete REPO_COMPRAS[id];
+    Object.keys(GUARDE).forEach(function(k){ if(k.indexOf(id + "|") === 0) delete GUARDE[k]; });
   }
 
   /* ============ Guardado ============ */

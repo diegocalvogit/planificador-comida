@@ -176,6 +176,11 @@ revisión, que es donde está el trabajo de verdad:
 Si el fichero trae algo que la pantalla no puede arreglar — un tipo que no existe, un ingrediente sin declarar,
 una fecha en fin de semana, un plato que no se crea ni existe — se listan todos y **no se carga nada**.
 
+Al pie hay una casilla **dejar solo este menú**: sin marcar se carga encima de lo que hubiera, sustituyendo
+solo las comidas que trae el fichero; marcada, la semana del niño se queda únicamente con el menú de la
+guardería. La de los adultos no se toca en ninguno de los dos casos. Si las semanas de destino ya tienen
+platos del niño, la revisión lo dice antes, semana por semana.
+
 Cada hueco cargado así queda marcado con **en la guarde** (la columna `en_guarde` de la tabla `semanas`), y eso
 tiene una consecuencia: **sus ingredientes no entran en la lista de la compra**, porque los compran ellos. La
 marca va por hueco y no por plato — el mismo puré puede ser de allí un martes y de casa un sábado — y se
@@ -187,6 +192,11 @@ algo distinto. **El equilibrio mide la mesa de casa**, no las excepciones del ni
 **Compra** — Una sola lista con los ingredientes de **las dos semanas**, primeros y segundos platos incluidos, con sus propias flechas para moverte de una semana a otra. Es determinista: sale de los ingredientes de los platos de la semana abierta, agrupada por sección del súper en el orden que marca la tabla `secciones`, que es el orden en que se recorre la tienda; la panadería va la última. Un ingrediente aparece si, y solo si, lo usa algún plato. Cada ingrediente se marca como *ya lo tengo*, y esa marca **pertenece a esa semana**: queda registrada en la tabla `compras` como histórico de lo que había en casa. Lo que una semana no diga de un ingrediente se hereda de la última semana que sí lo diga, y en último término de la tabla `despensa`, los básicos fijos. Así una semana nueva arranca con la foto de la anterior sin borrar lo que pasó en las pasadas.
 
 **Ingredientes** — El catálogo, la única fuente de la que salen los ingredientes de los platos. Cada uno con su sección del súper y los platos que lo usan; se busca, se filtra por sección y por si está en uso o suelto. Desde aquí se añaden, se renombran —lo que arrastra a todos los platos, la despensa y el histórico de compras— y se borran, siempre que no los use ningún plato.
+
+Borrar una semana del histórico la borra de verdad: se va de `estado`, de la foto con la que arrancó la
+página y de la base en el siguiente guardado. Durante un tiempo solo se marcaba como borrada, lo que bastaba
+para que no se guardara pero no para que no se leyera — y volver a poner un plato en ella resucitaba los dos
+menús enteros con todo lo viejo dentro.
 
 **Configuración** — Incluye **copia de seguridad**: un botón descarga todo lo que hay en la base en un fichero JSON, y otro lo restaura. Importa porque el plan gratuito de Supabase **no hace copias automáticas** ("Automatic backups: Not included"), así que esa es la única que hay. Antes de restaurar se descarga sola una copia de lo actual, y el fichero se valida entero antes de borrar nada: a media restauración no habría vuelta atrás.
 
