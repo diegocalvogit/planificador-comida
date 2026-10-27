@@ -300,6 +300,19 @@ colar solas. Quitar una regla no quita lo que ya estuviera puesto.
 La tabla `reglas` es la misma forma que `semanas` sin la columna de la semana, porque la semana que te toque
 vivir no cambia que los domingos haya paella.
 
+**Recetas** — Los platos de **preparación media o alta**, que son los que no se resuelven solos. Los de
+preparación baja no salen: no hay nada que explicar de poner fruta en un plato, y meterlos solo haría la
+lista más larga. Cada ficha lleva el nombre, la dificultad — que es la misma columna *preparación* del
+plato, no un dato nuevo que pueda contradecirla —, sus ingredientes y los pasos numerados.
+
+Los pasos son **cortos y en imperativo, con el tiempo dentro del paso al que pertenece**: esto se consulta
+de pie y con las manos ocupadas, así que lo que importa es el orden y cuándo pasar al siguiente. Los
+ingredientes no se repiten en los pasos porque ya están arriba.
+
+Se escriben desde la propia ficha, **un paso por línea**, que es lo que más se parece a cómo lo dirías en
+voz alta y evita un editor de listas con sus botones de subir y bajar. Se busca por plato o por ingrediente,
+y se filtra por dificultad o por *sin escribir*, que es la lista de lo que queda por hacer.
+
 **Configuración** — Incluye **copia de seguridad**: un botón descarga todo lo que hay en la base en un fichero JSON, y otro lo restaura. Importa porque el plan gratuito de Supabase **no hace copias automáticas** ("Automatic backups: Not included"), así que esa es la única que hay. Antes de restaurar se descarga sola una copia de lo actual, y el fichero se valida entero antes de borrar nada: a media restauración no habría vuelta atrás.
 
 **Configuración** — La cuenta con la que has entrado y el botón de salir, un resumen de lo que hay en la base, y el histórico de semanas: Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.

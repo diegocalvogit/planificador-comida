@@ -89,6 +89,14 @@ create table if not exists public.reglas (
   primary key (menu, dia, momento, orden)
 );
 
+-- Los pasos de un plato, para los de preparación media o alta. Un plato de
+-- preparación baja no necesita que nadie le explique nada.
+create table if not exists public.recetas (
+  plato text primary key references public.platos(nombre)
+              on update cascade on delete cascade,
+  pasos text[] not null default '{}'
+);
+
 create table if not exists public.semanas (
   semana_id date     not null,
   menu      text     not null check (menu in ('casa','nino')),
@@ -130,7 +138,7 @@ do $$
 declare t text;
 begin
   foreach t in array array['secciones','ingredientes','tipos','equilibrio',
-                           'reglas','platos','semanas','compras','despensa']
+                           'reglas','recetas','platos','semanas','compras','despensa']
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists "solo la casa" on public.%I', t);

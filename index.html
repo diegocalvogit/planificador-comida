@@ -566,6 +566,34 @@
     border:1px dashed var(--line);border-radius:8px;padding:11px 12px;margin-top:11px}
   .regla-alta .full{grid-column:1/-1}
   .regla-alta select{width:100%}
+  /* Recetas: fichas que se leen de pie, no una revista de cocina. */
+  .rec-cab{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  .rec-cab input[type="search"]{flex:1 1 240px;min-width:0}
+  .rec-filtro{display:flex;gap:6px;flex-wrap:wrap}
+  .rec-chip{font-size:12.5px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;
+    background:var(--surface);color:var(--ink-2);cursor:pointer}
+  .rec-chip:hover{border-color:var(--accent)}
+  .rec-chip.activo{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+  .rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;
+    align-items:start}
+  .receta{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:13px 15px 14px;box-shadow:var(--shadow)}
+  .receta.vacia{background:var(--ground);border-style:dashed}
+  .receta > header{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .receta > header .sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
+  .receta h3{font-size:14.5px;font-weight:700;flex:1 1 auto;min-width:0}
+  .receta .dif{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.07em;
+    text-transform:uppercase;border:1px solid var(--line);border-radius:20px;padding:1px 8px;
+    flex:none;color:var(--ink-2);background:var(--ground)}
+  .receta .dif-alto{color:var(--pimenton);border-color:var(--pimenton)}
+  .receta .desc{font-size:12.5px;color:var(--ink-3);font-style:italic;margin-bottom:8px}
+  .rec-ings{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .receta .pasos{margin:0 0 11px 17px;padding:0}
+  .receta .pasos li{font-size:13px;line-height:1.5;margin-bottom:4px;padding-left:2px}
+  .receta .pasos li::marker{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3)}
+  .receta .sin-pasos{font-size:12.5px;color:var(--ink-3);margin-bottom:10px}
+  .receta .rec-editar{width:100%;justify-content:center}
+  #pasos-texto{width:100%;min-height:230px;resize:vertical;font-size:14px;line-height:1.55}
   .grupos{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px;margin-top:6px}
   .grupo-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:8px;padding:5px 10px;background:var(--ground)}
   .grupo-row .sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
@@ -659,7 +687,7 @@
     /* Fuera todo lo que no es la semana. */
     .top, .lead, .weeknav, .balance, .legend, .credits, .toast, .overlay,
     .section-head > div:last-child, #panel-platos, #panel-compra,
-    #panel-ingredientes, #panel-historico, .puerta{ display:none !important }
+    #panel-ingredientes, #panel-recetas, #panel-historico, .puerta{ display:none !important }
     .slot-add, .nino-add, .nino-quita{ display:none !important }
     main{ padding:0; max-width:none }
     #panel-semana{ display:block !important; padding:8mm }
@@ -749,6 +777,14 @@
   </section>
 
   <section id="panel-ingredientes" role="tabpanel" aria-labelledby="tab-ingredientes" hidden></section>
+
+  <section id="panel-recetas" role="tabpanel" aria-labelledby="tab-recetas" hidden>
+    <div class="rec-cab">
+      <input type="search" id="rec-buscar" placeholder="Buscar plato o ingrediente…">
+      <div class="rec-filtro" id="rec-filtro"></div>
+    </div>
+    <div id="rec-lista"></div>
+  </section>
 
   <section id="panel-historico" role="tabpanel" aria-labelledby="tab-historico" hidden>
     <div class="cfg-bloque">
@@ -894,6 +930,25 @@
   function deMomento(id){
     const l = (MOMENTO_LBL[id] || id).toLowerCase();
     return (id === "comida" || id === "cena" || id === "merienda" ? "de la " : "del ") + l;
+  }
+
+  /* ============ Recetas ============ */
+  // Solo para lo que no se resuelve solo: un plato de preparación baja es poner
+  // fruta en un plato y no necesita que nadie le explique nada. Los de media y
+  // alta sí, y lo que hace falta de ellos es el orden y los tiempos, no una
+  // receta de revista: se consultan de pie y con las manos ocupadas.
+  let RECETAS = {};
+
+  function necesitaReceta(p){ return !!p && (p.tiempo === "medio" || p.tiempo === "alto"); }
+  function platosConReceta(){
+    return repertorio().filter(necesitaReceta)
+                       .sort(function(a, b){ return a.n.localeCompare(b.n, "es"); });
+  }
+  function pasosDe(nombre){ return (RECETAS[nombre] || []).slice(); }
+  function fijarPasos(nombre, pasos){
+    const l = pasos.map(function(x){ return String(x).trim(); }).filter(Boolean);
+    if(l.length) RECETAS[nombre] = l; else delete RECETAS[nombre];
+    guardar();
   }
 
   /* ============ Reglas del día a día ============ */
@@ -1043,12 +1098,14 @@
       tabla("tipos",        ["orden"]),
       tabla("equilibrio",   ["orden"]),
       tabla("reglas",       ["menu", "dia", "momento", "orden"]),
+      tabla("recetas",      ["plato"]),
       tabla("platos",       ["nombre"]),
       tabla("semanas",      ["semana_id", "dia", "momento", "orden"]),
       tabla("compras",      ["semana_id", "ingrediente"]),
       tabla("despensa",     ["ingrediente"])
     ]);
-    const [secciones, ingredientes, tipos, equilibrio, reglas, platos, semanas, compras, despensa] = r;
+    const [secciones, ingredientes, tipos, equilibrio, reglas, recetas,
+           platos, semanas, compras, despensa] = r;
 
     // El orden de las secciones es el del súper y manda en la lista de la compra:
     // los ingredientes se devuelven ordenados por él, como venían en el CSV.
@@ -1069,6 +1126,9 @@
     datos.reglas = reglas.map(function(x){
       return {menu:x.menu, dia:x.dia, momento:x.momento,
               orden:String(x.orden), plato:x.plato};
+    });
+    datos.recetas = recetas.map(function(x){
+      return {plato:x.plato, pasos:tubo(x.pasos)};
     });
     datos.platos = platos.map(function(x){
       return {nombre:x.nombre, adultos:sn(x.adultos), nino:sn(x.nino),
@@ -1232,6 +1292,11 @@
     // Cada objetivo mide uno o varios tipos: "Pescado y marisco" los suma.
     OBJETIVOS = (datos.equilibrio || []).filter(function(x){ return x.objetivo; }).map(function(x){
       return { n:x.objetivo, tipos:lista(x.tipos), min:Number(x.minimo) || 0, max:Number(x.maximo) || 0 };
+    });
+
+    RECETAS = {};
+    (datos.recetas || []).forEach(function(x){
+      if(x.plato) RECETAS[x.plato] = lista(x.pasos);
     });
 
     REGLAS = (datos.reglas || []).filter(function(x){ return x.plato; }).map(function(x){
@@ -1933,6 +1998,7 @@
     {id:"semana",         lbl:"Semana"},
     {id:"compra",         lbl:"Compra"},
     {id:"ingredientes",   lbl:"Ingredientes"},
+    {id:"recetas",        lbl:"Recetas"},
     {id:"historico",      lbl:"Configuración"}
   ];
   function montarPestanas(){
@@ -4519,6 +4585,14 @@
       return {objetivo:o.n, tipos:o.tipos.slice(), minimo:o.min, maximo:o.max, orden:i};
     });
   }
+  function filasRecetas(){
+    // Una receta de un plato que ya no existe no se guarda: la clave ajena la
+    // rechazaría. Se queda en memoria por si el plato vuelve con ese nombre.
+    const hay = {};
+    repertorio().forEach(function(p){ hay[p.n] = 1; });
+    return Object.keys(RECETAS).filter(function(n){ return hay[n] && RECETAS[n].length; })
+                 .map(function(n){ return {plato:n, pasos:RECETAS[n].slice()}; });
+  }
   function filasReglas(){
     return REGLAS.map(function(r){
       return {menu:r.menu, dia:r.dia, momento:r.momento, orden:Number(r.orden), plato:r.plato};
@@ -4591,6 +4665,7 @@
     {n:"equilibrio",   pk:["objetivo"],     filas:filasEquilibrio},
     {n:"platos",       pk:["nombre"],       filas:filasPlatos},
     {n:"reglas",       pk:["menu","dia","momento","orden"], filas:filasReglas},
+    {n:"recetas",      pk:["plato"],        filas:filasRecetas},
     {n:"semanas",      pk:["semana_id","menu","dia","momento","orden"], filas:filasSemanas},
     {n:"compras",      pk:["semana_id","ingrediente"], filas:filasCompras},
     {n:"despensa",     pk:["ingrediente"],  filas:filasDespensa}
@@ -4856,6 +4931,138 @@
     ]));
   }
 
+  /* ============ Panel: recetas ============ */
+  const DIF_LBL = {medio:"Media", alto:"Alta"};
+  let RECETA_FILTRO = "";
+
+  function montarRecetas(){
+    const b = $("rec-buscar");
+    if(b && !b.dataset.listo){
+      b.dataset.listo = "1";
+      b.addEventListener("input", pintarRecetas);
+    }
+    const f = $("rec-filtro");
+    if(f){
+      f.textContent = "";
+      [{id:"", lbl:"Todas"}, {id:"alto", lbl:"Preparaci\u00f3n alta"},
+       {id:"medio", lbl:"Preparaci\u00f3n media"}, {id:"falta", lbl:"Sin escribir"}]
+        .forEach(function(o){
+          const btn = el("button", {type:"button",
+            class:"rec-chip" + (RECETA_FILTRO === o.id ? " activo" : ""), text:o.lbl});
+          btn.addEventListener("click", function(){
+            RECETA_FILTRO = o.id; montarRecetas(); pintarRecetas();
+          });
+          f.appendChild(btn);
+        });
+    }
+  }
+
+  function pintarRecetas(){
+    const cont = $("rec-lista");
+    if(!cont) return;
+    const q = sinTildes(($("rec-buscar") || {}).value || "");
+    const todos = platosConReceta();
+
+    const vistos = todos.filter(function(p){
+      if(RECETA_FILTRO === "falta" && pasosDe(p.n).length) return false;
+      if((RECETA_FILTRO === "alto" || RECETA_FILTRO === "medio") && p.tiempo !== RECETA_FILTRO) return false;
+      if(!q) return true;
+      return sinTildes(p.n).indexOf(q) !== -1 ||
+             (p.i || []).some(function(i){ return sinTildes(i).indexOf(q) !== -1; });
+    });
+
+    cont.textContent = "";
+    const faltan = todos.filter(function(p){ return !pasosDe(p.n).length; }).length;
+    cont.appendChild(el("p", {class:"hint", style:"margin-bottom:12px", text:
+      "Los " + todos.length + " platos de preparaci\u00f3n media o alta. Los de preparaci\u00f3n baja no salen " +
+      "aqu\u00ed: no hay nada que explicar de poner fruta en un plato." +
+      (faltan ? "  Faltan " + faltan + " por escribir." : "")}));
+
+    if(!vistos.length){
+      cont.appendChild(el("p", {class:"hint", text:"Nada con eso."}));
+      return;
+    }
+    const rejilla = el("div", {class:"rec-grid"});
+    vistos.forEach(function(p){ rejilla.appendChild(fichaReceta(p)); });
+    cont.appendChild(rejilla);
+  }
+
+  function fichaReceta(p){
+    const pasos = pasosDe(p.n);
+    const caja = el("article", {class:"receta" + (pasos.length ? "" : " vacia")});
+
+    caja.appendChild(el("header", null, [
+      el("span", {class:"sw", style:"background:" + colorDe(claveDe(tiposDe(p)[0] || ""))}),
+      el("h3", {text:p.n}),
+      el("span", {class:"dif dif-" + p.tiempo, text:DIF_LBL[p.tiempo] || p.tiempo})
+    ]));
+    if(p.d && p.d !== "Sin descripci\u00f3n.") caja.appendChild(el("p", {class:"desc", text:p.d}));
+
+    caja.appendChild(el("div", {class:"rec-ings"}, (p.i || []).map(function(i){
+      return el("span", {class:"chip chip-ing", text:i});
+    })));
+
+    const lista = el("ol", {class:"pasos"});
+    pasos.forEach(function(x){ lista.appendChild(el("li", {text:x})); });
+    if(pasos.length) caja.appendChild(lista);
+    else caja.appendChild(el("p", {class:"sin-pasos", text:"Sin pasos escritos todav\u00eda."}));
+
+    caja.appendChild(el("button", {type:"button", class:"btn btn-sm rec-editar",
+      text: pasos.length ? "Editar pasos" : "Escribir los pasos",
+      onclick:function(){ abrirPasos(p); }}));
+    return caja;
+  }
+
+  // Un paso por línea. Es lo que más se parece a cómo lo dirías en voz alta, y
+  // evita un editor de listas con sus botones de subir y bajar.
+  let capaPasos = null;
+  function cerrarPasos(){
+    if(capaPasos){ capaPasos.remove(); capaPasos = null; document.removeEventListener("keydown", escPasos); }
+  }
+  function escPasos(e){ if(e.key === "Escape") cerrarPasos(); }
+
+  function abrirPasos(p){
+    cerrarPasos();
+    const area = el("textarea", {id:"pasos-texto", rows:"12",
+      placeholder:"Un paso por l\u00ednea.\nCortar las berenjenas a lo largo y vaciarlas."});
+    area.value = pasosDe(p.n).join("\n");
+
+    const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true",
+                            "aria-label":"Pasos de " + p.n}, [
+      el("header", null, [
+        el("div", null, [
+          el("h3", {text:p.n}),
+          el("div", {class:"hint", text:"Un paso por l\u00ednea. Cortos: esto se lee de pie."})
+        ]),
+        el("span", {class:"dif dif-" + p.tiempo, text:DIF_LBL[p.tiempo] || p.tiempo})
+      ]),
+      el("div", {class:"editor-body"}, [
+        el("div", {class:"full"}, [
+          el("label", {class:"bloque-lbl", text:"Ingredientes"}),
+          el("div", {class:"rec-ings"}, (p.i || []).map(function(i){
+            return el("span", {class:"chip chip-ing", text:i});
+          }))
+        ]),
+        el("div", {class:"full"}, [area])
+      ]),
+      el("footer", null, [
+        el("div", {class:"der"}, [
+          el("button", {class:"btn", text:"Cancelar", onclick:cerrarPasos}),
+          el("button", {class:"btn btn-primary", text:"Guardar", onclick:function(){
+            fijarPasos(p.n, area.value.split("\n"));
+            cerrarPasos(); pintarRecetas();
+            aviso("Pasos de \u00ab" + p.n + "\u00bb guardados");
+          }})
+        ])
+      ])
+    ]);
+
+    capaPasos = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaPasos) cerrarPasos(); }}, [caja]);
+    document.body.appendChild(capaPasos);
+    document.addEventListener("keydown", escPasos);
+    area.focus();
+  }
+
   /* ============ Copias de seguridad ============ */
   // Todo lo que hay en la base, tal cual, en un fichero. Las tablas van en el
   // orden de TABLAS, que es de padres a hijos: así al restaurar se puede recorrer
@@ -4972,7 +5179,7 @@
     pintarPlatos();
     pintarIngredientes();
     pintarSemana();
-    pintarCompra(); pintarHistorico();
+    pintarCompra(); pintarRecetas(); pintarHistorico();
   }
 
   /* ============ Puerta ============ */
@@ -5151,6 +5358,7 @@
     montarPanelSemana();
     pintarObjetivos();
     montarCopias();
+    montarRecetas();
     montarReglas();
     montarAltaRegla();
 
