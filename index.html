@@ -305,7 +305,8 @@
     transition:transform .15s}
   .balance[open] .balance-cab .bal-chevron{transform:rotate(180deg)}
   .balance[open] .balance-cab{border-bottom:1px solid var(--line);margin-bottom:12px}
-  .balance > .obj{margin-bottom:14px}
+  .bal-pie{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;
+    border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3)}
   .meters{display:flex;flex-wrap:wrap;gap:8px}
   .meter{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
   .meter .lbl{font-size:13px;color:var(--ink-2)}
@@ -318,12 +319,7 @@
   .meter.fuera .val{font-weight:700}
   .meter .flecha{font-size:11px;color:var(--pimenton);margin-left:-4px}
 
-  details.obj{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
-  details.obj > summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--accent-ink);list-style:none;display:flex;align-items:center;gap:7px}
-  details.obj > summary::-webkit-details-marker{display:none}
-  details.obj > summary::before{content:"▸";font-size:11px;transition:transform .15s}
-  details.obj[open] > summary::before{transform:rotate(90deg)}
-  .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:12px}
+  .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
   .obj-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
   .obj-row .swatch{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
   .obj-row .name{flex:1 1 auto;font-size:13px;min-width:0}
@@ -744,6 +740,16 @@
     <div class="cfg-bloque">
       <h3>Datos</h3>
       <div class="cfg-fila" id="cfg-datos"></div>
+    </div>
+
+    <div class="cfg-bloque">
+      <h3>Objetivos de equilibrio</h3>
+      <p class="hint" style="margin:0 0 10px">Cuántas veces debería aparecer cada grupo de alimentos en la
+        mesa de casa a lo largo de una semana. No son de una semana concreta: valen para todas, y son lo que
+        guía el reparto al pulsar «Generar semana». La pestaña Semana enseña cómo va la semana abierta frente
+        a esto.</p>
+      <div class="obj-grid" id="obj-grid"></div>
+      <div class="obj-foot" id="obj-foot"></div>
     </div>
 
     <div class="cfg-bloque">
@@ -2459,16 +2465,13 @@
       resumen,
       el("p", {text:"Veces que aparece cada grupo en la mesa de casa, frente al objetivo semanal."}),
       el("div", {class:"meters", id:"meters"}),
-      el("details", {class:"obj"}, [
-        el("summary", {text:"Ajustar objetivos antes de generar"}),
-        el("div", {class:"obj-grid", id:"obj-grid"}),
-        el("div", {class:"obj-foot"}, [
-          el("button", {class:"btn btn-sm", text:"Volver a los valores del documento", onclick:function(){
-            estado.objetivos = {}; guardar(); pintarObjetivos(); pintarSemana();
-            aviso("Objetivos restablecidos");
-          }}),
-          el("span", {class:"hint", text:"Los objetivos guían el reparto al pulsar «Generar semana»."})
-        ])
+      // Los objetivos se editaban aquí dentro, y estando bajo la semana abierta
+      // parecían suyos. Son los mismos para todas, así que viven en Configuración
+      // y aquí queda el camino hasta ellos.
+      el("p", {class:"bal-pie"}, [
+        document.createTextNode("Los objetivos son los mismos para todas las semanas. "),
+        el("button", {class:"btn btn-sm", text:"Ajustarlos en Configuración",
+                      onclick:function(){ verTab("historico"); }})
       ])
     ]);
     plegable.open = !!estado.equilibrioAbierto;
@@ -2493,7 +2496,21 @@
 
   function pintarObjetivos(){
     const cont = $("obj-grid");
+    if(!cont) return;
     cont.textContent = "";
+
+    const pie = $("obj-foot");
+    if(pie){
+      pie.textContent = "";
+      pie.appendChild(el("button", {class:"btn btn-sm", text:"Volver a los valores del documento",
+        onclick:function(){
+          estado.objetivos = {}; guardar(); pintarObjetivos(); pintarSemana();
+          aviso("Objetivos restablecidos");
+        }}));
+      pie.appendChild(el("span", {class:"hint",
+        text: objetivosTocados() ? "Hay objetivos cambiados a mano."
+                                 : "Ahora mismo son los del documento, sin tocar."}));
+    }
     objetivos().forEach(function(o){
       const id = o.n.replace(/[^a-z0-9]+/gi, "-");
       const min = el("input", {type:"number", min:"0", max:"35", value:String(o.min),
@@ -2506,7 +2523,7 @@
         if(b < a) b = a;
         min.value = String(a); max.value = String(b);
         estado.objetivos[o.n] = {min:a, max:b};
-        guardar(); pintarSemana();
+        guardar(); pintarObjetivos(); pintarSemana();
       }
       min.addEventListener("change", cambiaObj);
       max.addEventListener("change", cambiaObj);
