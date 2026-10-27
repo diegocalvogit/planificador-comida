@@ -282,6 +282,24 @@ página y de la base en el siguiente guardado. Durante un tiempo solo se marcaba
 para que no se guardara pero no para que no se leyera — y volver a poner un plato en ella resucitaba los dos
 menús enteros con todo lo viejo dentro.
 
+### Las reglas del día a día
+
+Aparte de los objetivos, y en otra tabla: platos clavados en un hueco de la semana. *Paella los domingos*,
+*pasta los martes*. Se definen en **Configuración → Reglas del día a día** eligiendo quién, qué día, qué
+momento, qué puesto y qué plato — y el desplegable de platos solo ofrece los de ese menú que se coman en
+ese momento, que una regla poniendo un desayuno en la cena no la quiere nadie.
+
+No son objetivos que el reparto persiga, son **sitios que ya están ocupados**. Al abrir una semana cada
+regla ocupa su hueco si lo encuentra libre — libre es que no haya nada en toda esa comida — y a partir de
+ahí el generador las respeta igual que respeta lo que pongas tú. Por eso mandan sobre el equilibrio sin
+tener que pelearse con él: cuando el generador entra, ese hueco ya no está en juego.
+
+Se aplican **al abrir la semana y no en cada repintado**, así que *Vaciar* vacía de verdad y no se vuelven a
+colar solas. Quitar una regla no quita lo que ya estuviera puesto.
+
+La tabla `reglas` es la misma forma que `semanas` sin la columna de la semana, porque la semana que te toque
+vivir no cambia que los domingos haya paella.
+
 **Configuración** — Incluye **copia de seguridad**: un botón descarga todo lo que hay en la base en un fichero JSON, y otro lo restaura. Importa porque el plan gratuito de Supabase **no hace copias automáticas** ("Automatic backups: Not included"), así que esa es la única que hay. Antes de restaurar se descarga sola una copia de lo actual, y el fichero se valida entero antes de borrar nada: a media restauración no habría vuelta atrás.
 
 **Configuración** — La cuenta con la que has entrado y el botón de salir, un resumen de lo que hay en la base, y el histórico de semanas: Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.

@@ -52,19 +52,6 @@ create table if not exists public.equilibrio (
   minimo   int    not null default 0,
   maximo   int    not null default 0,
   orden    int    not null,
-  -- Una regla es una frase: entre minimo y maximo comidas o platos de estos
-  -- tipos, en estos momentos del día, cada día o a la semana, para un menú o
-  -- para los dos. Los objetivos de siempre son esa frase con los valores por
-  -- defecto, y por eso no hacen falta dos mecanismos.
-  momentos text[] not null default '{}',
-  ambito   text   not null default 'semana' check (ambito in ('semana','dia')),
-  cuenta   text   not null default 'comidas' check (cuenta in ('comidas','platos')),
-  perfil   text   not null default 'ambos'  check (perfil in ('ambos','adultos','nino')),
-  dias     text[] not null default '{}',
-  -- Una regla puede apuntar a un plato con nombre y apellidos en vez de a un
-  -- grupo de tipos: paella los domingos. La clave ajena se añade más abajo,
-  -- porque platos todavía no existe a estas alturas del fichero.
-  plato    text,
   check (maximo >= minimo)
 );
 
@@ -89,11 +76,18 @@ create table if not exists public.platos (
 -- Una sola tabla para los dos menús: `menu` dice cuál. El identificador de la
 -- semana es el lunes, y la etiqueta ("3ª semana de septiembre") se calcula en
 -- la página: guardarla sería repetirse.
--- Renombrar el plato arrastra la regla que lo nombra, y borrarlo se la lleva.
-alter table public.equilibrio drop constraint if exists equilibrio_plato_fkey;
-alter table public.equilibrio add constraint equilibrio_plato_fkey
-  foreign key (plato) references public.platos(nombre)
-  on update cascade on delete cascade;
+-- Platos clavados en un hueco de la semana: paella los domingos, pasta los
+-- martes. Es la misma forma que `semanas` sin la columna de la semana, porque
+-- la semana que te toque vivir no cambia que los domingos haya paella.
+create table if not exists public.reglas (
+  menu    text     not null check (menu in ('casa','nino')),
+  dia     text     not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
+  momento text     not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
+  orden   smallint not null check (orden in (1,2,3)),
+  plato   text     not null references public.platos(nombre)
+                        on update cascade on delete cascade,
+  primary key (menu, dia, momento, orden)
+);
 
 create table if not exists public.semanas (
   semana_id date     not null,
@@ -136,7 +130,7 @@ do $$
 declare t text;
 begin
   foreach t in array array['secciones','ingredientes','tipos','equilibrio',
-                           'platos','semanas','compras','despensa']
+                           'reglas','platos','semanas','compras','despensa']
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists "solo la casa" on public.%I', t);
