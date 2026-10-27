@@ -67,7 +67,7 @@ La pantalla va sin títulos ni textos de ayuda: la pestaña activa ya dice dónd
 
 Todo plato es **editable por completo** desde su botón *Editar*, venga del volcado inicial o lo hayas añadido tú: todos los campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. También se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
 
-Los ingredientes **solo se eligen del catálogo**: el editor los ofrece con autocompletado y rechaza lo que no esté en él. Así no acaban conviviendo «pimiento», «pimientos» y «piniento».
+Los ingredientes **solo se eligen del catálogo**: el editor los ofrece con autocompletado y rechaza lo que no esté en él. Así no acaban conviviendo «pimiento», «pimientos» y «piniento». Lo que no esté **se da de alta ahí mismo**: el autocompletado ofrece *Crear «…»*, y lo único que pregunta es la sección del súper, que es lo único que la lista de la compra necesita saber. La sección viene propuesta mirando a los ingredientes que ya tienes —«puerro ecológico» comparte palabra con «puerro», que está en la frutería—, así que casi siempre basta con confirmar. Mandar a la pestaña Ingredientes con el plato a medio escribir era perder el plato.
 
 La columna **Menús** lleva una casilla por menú, marcable desde la propia tabla: así se pasa un plato de un menú a otro sin duplicarlo. Desmarcar la última casilla no borra el plato, solo lo deja fuera de los dos menús; para eliminarlo del repertorio está el botón del editor. Al sacarlo de un menú, se quita también de las semanas de ese menú.
 
@@ -165,8 +165,9 @@ revisión, que es donde está el trabajo de verdad:
 - cada uno se abre con **Editar**, que es el mismo editor de la pestaña Platos — tipos, momentos, preparación,
   repetición, plato único, menús e ingredientes — con los platos parecidos arriba del todo por si al verlo
   de cerca prefieres reutilizar uno. Lo que cambies ahí no se guarda: vuelve a la revisión. Si le cambias el
-  nombre, los días que lo citaban lo siguen; si le añades un ingrediente que no tienes, se crea con el menú y
-  aparece abajo para decirle la sección. Los menús que marques plato a plato mandan sobre la casilla del pie;
+  nombre, los días que lo citaban lo siguen; si le añades un ingrediente que no tienes, no se crea en el
+  catálogo todavía sino con el menú, y aparece abajo con la sección que le hayas dado. Los menús que marques
+  plato a plato mandan sobre la casilla del pie;
 - los que no se parecen a nada quedan plegados debajo, contados;
 - **los ingredientes nuevos** salen con la sección del súper que propone el asistente, editable, y avisa si
   alguno roza a uno que ya tienes. Solo se crean los de los platos que de verdad se crean;

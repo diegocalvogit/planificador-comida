@@ -535,6 +535,13 @@
   .carga-dia{display:flex;gap:10px;font-size:12px;padding:3px 0;border-bottom:1px solid var(--line)}
   .carga-dia .fe{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);flex:none;width:62px}
   .carga-dia .pl{color:var(--ink-2);min-width:0}
+  .ing-nueva{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:8px;
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--ground)}
+  .ing-nueva[hidden]{display:none}
+  .ing-nueva .nm{flex:1 1 100%;font-size:12.5px;color:var(--ink-2)}
+  .ing-nueva select{width:auto;flex:1 1 170px}
+  .ing-nueva .btn{flex:none}
+  .combo-crear .cn{color:var(--accent)}
   .grupos{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:6px;margin-top:6px}
   .grupo-row{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:8px;padding:5px 10px;background:var(--ground)}
   .grupo-row .sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
@@ -2743,6 +2750,31 @@
   // "merluza" solo sale en platos de pescado blanco, el tipo está claro; si es
   // "aceite de oliva", que sale en diecisiete platos de todo, no dice nada y se
   // calla. No hace falta ninguna tabla nueva: lo aprende del propio repertorio.
+  // La despensa es el cajón de sastre: lo que no es fresco ni se congela suele
+  // acabar ahí, así que es la apuesta menos mala cuando no hay nada mejor.
+  function seccionPorDefecto(){
+    return SECCIONES.indexOf("Despensa") !== -1 ? "Despensa" : (SECCIONES[0] || "");
+  }
+
+  // De qué sección es algo que aún no está en el catálogo, mirando a los que sí.
+  // "puerro ecológico" comparte palabra con "puerro", que está en la frutería, y
+  // acertar la mayoría de las veces ahorra el desplegable casi siempre.
+  function seccionProbable(nombre){
+    const mias = palabrasDe(nombre);
+    if(!mias.length) return "";
+    let mejor = "", cuantas = 0;
+    ingredientes().forEach(function(x){
+      const suyas = palabrasDe(x.n);
+      const comun = mias.filter(function(w){ return suyas.indexOf(w) !== -1; }).length;
+      // Empatar con uno más corto es mejor señal: "puerro" dice más que
+      // "crema de puerro y calabaza" sobre dónde está el puerro en la tienda.
+      if(comun > cuantas || (comun && comun === cuantas && suyas.length < mias.length)){
+        cuantas = comun; mejor = x.seccion;
+      }
+    });
+    return cuantas ? mejor : "";
+  }
+
   function tiposProbables(ings){
     const todos = repertorio(), voto = {};
     // Cada cuánto sale cada tipo en el recetario entero. Sirve de vara de medir:
@@ -3110,6 +3142,9 @@
                                placeholder:"Escribe para buscar en el catálogo…"});
     const panel = el("div", {class:"combo-lista", hidden:"hidden", role:"listbox"});
     const avisoIng = el("div", {class:"hint"});
+    // Mandar a otra pestaña a por un ingrediente, con el plato a medio escribir,
+    // es perder el plato: se da de alta aquí, que lo único que falta es la sección.
+    const altaIng = el("div", {class:"ing-nueva", hidden:"hidden"});
     let activo = -1, visibles = [];
 
     function pintaChips(){
@@ -3148,10 +3183,14 @@
       visibles = candidatos();
       panel.textContent = "";
       if(!visibles.length){
-        panel.appendChild(el("div", {class:"combo-vacio",
-          text: ini.alCrearIngrediente
-            ? "Nada con «" + eIngs.value.trim() + "». Pulsa Añadir y se creará con el menú."
-            : "Nada en el catálogo con «" + eIngs.value.trim() + "». Créalo en la pestaña Ingredientes."}));
+        const v = eIngs.value.trim();
+        panel.appendChild(v
+          ? el("button", {type:"button", class:"combo-opt combo-crear",
+                          onmousedown:function(e){ e.preventDefault(); ofreceCrear(v); }}, [
+              el("span", {class:"cn", text:"Crear «" + v + "»"}),
+              el("span", {class:"cs", text:"no está en el catálogo"})
+            ])
+          : el("div", {class:"combo-vacio", text:"Escribe para buscar en el catálogo."}));
       }
       visibles.slice(0, 60).forEach(function(x, i){
         panel.appendChild(el("button", {
@@ -3170,29 +3209,56 @@
 
     function elige(n){
       if(elegidos.indexOf(n) === -1) elegidos.push(n);
-      eIngs.value = ""; avisoIng.textContent = "";
+      eIngs.value = ""; avisoIng.textContent = ""; altaIng.hidden = true;
       pintaChips(); activo = -1; pintaPanel(); eIngs.focus();
     }
+
+    // No se crea de un clic: falta decir por dónde se pasa a cogerlo, que es lo
+    // único que la lista de la compra necesita saber de un ingrediente.
+    function ofreceCrear(v){
+      cierra();
+      altaIng.textContent = "";
+      const sel = el("select", {"aria-label":"Sección de " + v});
+      SECCIONES.forEach(function(sec){ sel.appendChild(el("option", {value:sec, text:sec})); });
+      sel.value = seccionProbable(v) || seccionPorDefecto();
+      altaIng.appendChild(el("span", {class:"nm", text:"«" + v + "» es nuevo. ¿En qué parte del súper va?"}));
+      altaIng.appendChild(sel);
+      altaIng.appendChild(el("button", {type:"button", class:"btn btn-sm btn-primary", text:"Crear y añadir",
+        onclick:function(){ creaIng(v, sel.value); }}));
+      altaIng.hidden = false;
+      avisoIng.textContent = "";
+      // El formulario es largo y la fila nace al final: sin esto puede aparecer
+      // fuera de la vista y parecer que el botón no ha hecho nada.
+      if(altaIng.scrollIntoView) altaIng.scrollIntoView({block:"nearest"});
+      sel.focus();
+    }
+
+    function creaIng(v, seccion){
+      // En el cargador el ingrediente todavía no existe para nadie: va al menú que
+      // se está revisando y se creará con él. Fuera de ahí, al catálogo y ya.
+      if(ini.alCrearIngrediente) ini.alCrearIngrediente(v, seccion);
+      else{ estado.ing.extra.push({n:v, seccion:seccion}); guardar(); }
+      elige(v);
+      avisoIng.textContent = ini.alCrearIngrediente
+        ? "«" + v + "» se creará al cargar el menú, en " + seccion + "."
+        : "«" + v + "» añadido al catálogo, en " + seccion + ".";
+      avisoIng.style.color = "var(--ink-3)";
+    }
+
     function añadeIng(){
       if(visibles.length){ elige(visibles[activo >= 0 ? activo : 0].n); return; }
       const v = eIngs.value.trim();
-      // Revisando el menú de la guardería sale a menudo un ingrediente que no
-      // tenías y que el fichero no declaró. Mandar a otra pestaña a por él, con
-      // esta pantalla a medias, es justo lo que hace la revisión tediosa.
-      if(v && ini.alCrearIngrediente){
-        ini.alCrearIngrediente(v);
-        elige(v);
-        avisoIng.textContent = "«" + v + "» se creará al cargar. Dile la sección en la pantalla de atrás.";
-        avisoIng.style.color = "var(--ink-3)";
+      if(!v){
+        avisoIng.textContent = "Escribe para buscar un ingrediente.";
+        avisoIng.style.color = "var(--pimenton)";
         return;
       }
-      avisoIng.textContent = v
-        ? "«" + v + "» no está en el catálogo. Créalo en la pestaña Ingredientes."
-        : "Escribe para buscar un ingrediente.";
-      avisoIng.style.color = "var(--pimenton)";
+      ofreceCrear(v);
     }
 
-    eIngs.addEventListener("input", function(){ activo = -1; avisoIng.textContent = ""; pintaPanel(); });
+    eIngs.addEventListener("input", function(){
+      activo = -1; avisoIng.textContent = ""; altaIng.hidden = true; pintaPanel();
+    });
     eIngs.addEventListener("focus", pintaPanel);
     eIngs.addEventListener("blur", function(){ setTimeout(cierra, 120); });
     eIngs.addEventListener("keydown", function(e){
@@ -3352,6 +3418,7 @@
             el("div", {class:"combo"}, [eIngs, panel]),
             el("button", {type:"button", class:"btn btn-sm", text:"Añadir", onclick:añadeIng})
           ]),
+          altaIng,
           avisoIng
         ])
       ])),
@@ -3702,10 +3769,11 @@
         ingsExtra: ingNuevos.map(function(x){
           return {n:x.ingrediente, seccion:secciones[x.ingrediente] || x.seccion};
         }),
-        alCrearIngrediente:function(n){
+        alCrearIngrediente:function(n, seccion){
+          const sec = seccion || POR_DEFECTO;
+          secciones[n] = sec;
           if(ingNuevos.some(function(x){ return x.ingrediente === n; })) return;
-          ingNuevos.push({ingrediente:n, seccion:POR_DEFECTO});
-          secciones[n] = POR_DEFECTO;
+          ingNuevos.push({ingrediente:n, seccion:sec});
         },
         parecidos: mirados[p.nombre].map(function(x){
           return {n:x.p.n, pista:x.comun.join(", "),
