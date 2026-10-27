@@ -117,6 +117,13 @@ El bloque va **plegado en una línea** con lo que incumple —*Fruta −4 · Lá
 
 El botón **Imprimir** saca la semana entera en **una hoja A4 apaisada**: siete columnas, una por día, sin barras ni botones. Medido sobre seis semanas generadas, la más llena ocupa 674 px de los 733 que caben.
 
+El equilibrio se mide **por menú**: el bloque tiene dos pestañas, *Mesa de casa* y *Niño*, y el resumen
+plegado habla de las dos. Los objetivos son los mismos para los dos — lo que come un niño en una semana no es
+otra cosa que lo que coman sus padres, en menor cantidad — pero las dos semanas no son la misma, sobre todo
+desde que lo de la guardería se carga en vez de derivarse. **Lo que come allí cuenta**: si le dan legumbre
+dos veces, en casa toca menos. Si algún día hicieran falta objetivos distintos para él, es una columna más
+en `equilibrio` y nada más; de momento duplicar diecisiete pares de números iguales no compensa.
+
 Un objetivo que no se cumple se pinta **en rojo**, con una flecha que dice si falta o si se pasa. Los objetivos se cumplen si el repertorio da para ello. Con un solo plato de pasta en el menú de adultos, pedir *2 a 4 comidas con pasta* deja ese objetivo en rojo de
 vez en cuando: no es un fallo del reparto sino que faltan platos de esa clase. Los objetivos se ajustan en **Configuración → Objetivos de equilibrio**: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
@@ -145,14 +152,29 @@ COMIDA
     NIÑO 2º  Croquetas congeladas       ×
 ```
 
+El orden de trabajo es **guardería → niño → mesa**, y los botones de la semana van en ese orden:
+
+1. **Cargar menú guarde** — lo que mandan de allí.
+2. **Completar menú equilibrado niño** — rellena sus huecos vacíos con platos suyos, **sin tocar lo que ya
+   haya**, y persiguiendo los objetivos. Donde la mesa ya tenga algo que él pueda comer, le pone lo mismo:
+   cocinar dos cosas distintas cuando no hace falta no le conviene a nadie.
+3. **Generar menú adulto a partir de niño** — la mesa sale de su semana: su mismo plato si los adultos
+   también lo comen, y si no el más parecido que sí. En los huecos de la guardería no hay nada que copiar
+   — ese día no come en casa — y los rellena el reparto normal.
+4. **Generar menú adulto** — la mesa a secas, sin mirar lo del niño. Es el camino corto cuando no hay
+   menú de guardería que cargar.
+
+*Generar* reemplaza; *Completar* rellena huecos y es idempotente.
+
 Las reglas son dos y no hay más:
 
-- **cambiar un plato de la mesa arrastra al niño** si en ese hueco comía lo mismo. Si tenía platos suyos
-  puestos, se respetan;
-- **al generar, su semana se deriva de la de la casa**: copia lo que puede comer y, para lo que no está en su
-  menú, busca el plato suyo más parecido — misma base, mismos tipos, misma condición de plato único. Esa
-  sustitución no tiene azar, y por eso el programa sabe después si un hueco suyo es una excepción tuya o
-  simplemente lo que le tocaba. Lo que come en la guardería no se toca: lo puso el menú que mandan de allí.
+- **cambiar un plato del niño arrastra a la mesa** si ahí tenía justo su equivalente. Si habías puesto otra
+  cosa a mano, se respeta. El arrastre iba antes al revés, de la mesa al niño; cambió con el orden de
+  trabajo, porque ahora el origen es él;
+- **el equivalente de un plato en el otro menú** es él mismo si también está ahí y, si no, el más parecido
+  que sí esté — misma base, mismos tipos, misma condición de plato único. Esa sustitución no tiene azar, y
+  por eso el programa sabe después si un hueco es una excepción tuya o simplemente lo que tocaba. Vale para
+  los dos sentidos. Lo que come en la guardería no se toca nunca: lo puso el menú que mandan de allí.
 
 ### La guardería
 

@@ -307,6 +307,11 @@
   .balance[open] .balance-cab{border-bottom:1px solid var(--line);margin-bottom:12px}
   .bal-pie{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;
     border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-3)}
+  .bal-quien{display:flex;gap:6px;margin-bottom:11px}
+  .bal-tab{font-size:12.5px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;
+    background:var(--ground);color:var(--ink-2);cursor:pointer}
+  .bal-tab.mal{color:var(--pimenton)}
+  .bal-tab.activo{background:var(--ink);color:var(--surface);border-color:var(--ink)}
   .meters{display:flex;flex-wrap:wrap;gap:8px}
   .meter{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
   .meter .lbl{font-size:13px;color:var(--ink-2)}
@@ -1057,6 +1062,7 @@
     }
     estado.tab = (p.tab === "semana-adultos" || p.tab === "semana-nino") ? "semana" : (p.tab || "semana");
     estado.semana = p.semana || null;
+    estado.balancePerfil = p.balancePerfil === "nino" ? "nino" : "adultos";
     estado.equilibrioAbierto = !!p.equilibrioAbierto;
     estado.despensa = p.despensa && typeof p.despensa === "object" ? p.despensa : {};
     estado.secciones = p.secciones && typeof p.secciones === "object" ? p.secciones : {};
@@ -1103,13 +1109,15 @@
   function guardarPreferencias(){
     try{
       localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
-                                                  equilibrioAbierto:!!estado.equilibrioAbierto}));
+                                                  equilibrioAbierto:!!estado.equilibrioAbierto,
+                                                  balancePerfil:estado.balancePerfil}));
     }catch(e){}
   }
   function guardar(){
     try{
       localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
-                                                  equilibrioAbierto:!!estado.equilibrioAbierto}));
+                                                  equilibrioAbierto:!!estado.equilibrioAbierto,
+                                                  balancePerfil:estado.balancePerfil}));
     }catch(e){}
     persistir();
   }
@@ -1284,18 +1292,18 @@
     return ordenesDe().some(function(o){ return !paraComprar(id, pid, slot + "|" + o); });
   }
 
-  // Lo que le toca al niño cuando en casa se cocina `n`: el mismo plato si está
-  // en su menú y, si no, el más parecido que sí lo esté. Sin azar: el mismo plato
-  // da siempre la misma sustitución, y por eso se puede saber después si un hueco
-  // suyo es una excepción tuya o simplemente lo que le tocaba.
-  function espejoNino(n, momento){
+  // El equivalente de `n` en otro menú: el mismo plato si también está ahí y,
+  // si no, el más parecido que sí esté. Sin azar: el mismo plato da siempre la
+  // misma sustitución, y por eso se puede saber después si un hueco es una
+  // excepción tuya o simplemente lo que le tocaba. Vale para los dos sentidos.
+  function espejo(n, momento, pid){
     if(!n) return "";
-    const suyo = plato("nino", n);
+    const suyo = plato(pid, n);
     if(suyo) return suyo.n;
     const dela = platoPorNombre(n);
     if(!dela) return "";
     const base0 = base(dela), tipos = tiposDe(dela);
-    const cands = platos("nino").filter(function(c){
+    const cands = platos(pid).filter(function(c){
       return elegible(c, momento) && c.rep !== "nunca" && !esGuarde(c);
     });
     if(!cands.length) return "";
@@ -1312,44 +1320,20 @@
     return cands[0].n;
   }
 
-  // La semana del niño sale de la de la casa: copia lo que puede comer y
-  // sustituye lo que no está en su menú. Lo que come en la guardería se queda
-  // como está: lo puso el menú que mandan de allí, y no es nuestro para tocarlo.
-  function derivarSemana(id){
-    const casa = huecos("adultos", id), previo = huecos("nino", id), h = {};
-    slotsDe().forEach(function(slot){
-      const mom = slot.split("|")[1];
-      // Un hueco suyo que dejaste fuera de la compra lo pusiste a mano o lo trajo
-      // el menú de la guardería: en los dos casos sabes tú más que el generador.
-      if(fueraDeCompra(id, "nino", slot)){
-        ordenesDe().forEach(function(o){
-          if(previo[slot + "|" + o]) h[slot + "|" + o] = previo[slot + "|" + o];
-        });
-        return;
-      }
-      ordenesDe().forEach(function(o){
-        const x = espejoNino(casa[slot + "|" + o], mom);
-        if(x) h[slot + "|" + o] = x;
-      });
-      // Si el primero se cayó y el segundo no, el segundo sube.
-      if(!h[slot + "|1"] && h[slot + "|2"]){ h[slot + "|1"] = h[slot + "|2"]; delete h[slot + "|2"]; }
-      // Un plato único no necesita acompañante, y nadie repite dentro del hueco.
-      const p1 = h[slot + "|1"] ? plato("nino", h[slot + "|1"]) : null;
-      if((p1 && p1.unico) || h[slot + "|2"] === h[slot + "|1"]) delete h[slot + "|2"];
-    });
-    fijarHuecos("nino", id, h);
-  }
-
-  // Al cambiar un plato de la casa, el niño le sigue si tenía justo lo que le
-  // tocaba. Si ahí había una excepción suya — o la guardería — no se toca.
-  function sigueNino(id, clave, viejo, nuevo){
-    const hn = huecos("nino", id), mom = clave.split("|")[1];
-    if((hn[clave] || "") !== espejoNino(viejo, mom)) return;
+  // Al cambiar un plato del niño, la mesa le sigue si tenía justo su equivalente.
+  // Si ahí habías puesto otra cosa a mano, no se toca.
+  //
+  // Antes el arrastre iba al revés, de la mesa al niño. Cambió con el orden de
+  // trabajo: ahora se carga la guardería, se completa la semana del niño y de
+  // ella sale la de la mesa. El origen es él.
+  function sigueAdulto(id, clave, viejo, nuevo){
+    const ha = huecos("adultos", id), mom = clave.split("|")[1];
+    if((ha[clave] || "") !== espejo(viejo, mom, "adultos")) return;
     const copia = {};
-    Object.keys(hn).forEach(function(k){ copia[k] = hn[k]; });
-    const ahora = espejoNino(nuevo, mom);
+    Object.keys(ha).forEach(function(k){ copia[k] = ha[k]; });
+    const ahora = espejo(nuevo, mom, "adultos");
     if(ahora) copia[clave] = ahora; else delete copia[clave];
-    fijarHuecos("nino", id, copia);
+    fijarHuecos("adultos", id, copia);
   }
 
   // En cuántos huecos el niño no come lo que hay en la mesa. La guardería va
@@ -1536,9 +1520,16 @@
   /* ============ Generador ============ */
   function elegible(p, mom){ return momentosDe(p).indexOf(mom) !== -1; }
 
-  // Genera la semana de la casa. La del niño se deriva al final.
-  function generar(id){
-    const pid = "adultos";
+  // Reparte el repertorio de un menú por los huecos de una semana, persiguiendo
+  // los objetivos de equilibrio.
+  //
+  // `semilla` son huecos que llegan puestos de antes — lo que trajo el menú de
+  // la guardería, o lo que se copia del otro menú. No se tocan, pero sí cuentan:
+  // si en la guardería le dan legumbre dos veces, en casa toca menos. Un hueco
+  // con algo dentro queda fijo entero; se rellenan solo los que están vacíos.
+  function generar(id, pid, op){
+    pid = pid || "adultos";
+    op = op || {};
     const todos = platos(pid), metas = objetivos(), pf = perfil(pid);
     const h = {}, usados = {}, cuenta = {};
     metas.forEach(function(o){ cuenta[o.n] = 0; });
@@ -1552,14 +1543,23 @@
     IDS_MOMENTO.forEach(function(m){
       APTOS[m] = todos.filter(function(p){ return elegible(p, m); });
     });
-    todos.forEach(function(p){
+    // De todo el repertorio y no solo de este menú: un hueco fijo puede traer un
+    // plato del otro, y si no estuviera aquí no contaría para ningún objetivo.
+    repertorio().forEach(function(p){
       PORNOMBRE[p.n] = p;
       CUBRE[p.n] = metas.map(function(o){ return cumple(p, o) ? 1 : 0; });
     });
 
-    // En la mesa de casa no hay nada decidido de antemano: la guardería es cosa
-    // del niño y entra al derivar su semana.
-    const fijados = {};
+    const fijados = {}, semilla = op.semilla || {};
+    Object.keys(semilla).forEach(function(k){ if(semilla[k]) h[k] = semilla[k]; });
+    SLOTS.forEach(function(slot){
+      if(ORDS.some(function(o){ return !!h[slot + "|" + o]; })) fijados[slot] = 1;
+    });
+    Object.keys(h).forEach(function(k){ usados[h[k]] = 1; });
+    // Lo fijo ya cubre objetivos, y el reparto tiene que saberlo antes de
+    // empezar: si no, volvería a buscar legumbre donde ya la hay.
+    conteo(h).forEach(function(n, i){ cuenta[metas[i].n] = n; });
+
     const orden = SLOTS.filter(function(x){ return !fijados[x]; })
                        .sort(function(){ return Math.random() - 0.5; });
 
@@ -1665,7 +1665,7 @@
         if(!k) break;
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
-        if(fijados[slot] && orden === "1") continue;   // lo de la guardería no se toca
+        if(fijados[slot]) continue;                    // lo que ya estaba puesto no se toca
 
         const actual = h[k] ? PORNOMBRE[h[k]] : null;
         if(h[k] && !actual) continue;                  // un plato que ya no existe
@@ -1756,8 +1756,78 @@
     repasa();
 
     fijarHuecos(pid, id, h);
-    derivarSemana(id);
     return diferencias(id);
+  }
+
+  // Quita repetidos dentro de un hueco y cierra los saltos, que un 3º sin 2º no
+  // se pinta. Hace falta al copiar de un menú a otro: dos platos distintos del
+  // niño pueden tener el mismo equivalente en la mesa.
+  function compacta(h, slot){
+    const vistos = {}, queda = [];
+    ordenesDe().forEach(function(o){
+      const n = h[slot + "|" + o];
+      delete h[slot + "|" + o];
+      if(!n || vistos[n]) return;
+      vistos[n] = 1; queda.push(n);
+    });
+    queda.forEach(function(n, i){ h[slot + "|" + String(i + 1)] = n; });
+  }
+
+  // Completa la semana del niño sin tocar lo que ya tenga — lo de la guardería,
+  // lo que hayas puesto tú — y buscando el equilibrio con el resto. Donde la
+  // mesa ya tenga algo que él pueda comer, lo mismo que la mesa: cocinar dos
+  // cosas distintas cuando no hace falta no le conviene a nadie.
+  function completarNino(id){
+    const hn = huecos("nino", id), ha = huecos("adultos", id), semilla = {};
+    clavesDe().forEach(function(k){ if(hn[k]) semilla[k] = hn[k]; });
+    slotsDe().forEach(function(slot){
+      if(ordenesDe().some(function(o){ return !!semilla[slot + "|" + o]; })) return;
+      ordenesDe().forEach(function(o){
+        const k = slot + "|" + o;
+        if(ha[k] && plato("nino", ha[k])) semilla[k] = ha[k];
+      });
+      compacta(semilla, slot);
+    });
+    return generar(id, "nino", {semilla:semilla});
+  }
+
+  // La mesa, a partir de lo que come el niño: su mismo plato si los adultos
+  // también lo comen, y si no el más parecido que sí. En los huecos de la
+  // guardería no hay nada que copiar — ese día no come en casa — y los rellena
+  // el reparto normal, contando ya lo demás.
+  function adultoDesdeNino(id){
+    const hn = huecos("nino", id), semilla = {};
+    slotsDe().forEach(function(slot){
+      if(fueraDeCompra(id, "nino", slot)) return;
+      const mom = slot.split("|")[1];
+      ordenesDe().forEach(function(o){
+        const x = espejo(hn[slot + "|" + o], mom, "adultos");
+        if(x) semilla[slot + "|" + o] = x;
+      });
+      compacta(semilla, slot);
+      // Un plato único no necesita acompañante.
+      const p1 = semilla[slot + "|1"] ? plato("adultos", semilla[slot + "|1"]) : null;
+      if(p1 && p1.unico && semilla[slot + "|3"]) delete semilla[slot + "|3"];
+    });
+    return generar(id, "adultos", {semilla:semilla});
+  }
+
+  // En cuántas comidas la mesa y el niño tienen exactamente lo mismo. Se cuenta
+  // por hueco y no por plato: lo que se quiere saber es cuántas veces se cocina
+  // una sola cosa, y para eso tienen que coincidir los tres órdenes.
+  function huecosIguales(id){
+    const ha = huecos("adultos", id), hn = huecos("nino", id);
+    return slotsDe().filter(function(slot){
+      if(!ha[slot + "|1"] || !hn[slot + "|1"]) return false;
+      return ordenesDe().every(function(o){
+        return (ha[slot + "|" + o] || "") === (hn[slot + "|" + o] || "");
+      });
+    }).length;
+  }
+
+  function cuantosHuecos(pid, id){
+    const h = huecos(pid, id);
+    return clavesDe().filter(function(k){ return !!h[k]; }).length;
   }
 
   /* ============ Pestañas ============ */
@@ -2424,10 +2494,36 @@
     p.textContent = "";
     p.appendChild(el("div", {class:"section-head"}, [
       el("div", {style:"display:flex;gap:8px;flex-wrap:wrap"}, [
-        el("button", {class:"btn btn-primary", text:"Generar semana",
-          title:"Reparte el repertorio por los huecos que no sean de la guardería",
+        // En el orden en que se usan: primero lo que mandan de la guardería,
+        // luego se completa la semana del niño y de ella sale la de la mesa.
+        el("button", {class:"btn", text:"Cargar menú guarde",
+                      title:"El menú que mandan de la guardería, en el JSON que devuelve el asistente",
+                      onclick:pedirFicheroGuarde}),
+        el("button", {class:"btn", text:"Completar menú equilibrado niño",
+          title:"Rellena los huecos vacíos del niño con sus platos, sin tocar lo que ya haya",
           onclick:function(){
-            const d = generar(semanaActual()); pintarTodo(); avisoGenerada(d);
+            const id = semanaActual(), antes = cuantosHuecos("nino", id);
+            completarNino(id); pintarTodo();
+            aviso("Semana del niño completada: " + (cuantosHuecos("nino", id) - antes) +
+                  " platos nuevos · " + resumenEquilibrio("nino", id));
+          }}),
+        el("button", {class:"btn", text:"Generar menú adulto a partir de niño",
+          title:"La mesa, con los platos del niño o los más parecidos que comáis vosotros",
+          onclick:function(){
+            const id = semanaActual();
+            adultoDesdeNino(id); pintarTodo();
+            aviso("Mesa generada a partir del niño: coméis lo mismo en " +
+                  huecosIguales(id) + " de " + slotsDe().length + " comidas · " +
+                  resumenEquilibrio("adultos", id));
+          }}),
+        el("button", {class:"btn btn-primary", text:"Generar menú adulto",
+          title:"Reparte el repertorio de adultos por la semana, sin mirar lo del niño",
+          onclick:function(){
+            const id = semanaActual();
+            fijarHuecos("adultos", id, {});
+            generar(id, "adultos"); pintarTodo();
+            aviso("Menú de adulto generado: " + etiquetaSemana(desdeIso(id)) +
+                  " · " + resumenEquilibrio("adultos", id));
           }}),
         el("button", {class:"btn", text:"Vaciar",
                       title:"Deja la semana en blanco, los dos menús",
@@ -2438,9 +2534,6 @@
           PERFILES.forEach(function(pf){ delete REP[pf.id].REPO[id]; });
           fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
         }}),
-        el("button", {class:"btn", text:"Cargar guarde\u2026",
-                      title:"El men\u00fa que mandan de la guarder\u00eda, en el JSON que devuelve el asistente",
-                      onclick:pedirFicheroGuarde}),
         el("button", {class:"btn", text:"Imprimir",
                       title:"La semana entera en una hoja apaisada",
                       onclick:function(){ window.print(); }}),
@@ -2469,7 +2562,8 @@
     ]);
     const plegable = el("details", {class:"balance", id:"balance"}, [
       resumen,
-      el("p", {text:"Veces que aparece cada grupo en la mesa de casa, frente al objetivo semanal."}),
+      el("p", {id:"bal-pie-txt", text:""}),
+      el("div", {class:"bal-quien", id:"bal-quien"}),
       el("div", {class:"meters", id:"meters"}),
       // Los objetivos se editaban aquí dentro, y estando bajo la semana abierta
       // parecían suyos. Son los mismos para todas, así que viven en Configuración
@@ -2491,13 +2585,104 @@
     p.appendChild(el("div", {class:"legend", id:"legend"}));
   }
 
-  function avisoGenerada(d){
-    const partes = ["Semana generada" + (objetivosTocados() ? " con tus objetivos" : "") + ": " +
-                    etiquetaSemana(desdeIso(semanaActual()))];
-    if(d.guarde) partes.push(d.guarde + " huecos suyos fuera de la compra");
-    partes.push(d.propias ? "el niño come distinto en " + d.propias + (d.propias === 1 ? " hueco" : " huecos")
-                          : "el niño come lo mismo que vosotros");
-    aviso(partes.join(" · "));
+  // Los objetivos son "veces por semana", así que cuentan comidas y no platos:
+  // una comida con lentejas y pollo cuenta una vez en legumbres y una en carne.
+  //
+  // Se mide por menú. Los objetivos son los mismos para los dos — lo que come un
+  // niño de tres años en una semana no es otra cosa que lo que coman sus padres,
+  // en menor cantidad — pero las dos semanas no son la misma, sobre todo desde
+  // que lo de la guardería se carga y no se deriva. Lo que come allí cuenta: si
+  // le dan legumbre dos veces, en casa toca menos.
+  function cuentaEquilibrio(pid, id){
+    const h = huecos(pid, id), metas = objetivos(), c = {};
+    metas.forEach(function(o){ c[o.n] = 0; });
+    slotsDe().forEach(function(slot){
+      const dentro = platosDe(pid, h, slot);
+      if(!dentro.length) return;
+      metas.forEach(function(o){
+        if(dentro.some(function(p){ return cumple(p, o); })) c[o.n]++;
+      });
+    });
+    return c;
+  }
+
+  // Lo que falla, en corto: "Fruta −4 · Lácteos −3". Un número negativo es lo que
+  // falta para el mínimo; uno positivo, lo que sobra del máximo.
+  function fueraDeRango(pid, id){
+    const c = cuentaEquilibrio(pid, id), falla = [];
+    objetivos().forEach(function(o){
+      if(c[o.n] < o.min) falla.push(o.n + " −" + (o.min - c[o.n]));
+      else if(c[o.n] > o.max) falla.push(o.n + " +" + (c[o.n] - o.max));
+    });
+    return falla;
+  }
+
+  // Cómo ha quedado el equilibrio de ese menú, en corto. Es lo único que de
+  // verdad se quiere saber después de generar.
+  function resumenEquilibrio(pid, id){
+    const falla = fueraDeRango(pid, id);
+    return falla.length ? "fuera de rango: " + falla.join(" · ") : "equilibrio en su sitio";
+  }
+
+  // El resumen habla de los dos menús, porque los dos se comen. Los medidores
+  // enseñan uno cada vez: treinta y cuatro contadores a la vez no los lee nadie.
+  function pintarEquilibrio(id){
+    const metas = objetivos();
+    const quien = estado.balancePerfil === "nino" ? "nino" : "adultos";
+
+    const eco = $("bal-eco");
+    if(eco){
+      const partes = PERFILES.map(function(pf){
+        const f = fueraDeRango(pf.id, id);
+        return (pf.casa ? "casa" : "ni\u00f1o") + ": " + (f.length ? f.join(" \u00b7 ") : "bien");
+      });
+      const malos = PERFILES.filter(function(pf){ return fueraDeRango(pf.id, id).length; }).length;
+      eco.textContent = malos ? partes.join("   \u2014   ") : "todo en su sitio";
+      eco.className = "bal-eco" + (malos ? " mal" : " bien");
+      eco.title = malos ? "Hay grupos fuera de rango" : "Los objetivos, dentro de rango en los dos men\u00fas";
+    }
+
+    const tabs = $("bal-quien");
+    if(tabs){
+      tabs.textContent = "";
+      PERFILES.forEach(function(pf){
+        const f = fueraDeRango(pf.id, id);
+        const b = el("button", {type:"button",
+          class:"bal-tab" + (pf.id === quien ? " activo" : "") + (f.length ? " mal" : ""),
+          text: (pf.casa ? "Mesa de casa" : "Ni\u00f1o") + (f.length ? "  " + f.length : "")});
+        b.addEventListener("click", function(){
+          estado.balancePerfil = pf.id;
+          guardarPreferencias();
+          pintarEquilibrio(id);
+        });
+        tabs.appendChild(b);
+      });
+    }
+
+    const txt = $("bal-pie-txt");
+    if(txt){
+      txt.textContent = "Veces que aparece cada grupo en " +
+        (quien === "adultos" ? "la mesa de casa" : "la semana del ni\u00f1o, la guarder\u00eda incluida") +
+        ", frente al objetivo semanal.";
+    }
+
+    const cuenta = cuentaEquilibrio(quien, id);
+    const metros = $("meters");
+    if(!metros) return;
+    metros.textContent = "";
+    metas.forEach(function(o){
+      const c = cuenta[o.n], corto = c < o.min, pasado = c > o.max;
+      metros.appendChild(el("div", {
+        class:"meter " + (corto || pasado ? "fuera" : "ok"),
+        title: corto ? "Faltan " + (o.min - c) : (pasado ? "Se pasa en " + (c - o.max) : "Dentro del objetivo")
+      }, [
+        el("span", {class:"swatch", style:"background:" + colorDe(claveDe(o.tipos[0]))}),
+        el("span", {class:"lbl", text:o.n}),
+        el("span", {class:"val", text:String(c)}),
+        corto ? el("span", {class:"flecha", text:"\u2193"}) : (pasado ? el("span", {class:"flecha", text:"\u2191"}) : null),
+        el("span", {class:"rng", text:"/ " + o.min + "\u2013" + o.max})
+      ]));
+    });
   }
 
   function pintarObjetivos(){
@@ -2558,48 +2743,7 @@
     $("panel-semana").setAttribute("data-semana", "Menú semanal · " + etiquetaSemana(lunes));
     if(id === hoyId) etiqueta.appendChild(el("span", {class:"now", text:"esta semana"}));
 
-    // Los objetivos son "veces por semana", así que cuentan comidas, no platos:
-    // una comida con lentejas y pollo cuenta una vez en legumbres y una en carne.
-    const metas = objetivos(), cuenta = {};
-    metas.forEach(function(o){ cuenta[o.n] = 0; });
-    slotsDe().forEach(function(slot){
-      const dentro = platosDe("adultos", h, slot);
-      if(!dentro.length) return;
-      metas.forEach(function(o){
-        if(dentro.some(function(p){ return cumple(p, o); })) cuenta[o.n]++;
-      });
-    });
-
-    // Lo que falla, en corto: "Fruta −4 · Lácteos −3". Un número negativo es lo
-    // que falta para el mínimo; uno positivo, lo que sobra del máximo.
-    const falla = [];
-    metas.forEach(function(o){
-      const c = cuenta[o.n];
-      if(c < o.min) falla.push(o.n + " −" + (o.min - c));
-      else if(c > o.max) falla.push(o.n + " +" + (c - o.max));
-    });
-    const eco = $("bal-eco");
-    if(eco){
-      eco.textContent = falla.length ? falla.join(" · ") : "todo en su sitio";
-      eco.className = "bal-eco" + (falla.length ? " mal" : " bien");
-      eco.title = falla.length ? falla.length + (falla.length === 1 ? " grupo fuera de rango" : " grupos fuera de rango")
-                               : "Los diecisiete objetivos, dentro de rango";
-    }
-
-    const metros = $("meters"); metros.textContent = "";
-    metas.forEach(function(o){
-      const c = cuenta[o.n], corto = c < o.min, pasado = c > o.max;
-      metros.appendChild(el("div", {
-        class:"meter " + (corto || pasado ? "fuera" : "ok"),
-        title: corto ? "Faltan " + (o.min - c) : (pasado ? "Se pasa en " + (c - o.max) : "Dentro del objetivo")
-      }, [
-        el("span", {class:"swatch", style:"background:" + colorDe(claveDe(o.tipos[0]))}),
-        el("span", {class:"lbl", text:o.n}),
-        el("span", {class:"val", text:String(c)}),
-        corto ? el("span", {class:"flecha", text:"↓"}) : (pasado ? el("span", {class:"flecha", text:"↑"}) : null),
-        el("span", {class:"rng", text:"/ " + o.min + "–" + o.max})
-      ]));
-    });
+    pintarEquilibrio(id);
 
     const cont = $("week"); cont.textContent = "";
     DIAS.forEach(function(dia, idx){
@@ -2797,7 +2941,7 @@
     if(!quedan.length){
       const casa = huecos("adultos", id);
       ords.forEach(function(o){
-        const x = espejoNino(casa[slot + "|" + o], mom);
+        const x = espejo(casa[slot + "|" + o], mom, "nino");
         if(x) copia[slot + "|" + o] = x;
       });
       const p1 = copia[slot + "|1"] ? plato("nino", copia[slot + "|1"]) : null;
@@ -2904,7 +3048,7 @@
       .map(function(o){ return h[dia + "|" + momento + "|" + o]; }).filter(Boolean);
     const previo = origen[clave] || "";
     // Cambiar un plato de la mesa arrastra al niño, salvo que ahí tuviera lo suyo.
-    const arrastra = function(nuevo){ if(pid === "adultos") sigueNino(id, clave, previo, nuevo); };
+    const arrastra = function(nuevo){ if(pid === "nino") sigueAdulto(id, clave, previo, nuevo); };
     // Estrenar los platos propios del niño: lo elegido sustituye a todo el momento.
     const soloEste = !!(opciones && opciones.soloEste);
     const limpia = function(){
