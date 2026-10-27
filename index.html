@@ -344,7 +344,9 @@
     border-left:2px solid var(--accent);padding-left:9px}
   .obj-nueva{grid-column:1/-1;margin-top:11px;border-style:dashed}
   .obj-mas{display:block;padding:9px 12px;font-size:13px;font-weight:600;color:var(--accent-ink)}
-  .obj-row{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--ground)}
+  .obj-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px solid var(--line);
+    border-radius:8px;padding:6px 10px;background:var(--ground)}
+  .obj-row .name{flex:1 1 90px}
   .obj-row .swatch{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--veil)}
   .obj-row .name{flex:1 1 auto;font-size:13px;min-width:0}
   .obj-row input{width:48px;padding:3px 6px;text-align:center;font-family:"IBM Plex Mono",monospace;
@@ -1227,6 +1229,13 @@
              propia: !!r.propia };
   }
 
+  // Una regla que dice algo distinto de lo normal: un momento concreto, cada
+  // día, platos en vez de comidas, o un solo menú. Son las específicas, las que
+  // se tocan, y por eso van delante.
+  function reglaEspecifica(r){
+    return !!(r.moms.length || r.ambito === "dia" || r.cuenta === "platos" || r.perfil !== "ambos");
+  }
+
   // La regla en una frase, que es como se entiende y como se edita.
   function fraseRegla(r){
     const partes = [r.min === r.max ? String(r.min) : r.min + " a " + r.max,
@@ -1257,6 +1266,9 @@
       salida.push(a ? reglaDe(Object.assign({}, o, a, {n:o.n})) : o);
     });
     (estado.reglasExtra || []).forEach(function(r){ salida.push(reglaDe(r)); });
+    // Las específicas primero. Entre las de su grupo mandan el orden de la tabla,
+    // y sort() es estable, así que basta con ordenar por esa sola condición.
+    salida.sort(function(a, b){ return (reglaEspecifica(b) ? 1 : 0) - (reglaEspecifica(a) ? 1 : 0); });
     if(!pid) return salida;
     return salida.filter(function(r){ return r.perfil === "ambos" || r.perfil === pid; });
   }

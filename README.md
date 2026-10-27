@@ -151,7 +151,10 @@ El generador persigue todas igual: el desvío que minimiza es la suma de lo que 
 cubo de cada regla, y una regla semanal tiene un cubo mientras que una diaria tiene siete.
 
 Las reglas se ajustan en **Configuración → Reglas de equilibrio**, cada una desplegable, con la frase escrita
-debajo mientras la editas, y un *Añadir una regla* al final: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
+debajo mientras la editas, y un *Añadir una regla* al final. **Las específicas van primero** — las que
+nombran un momento, van por día, cuentan platos o apuntan a un solo menú — porque son las que se tocan; las
+diecisiete genéricas, que casi nunca cambian, quedan detrás. Cada una lleva debajo del nombre una línea gris
+con lo que tiene de particular, del tipo `Merienda · cada día · platos`: un mínimo y un máximo por grupo, y *Volver a los valores del documento* deshace los cambios. Están ahí y no en la pestaña Semana porque **no son de una semana**: son los mismos para todas, y debajo de la semana abierta parecían suyos. La Semana enseña cómo va la semana abierta frente a ellos, y lleva un botón a Configuración. Por defecto valen los del documento, es decir, la semana que sale de fábrica ya está equilibrada.
 
 **El plato que falta se da de alta ahí mismo.** En el buscador del selector se escribe `Nombre del plato; ingrediente, ingrediente` y aparece un botón *Crear plato*. Si algún ingrediente no está en el catálogo, primero pregunta en qué parte del súper va. Después abre el editor con el nombre, los ingredientes y el momento del hueco ya puestos, y con **los tipos de alimento propuestos**: los deduce de los platos que ya usan esos ingredientes, quedándose con los ingredientes específicos —el aceite de oliva, que está en diecisiete platos, no opina— y con los tipos que destacan sobre su frecuencia normal. Solo hay que repasar la propuesta y guardar; el plato queda creado y puesto en el hueco.
 
