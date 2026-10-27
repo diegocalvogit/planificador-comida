@@ -233,6 +233,56 @@ window.CASOS = [
   }
 },
 
+/* ───────── Ventanas ───────── */
+{
+  // Cazaría: la de ingredientes, que durante meses no cerró con Escape porque
+  // era la única de las cinco copias a la que se le olvidó el manejador.
+  nombre: "Las cinco ventanas abren, apilan y cierran con Escape",
+  correr: function(app, banco, t, w){
+    const d = w.document;
+    const capas = function(){ return d.querySelectorAll(".overlay").length; };
+    const esc = function(){ d.dispatchEvent(new w.KeyboardEvent("keydown", {key:"Escape"})); };
+
+    const abrir = {
+      "ingrediente": function(){ app.abrirIngrediente(app.ingredientes()[0]); },
+      "selector":    function(){ app.abrirSelector("adultos", "lunes", "comida", "1"); },
+      "editor":      function(){ app.abrirEditor(null, app.ambito("platos"), {}); },
+      "pasos":       function(){ app.abrirPasos(app.platosConReceta()[0]); }
+    };
+    Object.keys(abrir).forEach(function(nombre){
+      t.igual(capas(), 0, "antes de abrir «" + nombre + "» no hay ninguna");
+      abrir[nombre]();
+      t.igual(capas(), 1, "«" + nombre + "» abre una");
+      esc();
+      t.igual(capas(), 0, "«" + nombre + "» cierra con Escape");
+    });
+
+    // Apiladas: Escape cierra la de arriba y deja la de abajo.
+    abrir.selector();
+    abrir.editor();
+    t.igual(capas(), 2, "dos a la vez");
+    esc();
+    t.igual(capas(), 1, "Escape cierra solo la de arriba");
+    esc();
+    t.igual(capas(), 0, "y luego la otra");
+  }
+},
+{
+  nombre: "Soltar el ratón fuera tras seleccionar dentro no cierra la ventana",
+  correr: function(app, banco, t, w){
+    const d = w.document;
+    app.abrirEditor(null, app.ambito("platos"), {});
+    const capa = d.querySelector(".overlay");
+    const caja = capa.querySelector(".editor");
+    // Empieza dentro y acaba fuera: el click cae en el fondo, el mousedown no.
+    caja.dispatchEvent(new w.MouseEvent("mousedown", {bubbles:true}));
+    capa.dispatchEvent(new w.MouseEvent("click", {bubbles:true}));
+    t.igual(d.querySelectorAll(".overlay").length, 1, "sigue abierta");
+    capa.dispatchEvent(new w.MouseEvent("mousedown", {bubbles:true}));
+    t.igual(d.querySelectorAll(".overlay").length, 0, "y un mousedown en el fondo sí la cierra");
+  }
+},
+
 /* ───────── Espejo entre menús ───────── */
 {
   nombre: "El espejo es determinista y respeta el menú de destino",

@@ -1936,6 +1936,38 @@
     return clavesDe().filter(function(k){ return !!h[k]; }).length;
   }
 
+  /* ============ Ventanas ============ */
+  // Había cinco copias de esto, una por ventana, y no se portaban igual: la de
+  // ingredientes no cerraba con Escape y la del cargador llevaba un caso
+  // especial para no cerrarse cuando tenía el editor encima. Con una pila, lo
+  // de "Escape cierra la de arriba" sale solo, y la sexta ventana que haga
+  // falta no tiene que volver a inventarlo.
+  const CAPAS = [];
+
+  function abrirCapa(caja, foco){
+    const capa = el("div", {class:"overlay" + (CAPAS.length ? " sobre" : "")}, [caja]);
+    // En el mousedown y no en el click: si empiezas a seleccionar texto dentro
+    // y sueltas el botón fuera, el click cae en el fondo y te cerraba la
+    // ventana con todo lo que llevaras escrito.
+    capa.addEventListener("mousedown", function(e){
+      if(e.target === capa) cerrarCapa(capa);
+    });
+    CAPAS.push(capa);
+    if(CAPAS.length === 1) document.addEventListener("keydown", escCapa);
+    document.body.appendChild(capa);
+    if(foco && foco.focus) foco.focus();
+    return capa;
+  }
+
+  // Sin argumento cierra la de arriba; con uno, esa misma esté donde esté.
+  function cerrarCapa(cual){
+    const i = cual ? CAPAS.indexOf(cual) : CAPAS.length - 1;
+    if(i < 0) return;
+    CAPAS.splice(i, 1)[0].remove();
+    if(!CAPAS.length) document.removeEventListener("keydown", escCapa);
+  }
+  function escCapa(e){ if(e.key === "Escape") cerrarCapa(); }
+
   /* ============ Pestañas ============ */
   const PESTANAS = [
     {id:"platos",         lbl:"Platos"},
@@ -2491,7 +2523,7 @@
   }
 
   let capaIng = null;
-  function cerrarIngrediente(){ if(capaIng){ capaIng.remove(); capaIng = null; } }
+  function cerrarIngrediente(){ if(capaIng){ cerrarCapa(capaIng); capaIng = null; } }
 
   function abrirIngrediente(x){
     cerrarIngrediente();
@@ -2561,8 +2593,7 @@
       ]),
       el("footer", null, pie)
     ]);
-    capaIng = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaIng) cerrarIngrediente(); }}, [caja]);
-    document.body.appendChild(capaIng);
+    capaIng = abrirCapa(caja);
     eNom.focus();
   }
 
@@ -3135,9 +3166,8 @@
   /* ============ Selector de plato ============ */
   let capa = null;
   function cerrarSelector(){
-    if(capa){ capa.remove(); capa = null; document.removeEventListener("keydown", escSelector); }
+    if(capa){ cerrarCapa(capa); capa = null; }
   }
-  function escSelector(e){ if(e.key === "Escape") cerrarSelector(); }
 
   function abrirSelector(pid, dia, momento, orden, opciones){
     cerrarSelector();
@@ -3284,10 +3314,7 @@
       ])
     ]);
 
-    capa = el("div", {class:"overlay", onclick:function(e){ if(e.target === capa) cerrarSelector(); }}, [caja]);
-    document.body.appendChild(capa);
-    document.addEventListener("keydown", escSelector);
-    buscar.focus();
+    capa = abrirCapa(caja, buscar);
   }
 
   // Da de alta el plato que acabas de escribir. Si trae ingredientes que no están
@@ -3352,9 +3379,8 @@
   /* ============ Editor de platos  /* ============ Editor de platos ============ */
   let capaEditor = null;
   function cerrarEditor(){
-    if(capaEditor){ capaEditor.remove(); capaEditor = null; document.removeEventListener("keydown", escEditor); }
+    if(capaEditor){ cerrarCapa(capaEditor); capaEditor = null; }
   }
-  function escEditor(e){ if(e.key === "Escape") cerrarEditor(); }
 
   function campo(etiqueta, control, ancho){
     return el("div", {class:"field" + (ancho ? " full" : "")}, [
@@ -3738,10 +3764,7 @@
       el("footer", null, pie)
     ]);
 
-    capaEditor = el("div", {class:"overlay sobre", onclick:function(e){ if(e.target === capaEditor) cerrarEditor(); }}, [caja]);
-    document.body.appendChild(capaEditor);
-    document.addEventListener("keydown", escEditor);
-    eNombre.focus();
+    capaEditor = abrirCapa(caja, eNombre);
   }
 
   /* ============ Cargar el menú de la guardería ============ */
@@ -3891,9 +3914,8 @@
   /* ============ La pantalla de revisión ============ */
   let capaGuarde = null;
   function cerrarGuarde(){
-    if(capaGuarde){ capaGuarde.remove(); capaGuarde = null; document.removeEventListener("keydown", escGuarde); }
+    if(capaGuarde){ cerrarCapa(capaGuarde); capaGuarde = null; }
   }
-  function escGuarde(e){ if(e.key === "Escape" && !capaEditor) cerrarGuarde(); }
 
   function abrirGuarde(g, nombreFichero){
     cerrarGuarde();
@@ -4183,9 +4205,7 @@
     ]);
     pinta();
 
-    capaGuarde = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaGuarde) cerrarGuarde(); }}, [caja]);
-    document.body.appendChild(capaGuarde);
-    document.addEventListener("keydown", escGuarde);
+    capaGuarde = abrirCapa(caja);
   }
 
   function mesLargo(m){
@@ -4739,7 +4759,9 @@
         palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
         semanaActual:semanaActual, irASemana:irASemana, verTab:verTab,
         guardar:guardar, persistir:persistir, pintarTodo:pintarTodo,
-        copiaEntera:copiaEntera, revisaCopia:revisaCopia, restaurarCopia:restaurarCopia
+        copiaEntera:copiaEntera, revisaCopia:revisaCopia, restaurarCopia:restaurarCopia,
+        abrirEditor:abrirEditor, abrirSelector:abrirSelector, abrirPasos:abrirPasos,
+        abrirIngrediente:abrirIngrediente, ambito:ambito, CAPAS:CAPAS
       };
     }
   }
@@ -4984,9 +5006,8 @@
   // evita un editor de listas con sus botones de subir y bajar.
   let capaPasos = null;
   function cerrarPasos(){
-    if(capaPasos){ capaPasos.remove(); capaPasos = null; document.removeEventListener("keydown", escPasos); }
+    if(capaPasos){ cerrarCapa(capaPasos); capaPasos = null; }
   }
-  function escPasos(e){ if(e.key === "Escape") cerrarPasos(); }
 
   function abrirPasos(p){
     cerrarPasos();
@@ -5024,10 +5045,7 @@
       ])
     ]);
 
-    capaPasos = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaPasos) cerrarPasos(); }}, [caja]);
-    document.body.appendChild(capaPasos);
-    document.addEventListener("keydown", escPasos);
-    area.focus();
+    capaPasos = abrirCapa(caja, area);
   }
 
   /* ============ Copias de seguridad ============ */

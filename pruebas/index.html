@@ -114,7 +114,7 @@
       let entorno = null, error = null;
       try{
         entorno = await arrancarApp();
-        await caso.correr(entorno.app, entorno.banco, comprobador());
+        await caso.correr(entorno.app, entorno.banco, comprobador(), entorno.ventana);
       }catch(e){
         error = e;
       }finally{
