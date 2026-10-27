@@ -507,10 +507,11 @@
   .carga-mal ul{margin:8px 0 6px 18px;font-size:12.5px;line-height:1.55}
   .gp{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--ground)}
   .gp-fuera{opacity:.62}
-  .gp-cab{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
-  .gp-cab strong{font-size:13.5px}
+  .gp-cab{display:flex;align-items:center;gap:10px}
+  .gp-cab strong{font-size:13.5px;flex:1 1 auto;min-width:0}
+  .gp-cab .btn{flex:none}
   .gp-estado{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.05em;
-    text-transform:uppercase;color:var(--ink-3);flex:none}
+    text-transform:uppercase;color:var(--ink-3);flex:none;margin-left:auto}
   .gp-fuera .gp-estado{color:var(--accent)}
   .gp-meta{font-size:11.5px;color:var(--ink-2);margin-top:3px}
   .gp-ings{font-size:12px;color:var(--ink-3);margin-top:4px}
@@ -575,6 +576,7 @@
     border-radius:8px;padding:9px 11px}
   .overlay{position:fixed;inset:0;background:rgba(10,16,24,.5);z-index:100;display:flex;align-items:flex-end;justify-content:center}
   @media (min-width:640px){ .overlay{align-items:center;padding:24px} }
+  .overlay.sobre{z-index:110}
   .picker{background:var(--surface);width:100%;max-width:560px;max-height:86vh;display:flex;flex-direction:column;
     border:1px solid var(--line);border-radius:14px 14px 0 0;box-shadow:0 20px 60px -20px rgba(0,0,0,.5)}
   @media (min-width:640px){ .picker{border-radius:14px} }
@@ -3027,10 +3029,16 @@
   // "a" es la pestaña desde la que se abre (decide los momentos por defecto).
   // "ini" trae valores de partida y un aviso para cuando se guarde, que es lo que
   // usa el alta rápida desde el selector de la semana.
+  // ini.enVezDeGuardar convierte el editor en un formulario a secas: valida y
+  // devuelve los campos en vez de tocar el repertorio. Lo usa el cargador de la
+  // guardería, donde los platos se revisan antes de existir. Reutilizarlo entero
+  // importa: un segundo editor parecido pero distinto acaba divergiendo, y los
+  // tipos, los momentos y el buscador de ingredientes ya están resueltos aquí.
   function abrirEditor(ref, a, ini){
     cerrarEditor();
     ini = ini || {};
     const nuevo = !ref;
+    const suelto = !!ini.enVezDeGuardar;
     let p = null;
     if(ref && ref.tipo === "base") p = repertorio().filter(function(x){ return x.orig === ref.orig; })[0];
     else if(ref && ref.tipo === "extra") p = estado.platos.extra.filter(function(x){ return x.uid === ref.uid; })[0];
@@ -3038,7 +3046,7 @@
     const nombreAntes = p ? p.n : "";
 
     const eNombre = el("input", {type:"text", id:"e-nombre", value: p ? p.n : (ini.n || ""), placeholder:"Merluza al horno con patata"});
-    const eDesc   = el("input", {type:"text", id:"e-desc", value: p ? p.d : "", placeholder:"Lomos de merluza con patata y cebolla."});
+    const eDesc   = el("input", {type:"text", id:"e-desc", value: p ? p.d : (ini.d || ""), placeholder:"Lomos de merluza con patata y cebolla."});
     const tActuales = p ? tiposDe(p) : (ini.t || []);
     const tGrid = el("div", {class:"tipos-grid"});
     TIPOS.forEach(function(t){
@@ -3079,15 +3087,18 @@
     const menusGrid = el("div", {class:"menus-grid"});
     PERFILES.forEach(function(pf){
       const cb = el("input", {type:"checkbox", id:"e-menu-" + pf.id, "aria-label":"Entra en el menú " + pf.quien});
-      cb.checked = p ? !!(p.menus && p.menus[pf.id]) : true;
+      cb.checked = p ? !!(p.menus && p.menus[pf.id])
+                     : (ini.menus ? !!ini.menus[pf.id] : true);
       eMenus[pf.id] = cb;
       menusGrid.appendChild(el("label", {class:"tipo-row"}, [cb, el("span", {class:"nm", text:pf.lbl})]));
     });
-    const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : "medio");
-    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional","nunca"], p ? p.rep : "media");
+    const eTiempo = selectDe("e-tiempo", ["bajo","medio","alto"], p ? p.tiempo : (ini.tiempo || "medio"));
+    const eRep    = selectDe("e-repeticion", ["siempre","alta","media","baja","ocasional","nunca"],
+                             p ? p.rep : (ini.rep || "media"));
+    const unicoIni = p ? !!p.unico : !!ini.unico;
     const eUnico  = el("select", {id:"e-unico"}, [
-      el("option", {value:"si", text:"Sí, basta él solo", selected: p && p.unico ? "selected" : null}),
-      el("option", {value:"no", text:"No, lleva acompañante", selected: !p || !p.unico ? "selected" : null})
+      el("option", {value:"si", text:"Sí, basta él solo", selected: unicoIni ? "selected" : null}),
+      el("option", {value:"no", text:"No, lleva acompañante", selected: !unicoIni ? "selected" : null})
     ]);
 
 
@@ -3118,7 +3129,12 @@
 
     function candidatos(){
       const q = sinTildes(eIngs.value.trim());
-      return ingredientes()
+      // Los que trae el fichero de la guardería aún no están en el catálogo, pero
+      // se van a crear con él: en este editor cuentan como si ya estuvieran.
+      const hay = {};
+      const todos = ingredientes().map(function(x){ hay[x.n] = 1; return x; });
+      (ini.ingsExtra || []).forEach(function(x){ if(!hay[x.n]) todos.push(x); });
+      return todos
         .filter(function(x){ return elegidos.indexOf(x.n) === -1; })
         .filter(function(x){ return !q || sinTildes(x.n).indexOf(q) !== -1; })
         .sort(function(a, b){
@@ -3133,7 +3149,9 @@
       panel.textContent = "";
       if(!visibles.length){
         panel.appendChild(el("div", {class:"combo-vacio",
-          text:"Nada en el catálogo con «" + eIngs.value.trim() + "». Créalo en la pestaña Ingredientes."}));
+          text: ini.alCrearIngrediente
+            ? "Nada con «" + eIngs.value.trim() + "». Pulsa Añadir y se creará con el menú."
+            : "Nada en el catálogo con «" + eIngs.value.trim() + "». Créalo en la pestaña Ingredientes."}));
       }
       visibles.slice(0, 60).forEach(function(x, i){
         panel.appendChild(el("button", {
@@ -3158,6 +3176,16 @@
     function añadeIng(){
       if(visibles.length){ elige(visibles[activo >= 0 ? activo : 0].n); return; }
       const v = eIngs.value.trim();
+      // Revisando el menú de la guardería sale a menudo un ingrediente que no
+      // tenías y que el fichero no declaró. Mandar a otra pestaña a por él, con
+      // esta pantalla a medias, es justo lo que hace la revisión tediosa.
+      if(v && ini.alCrearIngrediente){
+        ini.alCrearIngrediente(v);
+        elige(v);
+        avisoIng.textContent = "«" + v + "» se creará al cargar. Dile la sección en la pantalla de atrás.";
+        avisoIng.style.color = "var(--ink-3)";
+        return;
+      }
       avisoIng.textContent = v
         ? "«" + v + "» no está en el catálogo. Créalo en la pestaña Ingredientes."
         : "Escribe para buscar un ingrediente.";
@@ -3211,11 +3239,17 @@
     }
     pie.push(el("div", {class:"der"}, [
       el("button", {class:"btn", text:"Cancelar", onclick:cerrarEditor}),
-      el("button", {class:"btn btn-primary", text: nuevo ? "Añadir al repertorio" : "Guardar cambios", onclick:function(){
+      el("button", {class:"btn btn-primary",
+                    text: suelto ? "Guardar" : (nuevo ? "Añadir al repertorio" : "Guardar cambios"),
+                    onclick:function(){
         const n = eNombre.value.trim(), ings = elegidos.slice();
         if(!n){ aviso("Ponle nombre al plato"); eNombre.focus(); return; }
         const choque = platoPorNombre(n);
-        if(choque && choque.n !== nombreAntes){ aviso("Ya hay otro plato llamado así"); eNombre.focus(); return; }
+        if(choque && choque.n !== nombreAntes){
+          aviso(suelto ? "Ya tienes un plato llamado así: usándolo te ahorras crear este"
+                       : "Ya hay otro plato llamado así");
+          eNombre.focus(); return;
+        }
         const menus = {adultos:eMenus.adultos.checked, nino:eMenus.nino.checked};
         if(!menus.adultos && !menus.nino){ aviso("Marca al menos un menú"); return; }
 
@@ -3240,6 +3274,9 @@
           m: momsMarcados, tiempo: eTiempo.value, rep: eRep.value, unico: eUnico.value === "si",
           menus: menus, i: ings
         };
+        // En modo suelto no hay repertorio que tocar: los campos vuelven a quien
+        // abrió el editor y allí se decide qué hacer con ellos.
+        if(suelto){ cerrarEditor(); ini.enVezDeGuardar(campos); return; }
         if(nuevo){
           campos.uid = "x" + Date.now().toString(36);
           campos.custom = true;
@@ -3258,7 +3295,26 @@
       }})
     ]));
 
-    const cabeza = [el("h3", {text: nuevo ? ((a && a.nuevo) || "Nuevo plato") : "Editar plato"})];
+    // Los platos que se le parecen, aquí mismo: la decisión de crear o reutilizar
+    // se toma mirando los campos, no antes de verlos.
+    const bloqueParecidos = [];
+    if((ini.parecidos || []).length){
+      const fila = el("div", {class:"gp-par"}, []);
+      ini.parecidos.forEach(function(x){
+        fila.appendChild(el("button", {type:"button", class:"gp-otro", text:x.n,
+          title: x.pista ? "Comparten: " + x.pista : "",
+          onclick:function(){ cerrarEditor(); x.usar(); }}));
+      });
+      bloqueParecidos.push(el("div", {class:"full"}, [
+        el("label", {class:"bloque-lbl", text:"Ya tienes platos parecidos"}),
+        el("p", {class:"hint", style:"margin:-2px 0 7px",
+                 text:"Si es el mismo con otro nombre, púlsalo y se usará ese en vez de crear este."}),
+        fila
+      ]));
+    }
+
+    const cabeza = [el("h3", {text: suelto ? (ini.titulo || "Plato del menú")
+                                           : (nuevo ? ((a && a.nuevo) || "Nuevo plato") : "Editar plato")})];
     if(!nuevo){
       cabeza.push(el("span", {
         class:"badge " + (p.custom ? "local" : (p.editado ? "mod" : "repo")),
@@ -3269,7 +3325,7 @@
     const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true",
                             "aria-label": nuevo ? "Nuevo plato" : "Editar " + p.n}, [
       el("header", null, cabeza),
-      el("div", {class:"editor-body"}, [
+      el("div", {class:"editor-body"}, bloqueParecidos.concat([
         campo("Nombre del plato", eNombre, true),
         campo("Descripción", eDesc, true),
         el("div", {class:"full"}, [
@@ -3298,11 +3354,11 @@
           ]),
           avisoIng
         ])
-      ]),
+      ])),
       el("footer", null, pie)
     ]);
 
-    capaEditor = el("div", {class:"overlay", onclick:function(e){ if(e.target === capaEditor) cerrarEditor(); }}, [caja]);
+    capaEditor = el("div", {class:"overlay sobre", onclick:function(e){ if(e.target === capaEditor) cerrarEditor(); }}, [caja]);
     document.body.appendChild(capaEditor);
     document.addEventListener("keydown", escEditor);
     eNombre.focus();
@@ -3457,14 +3513,19 @@
   function cerrarGuarde(){
     if(capaGuarde){ capaGuarde.remove(); capaGuarde = null; document.removeEventListener("keydown", escGuarde); }
   }
-  function escGuarde(e){ if(e.key === "Escape") cerrarGuarde(); }
+  function escGuarde(e){ if(e.key === "Escape" && !capaEditor) cerrarGuarde(); }
 
   function abrirGuarde(g, nombreFichero){
     cerrarGuarde();
-    const errores = revisaGuarde(g);
-    const nuevos = Array.isArray(g.platos_nuevos) ? g.platos_nuevos : [];
-    const ingNuevos = Array.isArray(g.ingredientes_nuevos) ? g.ingredientes_nuevos : [];
-    const dias = Array.isArray(g.dias) ? g.dias : [];
+    // Lo que se revisa es el propio fichero, editado en el sitio: así el editor,
+    // las sustituciones y la validación miran todos la misma copia y no hay dos
+    // versiones del menú que puedan separarse.
+    if(!Array.isArray(g.platos_nuevos)) g.platos_nuevos = [];
+    if(!Array.isArray(g.ingredientes_nuevos)) g.ingredientes_nuevos = [];
+    if(!Array.isArray(g.dias)) g.dias = [];
+    const nuevos = g.platos_nuevos, ingNuevos = g.ingredientes_nuevos, dias = g.dias;
+    let errores = revisaGuarde(g);
+    const POR_DEFECTO = SECCIONES.indexOf("Despensa") !== -1 ? "Despensa" : (SECCIONES[0] || "");
 
     // El plan: qué se hace con cada plato nuevo. Empieza en "crear" salvo que
     // el nombre ya esté cogido, que entonces no hay nada que decidir.
@@ -3496,6 +3557,7 @@
 
     function pinta(){
       cuerpo.textContent = "";
+      errores = revisaGuarde(g);
 
       if(errores.length){
         cuerpo.appendChild(el("div", {class:"carga-mal"}, [
@@ -3591,10 +3653,16 @@
     function ficha(p){
       const usado = sust[p.nombre];
       const caja = el("div", {class:"gp" + (usado ? " gp-fuera" : "")});
-      caja.appendChild(el("div", {class:"gp-cab"}, [
+      const cab = el("div", {class:"gp-cab"}, [
         el("strong", {text:p.nombre}),
         el("span", {class:"gp-estado", text: usado ? "usas «" + usado + "»" : "se crea"})
-      ]));
+      ]);
+      if(!usado){
+        cab.appendChild(el("button", {type:"button", class:"btn btn-sm", text:"Editar",
+          title:"Ajustar tipos, momentos, ingredientes… antes de crearlo",
+          onclick:function(){ editaFicha(p); }}));
+      }
+      caja.appendChild(cab);
       caja.appendChild(el("div", {class:"gp-meta",
         text:(p.tipo || []).join(" · ") + "  ·  " + (p.momento || []).map(function(m){ return MOMENTO_LBL[m] || m; }).join(", ") +
              (p.plato_unico ? "  ·  basta él solo" : "")}));
@@ -3619,6 +3687,54 @@
         caja.appendChild(fila);
       }
       return caja;
+    }
+
+    // El mismo editor de la pestaña Platos, pero devolviendo los campos en vez
+    // de guardarlos: el plato todavía no existe y no debe existir hasta cargar.
+    function editaFicha(p){
+      abrirEditor(null, ambito("platos"), {
+        titulo:"Plato del menú de la guardería",
+        n:p.nombre, d:p.descripcion || "",
+        t:(p.tipo || []).slice(), m:(p.momento || []).slice(),
+        tiempo:p.tiempo, rep:p.repeticion, unico:!!p.plato_unico,
+        menus: p.menus || {adultos:alAdulto.checked, nino:true},
+        i:(p.ingredientes || []).slice(),
+        ingsExtra: ingNuevos.map(function(x){
+          return {n:x.ingrediente, seccion:secciones[x.ingrediente] || x.seccion};
+        }),
+        alCrearIngrediente:function(n){
+          if(ingNuevos.some(function(x){ return x.ingrediente === n; })) return;
+          ingNuevos.push({ingrediente:n, seccion:POR_DEFECTO});
+          secciones[n] = POR_DEFECTO;
+        },
+        parecidos: mirados[p.nombre].map(function(x){
+          return {n:x.p.n, pista:x.comun.join(", "),
+                  usar:function(){ sust[p.nombre] = x.p.n; pinta(); }};
+        }),
+        enVezDeGuardar:function(c){
+          const viejo = p.nombre;
+          p.nombre = c.n; p.descripcion = c.d; p.tipo = c.t; p.momento = c.m;
+          p.tiempo = c.tiempo; p.repeticion = c.rep; p.plato_unico = c.unico;
+          p.ingredientes = c.i;
+          // Lo que marques aquí manda sobre la casilla del pie, que es solo el
+          // valor de partida para los que no has tocado.
+          p.menus = c.menus;
+          if(c.n !== viejo){
+            // El menú cita los platos por su nombre: si cambia, hay que seguirlo
+            // por los días y por todo lo que estaba indexado con el anterior.
+            dias.forEach(function(d){
+              IDS_MOMENTO.forEach(function(m){
+                if(d[m]) d[m] = d[m].map(function(x){ return x === viejo ? c.n : x; });
+              });
+            });
+            if(sust[viejo]){ sust[c.n] = sust[viejo]; delete sust[viejo]; }
+            mirados[c.n] = parecidos(c.n, delRepertorio, peso);
+            delete mirados[viejo];
+          }
+          pinta();
+          aviso("«" + c.n + "» ajustado. Se creará así al cargar.");
+        }
+      });
     }
 
     const alAdulto = el("input", {type:"checkbox", id:"carga-adultos"});
@@ -3707,7 +3823,7 @@
         tiempo:p.tiempo || "medio",
         rep:p.repeticion || "media",
         unico:!!p.plato_unico,
-        menus:{adultos:!!plan.adultos, nino:true},
+        menus: p.menus || {adultos:!!plan.adultos, nino:true},
         i:(p.ingredientes || []).slice()
       });
       hayPlato[p.nombre] = 1;

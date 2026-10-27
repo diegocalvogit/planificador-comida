@@ -162,6 +162,11 @@ revisión, que es donde está el trabajo de verdad:
   se mide por palabras del nombre, pesadas por lo que distinguen: *carne* está en veinte platos y no dice nada,
   *carbonara* está en uno y lo dice todo. Pulsar el plato que ya tienes lo usa en su lugar — no se crea el
   nuevo, y todos los días que lo mencionaban pasan a apuntar al tuyo;
+- cada uno se abre con **Editar**, que es el mismo editor de la pestaña Platos — tipos, momentos, preparación,
+  repetición, plato único, menús e ingredientes — con los platos parecidos arriba del todo por si al verlo
+  de cerca prefieres reutilizar uno. Lo que cambies ahí no se guarda: vuelve a la revisión. Si le cambias el
+  nombre, los días que lo citaban lo siguen; si le añades un ingrediente que no tienes, se crea con el menú y
+  aparece abajo para decirle la sección. Los menús que marques plato a plato mandan sobre la casilla del pie;
 - los que no se parecen a nada quedan plegados debajo, contados;
 - **los ingredientes nuevos** salen con la sección del súper que propone el asistente, editable, y avisa si
   alguno roza a uno que ya tienes. Solo se crean los de los platos que de verdad se crean;
