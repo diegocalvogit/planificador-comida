@@ -325,6 +325,10 @@ de pie y con las manos ocupadas, así que lo que importa es qué toca ahora y cu
 que no está en la lista del plato — sal, un chorro de aceite — se nombra en el paso pero no se pesa: no se
 compra para una receta.
 
+La pestaña lleva el contador **escritas sobre posibles** — *Recetas 24/24* —, igual que la semana dice
+35/35. Es la única forma de enterarse de que ha entrado un plato nuevo sin receta sin abrir la pestaña por
+casualidad, y pasa sobre todo después de cargar un menú de la guardería.
+
 Arriba de la pestaña hay un **número de comensales**: las cantidades se guardan siempre por persona y se
 multiplican al pintarlas, así que lo guardado no depende de cuántos seáis hoy. Se escalan *todos* los
 números de la línea y no solo el primero — «6 unidades (80 g)» por cuatro es «24 unidades (320 g)» — y las

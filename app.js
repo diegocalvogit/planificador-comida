@@ -4328,6 +4328,10 @@
 
     cont.textContent = "";
     const faltan = todos.filter(function(p){ return !hayReceta(p.n); }).length;
+    // En la pestaña, escritas sobre posibles: igual que la semana dice 35/35.
+    // Es la única forma de ver de un vistazo que un plato nuevo ha llegado sin
+    // receta, que si no se entera uno al abrir la pestaña por casualidad.
+    $("n-recetas").textContent = (todos.length - faltan) + "/" + todos.length;
     cont.appendChild(el("p", {class:"hint", style:"margin-bottom:12px", text:
       "Los " + todos.length + " platos de preparaci\u00f3n media o alta. Los de preparaci\u00f3n baja no salen " +
       "aqu\u00ed: no hay nada que explicar de poner fruta en un plato." +

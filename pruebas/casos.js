@@ -283,6 +283,15 @@ window.CASOS = [
   }
 },
 {
+  nombre: "La pestaña cuenta escritas sobre posibles",
+  correr: function(app, banco, t, w){
+    const todos = app.platosConReceta();
+    const escritas = todos.filter(function(p){ return app.hayReceta(p.n); }).length;
+    t.igual(w.document.getElementById("n-recetas").textContent,
+            escritas + "/" + todos.length);
+  }
+},
+{
   nombre: "Ninguna receta se queda en un solo paso",
   correr: function(app, banco, t){
     app.platosConReceta().forEach(function(p){
