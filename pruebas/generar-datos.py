@@ -86,23 +86,50 @@ def valor(t):
 
 
 def tuplas(sql, tabla):
-    m = re.search(r"insert into public\." + tabla + r"\b[^;]*?values\s*(.*?);", sql, re.S)
+    """Las tuplas de un `insert into <tabla> ... values (...), (...);`.
+
+    Se recorre carácter a carácter respetando las comillas. Un punto y coma
+    dentro de un texto es SQL legal —«tritúrala si es para el niño; si no,
+    déjala con tropezones»— y buscar el final del insert con una expresión
+    regular hasta el primer `;` partía la lista por la mitad sin que nada se
+    quejara: salían 40 recetas de 48 y las ocho que faltaban parecían no
+    existir.
+    """
+    m = re.search(r"insert\s+into\s+public\." + tabla + r"\b.*?\bvalues\b", sql, re.S | re.I)
     if not m:
         return []
-    cuerpo, filas, hondo, actual = m.group(1), [], 0, ""
-    for c in cuerpo:
-        if c == "(":
+    filas, hondo, actual, comilla = [], 0, "", False
+    i = m.end()
+    while i < len(sql):
+        c = sql[i]
+        if comilla:
+            if c == "'":
+                if i + 1 < len(sql) and sql[i + 1] == "'":
+                    actual += "''"
+                    i += 2
+                    continue
+                comilla = False
+            actual += c
+        elif c == "'":
+            comilla = True
+            actual += c
+        elif c == "(":
             hondo += 1
-            if hondo == 1:
+            if hondo > 1:
+                actual += c
+            else:
                 actual = ""
-                continue
         elif c == ")":
             hondo -= 1
             if hondo == 0:
                 filas.append(actual)
-                continue
-        if hondo >= 1:
+            else:
+                actual += c
+        elif c == ";" and hondo == 0:
+            break
+        elif hondo >= 1:
             actual += c
+        i += 1
     return filas
 
 

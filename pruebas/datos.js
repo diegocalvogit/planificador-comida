@@ -481,6 +481,485 @@ window.DATOS_PRUEBA = {
     "Un hilo de aceite y sal en escamas, o miel y nueces si va de postre.",
     "Esto no es una receta: el plato está marcado como preparación media y probablemente debería ser baja, en la pestaña Platos."
    ]
+  },
+  {
+   "plato": "albóndigas con patatas",
+   "cantidades": [
+    "carne picada: 150 g",
+    "patatas: 150 g",
+    "tomate triturado: 100 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Las albóndigas:",
+    "Salpimentar la carne y formar bolas del tamaño de una nuez, apretando poco.",
+    "Dorarlas en el aceite a fuego fuerte, girándolas, 4 min. Solo marcarlas: se terminan en la salsa.",
+    "Sacarlas y reservar.",
+    "La salsa:",
+    "En ese mismo aceite, el tomate triturado 10 min a fuego lento, hasta que oscurezca.",
+    "Añadir medio vaso de agua y las patatas en cascos.",
+    "Devolver las albóndigas y cocer 20 min a fuego suave, moviendo la cazuela por el asa.",
+    "Probar de sal al final: el tomate concentra y puede bastarse."
+   ]
+  },
+  {
+   "plato": "Arroz con verduras",
+   "cantidades": [
+    "arroz: 80 g",
+    "pimiento rojo: 40 g",
+    "zanahoria: 40 g",
+    "calabacín: 50 g",
+    "cebolla: 40 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Picar toda la verdura en dados pequeños y del mismo tamaño.",
+    "Pochar la cebolla y el pimiento con el aceite, 8 min a fuego medio.",
+    "Añadir la zanahoria, 5 min, y luego el calabacín, 3 min.",
+    "Echar el arroz y removerlo 2 min hasta que brille.",
+    "Añadir el doble y medio de agua caliente que de arroz, y probar de sal.",
+    "18 min a fuego medio sin remover. Reposar 5 min tapado."
+   ]
+  },
+  {
+   "plato": "Calamares",
+   "cantidades": [
+    "calamares: 180 g",
+    "harina: 30 g",
+    "aceite de oliva: 4 cucharadas"
+   ],
+   "pasos": [
+    "Secar muy bien las anillas con papel: mojadas, el aceite salta y el rebozado no agarra.",
+    "Salarlas y pasarlas por harina, sacudiendo la que sobre.",
+    "Aceite bien caliente, casi humeando.",
+    "Freír en tandas pequeñas, 2 min. De golpe baja la temperatura y salen cocidos en vez de fritos.",
+    "Escurrir en papel y comer enseguida: esperando se ablandan."
+   ]
+  },
+  {
+   "plato": "Crema de calabacín",
+   "cantidades": [
+    "calabacín: 250 g",
+    "patata: 80 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Pochar la cebolla picada con el aceite, 8 min sin que coja color.",
+    "Añadir la patata y el calabacín en trozos parecidos, y rehogar 3 min.",
+    "Cubrir con agua justo hasta tapar la verdura: de más sale aguada y no tiene arreglo.",
+    "20 min a fuego medio, hasta que la patata se deshaga al pincharla.",
+    "Triturar reservando parte del caldo y añadirlo poco a poco hasta la textura que quieras.",
+    "Dejar la piel del calabacín: da el color verde y no se nota al triturar."
+   ]
+  },
+  {
+   "plato": "Crema de calabaza",
+   "cantidades": [
+    "calabaza: 250 g",
+    "patata: 80 g",
+    "zanahoria: 60 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Pochar la cebolla picada con el aceite, 8 min sin que coja color.",
+    "Añadir la calabaza, la patata y la zanahoria en trozos parecidos, y rehogar 3 min.",
+    "Cubrir con agua justo hasta tapar y cocer 20 min.",
+    "Triturar y ajustar con el caldo reservado.",
+    "La calabaza ya es dulce: no hace falta añadirle nada, solo sal."
+   ]
+  },
+  {
+   "plato": "Espaguetis a la carbonara",
+   "cantidades": [
+    "espaguetis: 90 g",
+    "bacon: 60 g",
+    "huevos: 1 unidad",
+    "queso rallado: 30 g",
+    "nata para cocinar: 40 ml"
+   ],
+   "pasos": [
+    "Poner el agua a hervir con sal.",
+    "Batir el huevo con el queso y la nata en un bol grande, y salpimentar. Reservar.",
+    "Dorar el bacon en tiras en una sartén sin aceite: suelta la suya.",
+    "Cocer los espaguetis al dente y escurrirlos guardando medio vaso del agua.",
+    "Fuera del fuego:",
+    "Echar la pasta caliente sobre el bol del huevo y remover rápido y sin parar.",
+    "Es el calor de la pasta lo que cuaja la salsa. En la sartén al fuego sale huevo revuelto.",
+    "Añadir el bacon y aflojar con el agua de la pasta hasta que quede cremosa."
+   ]
+  },
+  {
+   "plato": "Espaguetis con queso y pollo",
+   "cantidades": [
+    "espaguetis: 90 g",
+    "pechuga de pollo: 110 g",
+    "nata para cocinar: 60 ml",
+    "queso rallado: 40 g"
+   ],
+   "pasos": [
+    "Poner el agua a hervir con sal.",
+    "Dorar el pollo en tiras en una sartén, 6 min. Salpimentar.",
+    "Cocer los espaguetis un minuto menos de lo que diga el paquete.",
+    "Bajar el fuego, añadir la nata y la mitad del queso, y remover hasta que ligue.",
+    "Escurrir la pasta guardando medio vaso del agua y echarla a la sartén.",
+    "Saltear un minuto, aflojando con el agua de la pasta si hace falta.",
+    "El resto del queso por encima al servir."
+   ]
+  },
+  {
+   "plato": "Filete de lomo",
+   "cantidades": [
+    "lomo de cerdo: 160 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Sacar la carne de la nevera 20 min antes: fría por dentro se hace desigual.",
+    "Secar el filete con papel. Mojado se cuece en vez de dorarse.",
+    "Plancha muy caliente con unas gotas de aceite.",
+    "3 min por lado para un filete de dedo y medio, sin tocarlo mientras.",
+    "Salar al sacarlo y dejarlo reposar 3 min antes de cortarlo."
+   ]
+  },
+  {
+   "plato": "Judías verdes",
+   "cantidades": [
+    "judías verdes: 200 g",
+    "patata: 100 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Quitar las puntas y los hilos de las judías y partirlas en trozos de un dedo.",
+    "Cocer la patata en cascos 10 min en abundante agua con sal.",
+    "Añadir las judías y 12 min más, sin tapar, que así no amarillean.",
+    "Escurrir bien y rehogar un minuto en la misma cazuela con el aceite.",
+    "Están cuando ceden al morder pero no se deshacen."
+   ]
+  },
+  {
+   "plato": "Macarrones con lomo",
+   "cantidades": [
+    "macarrones: 90 g",
+    "lomo de cerdo: 110 g",
+    "tomate frito: 4 cucharadas (70 g)",
+    "cebolla: 40 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Poner el agua a hervir con sal.",
+    "Pochar la cebolla picada con el aceite, 8 min.",
+    "Subir el fuego y dorar el lomo en dados, 5 min. Salpimentar.",
+    "Añadir el tomate frito y dejarlo 5 min a fuego lento.",
+    "Cocer los macarrones al dente y escurrirlos.",
+    "Mezclarlos con la salsa en la sartén, un minuto, para que se impregnen."
+   ]
+  },
+  {
+   "plato": "Merluza en salsa verde",
+   "cantidades": [
+    "merluza: 180 g",
+    "ajo: 1 diente",
+    "perejil: 1 rama",
+    "harina: 1 cucharada",
+    "aceite de oliva: 2 cucharadas"
+   ],
+   "pasos": [
+    "Salar los lomos de merluza y dejarlos 10 min fuera de la nevera.",
+    "La salsa:",
+    "Dorar el ajo laminado en el aceite a fuego suave, sin que se queme o amarga.",
+    "Añadir la harina y tostarla 2 min removiendo.",
+    "Echar un vaso de agua poco a poco, removiendo, hasta que espese ligeramente.",
+    "La merluza:",
+    "Poner los lomos con la piel hacia abajo y el perejil picado por encima.",
+    "6 min a fuego suave, moviendo la cazuela en círculos todo el rato: ese movimiento es lo que liga la salsa.",
+    "Darles la vuelta y 2 min más. Pasarse de tiempo la deja seca."
+   ]
+  },
+  {
+   "plato": "Revuelto de gulas, gambas y huevo",
+   "cantidades": [
+    "huevos: 2 unidades",
+    "gulas: 70 g",
+    "gambas: 6 unidades (80 g)",
+    "ajo: 1 diente",
+    "perejil: 1 rama",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Tenerlo todo listo antes de encender: esto se hace en tres minutos.",
+    "Batir los huevos sin pasarse, que queden vetas de clara.",
+    "Dorar el ajo laminado en el aceite a fuego medio.",
+    "Añadir las gambas peladas, 1 min, hasta que pierdan el gris.",
+    "Echar las gulas y saltear 1 min.",
+    "Bajar el fuego al mínimo, verter el huevo y remover sin parar.",
+    "Sacarlo cuando todavía parezca poco hecho: cuaja fuera del fuego.",
+    "Perejil picado por encima."
+   ]
+  },
+  {
+   "plato": "Salmón con verduras",
+   "cantidades": [
+    "lomo de salmón: 160 g",
+    "calabacín: 60 g",
+    "zanahoria: 50 g",
+    "cebolla: 40 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Cortar la verdura en tiras finas y del mismo grosor.",
+    "Saltear la cebolla y la zanahoria con el aceite, 6 min a fuego medio.",
+    "Añadir el calabacín y 3 min más. Tienen que quedar enteras.",
+    "Apartar la verdura a un lado de la sartén y subir el fuego.",
+    "El salmón con la piel hacia abajo, 4 min sin tocarlo: la piel queda crujiente y la grasa se funde.",
+    "Darle la vuelta y 2 min. En el centro tiene que quedar un punto más oscuro.",
+    "Salar al sacarlo."
+   ]
+  },
+  {
+   "plato": "Sopa de cocido",
+   "cantidades": [
+    "muslos desguesados de pollo: 150 g",
+    "hueso de espinazo: 1 unidad",
+    "fideos: 40 g",
+    "zanahoria: 50 g",
+    "puerro: 40 g",
+    "cebolla: 40 g",
+    "ajo: 1 diente",
+    "hojas de laurel: 1 unidad"
+   ],
+   "pasos": [
+    "El caldo:",
+    "Poner el pollo y el hueso en agua fría, no caliente: así sueltan el sabor al caldo.",
+    "Llevar a hervir y retirar toda la espuma que suba, que es lo que enturbia.",
+    "Añadir la zanahoria, el puerro, la cebolla, el ajo y el laurel enteros.",
+    "90 min a fuego muy suave, apenas temblando. A borbotones sale turbio.",
+    "La sopa:",
+    "Colar el caldo y quitarle la grasa de la superficie con una cuchara.",
+    "Desmenuzar el pollo y reservarlo.",
+    "Llevar el caldo a hervir, echar los fideos y cocer lo que diga el paquete.",
+    "Devolver el pollo al final y probar de sal."
+   ]
+  },
+  {
+   "plato": "Sopa de pescado",
+   "cantidades": [
+    "caldo de pescado: 350 ml",
+    "merluza: 100 g",
+    "fideos: 40 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Calentar el caldo con el aceite hasta que rompa a hervir.",
+    "Echar los fideos y cocer dos minutos menos de lo que diga el paquete.",
+    "Añadir la merluza en dados y 3 min más: más tiempo y se deshace en hilos.",
+    "Revisar que no quede ninguna espina antes de servir.",
+    "Probar de sal al final: el caldo ya viene salado."
+   ]
+  },
+  {
+   "plato": "Verduras de guarnición",
+   "cantidades": [
+    "calabacín: 70 g",
+    "zanahoria: 60 g",
+    "pimiento verde: 50 g",
+    "champiñones: 60 g"
+   ],
+   "pasos": [
+    "Cortar todo en tiras o láminas del mismo grosor.",
+    "Sartén o plancha muy caliente, con unas gotas de aceite.",
+    "Por tiempos: la zanahoria 5 min, el pimiento 4, los champiñones 4 y el calabacín 3.",
+    "Los champiñones sueltan agua: dejarlos hasta que se evapore y empiecen a dorarse.",
+    "Sal al final, nunca antes: salar pronto hace que suelten el agua y se cuezan."
+   ]
+  },
+  {
+   "plato": "Albóndigas con verduras",
+   "cantidades": [
+    "carne picada de pollo: 150 g",
+    "zanahoria: 50 g",
+    "cebolla: 50 g",
+    "pimiento verde: 40 g",
+    "tomate frito: 3 cucharadas (50 g)",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Las albóndigas:",
+    "Salpimentar la carne y formar bolas del tamaño de una nuez.",
+    "Amasarlas lo justo para que agarren: trabajarlas de más las deja gomosas.",
+    "Dorarlas en el aceite a fuego fuerte, girándolas, 4 min. Solo marcarlas.",
+    "Sacarlas y reservar.",
+    "La salsa de verduras:",
+    "En ese aceite, pochar la cebolla y el pimiento picados, 8 min.",
+    "Añadir la zanahoria en dados pequeños, 5 min más.",
+    "Echar el tomate frito y medio vaso de agua, y dejar 5 min.",
+    "Triturar la salsa si es para el niño; dejarla con tropezones si no.",
+    "Juntar:",
+    "Devolver las albóndigas a la salsa y 15 min a fuego suave.",
+    "Mover la cazuela por el asa en vez de remover: se rompen con facilidad."
+   ]
+  },
+  {
+   "plato": "Alubias blancas con carne y chorizo",
+   "cantidades": [
+    "judías blancas cocidas: 180 g",
+    "filetes de ternera: 100 g",
+    "chorizo: 40 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "El sofrito:",
+    "Pochar la cebolla picada con el aceite, 8 min a fuego medio.",
+    "Subir el fuego y dorar la ternera en dados, 5 min.",
+    "Añadir el chorizo en rodajas, 3 min, hasta que suelte el pimentón y tiña el aceite.",
+    "El guiso:",
+    "Enjuagar las alubias bajo el grifo y escurrirlas: el líquido del bote repite.",
+    "Echarlas a la cazuela con un vaso de agua y 15 min a fuego suave.",
+    "Mover la cazuela por el asa en vez de remover con cuchara, o se deshacen.",
+    "Probar de sal al final: el chorizo ya sala bastante.",
+    "Reposar 10 min. Espesan al enfriarse un poco."
+   ]
+  },
+  {
+   "plato": "Alubias pintas con carne y chorizo",
+   "cantidades": [
+    "judías pintas cocidas: 180 g",
+    "filetes de ternera: 100 g",
+    "chorizo: 40 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "El sofrito:",
+    "Pochar la cebolla picada con el aceite, 8 min.",
+    "Dorar la ternera en dados a fuego fuerte, 5 min.",
+    "Añadir el chorizo en rodajas, 3 min, hasta que el aceite coja color.",
+    "El guiso:",
+    "Enjuagar las alubias y escurrirlas bien.",
+    "Echarlas con un vaso de agua y 15 min a fuego suave, moviendo la cazuela por el asa.",
+    "Probar de sal al final, que el chorizo ya sala.",
+    "Reposar 10 min antes de servir."
+   ]
+  },
+  {
+   "plato": "Garbanzos con chorizo y pollo",
+   "cantidades": [
+    "garbanzos cocidos: 180 g",
+    "muslos desguesados de pollo: 120 g",
+    "chorizo: 40 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "El sofrito:",
+    "Pochar la cebolla picada con el aceite, 8 min.",
+    "Dorar el pollo en tacos a fuego fuerte, 6 min. El muslo aguanta mejor el guiso que la pechuga.",
+    "Añadir el chorizo en rodajas, 3 min.",
+    "El guiso:",
+    "Enjuagar los garbanzos bajo el grifo y escurrirlos.",
+    "Echarlos con un vaso de agua y 15 min a fuego suave.",
+    "Mover la cazuela por el asa: los garbanzos de bote se abren con nada.",
+    "Probar de sal al final."
+   ]
+  },
+  {
+   "plato": "Guiso de ternera con verduras",
+   "cantidades": [
+    "filetes de ternera: 150 g",
+    "patata: 120 g",
+    "zanahoria: 60 g",
+    "guisantes: 50 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "Dorar la carne:",
+    "Secar la ternera en dados con papel y salpimentarla.",
+    "Dorarla en el aceite a fuego fuerte y por tandas, 5 min. Amontonada se cuece y no se dora.",
+    "Sacarla y reservar.",
+    "El guiso:",
+    "En ese aceite, pochar la cebolla picada 8 min, raspando el fondo de la cazuela.",
+    "Devolver la carne, cubrir con agua y 45 min a fuego muy suave, tapado.",
+    "Añadir la zanahoria en rodajas y la patata en cascos, 20 min más.",
+    "Chascar la patata con la punta del cuchillo al cortarla: así suelta almidón y espesa la salsa.",
+    "Los guisantes, los últimos 5 min.",
+    "Reposar 10 min antes de servir."
+   ]
+  },
+  {
+   "plato": "Lasaña de verdura",
+   "cantidades": [
+    "láminas de lasaña: 3 unidades",
+    "calabacín: 80 g",
+    "berenjena: 80 g",
+    "cebolla: 50 g",
+    "tomate triturado: 120 g",
+    "bechamel: 120 ml",
+    "queso rallado: 40 g"
+   ],
+   "pasos": [
+    "El relleno:",
+    "Cortar la verdura en dados pequeños.",
+    "Pochar la cebolla 8 min, añadir la berenjena 5 min y el calabacín 4 min.",
+    "Echar el tomate y 15 min a fuego lento, hasta que no quede líquido.",
+    "Esto es lo importante: con el relleno aguado, la lasaña no se sostiene al cortarla.",
+    "Las láminas:",
+    "Si no son precocinadas, hidratarlas según el paquete y extenderlas sobre un paño.",
+    "Montar:",
+    "Horno a 200°.",
+    "Una cucharada de bechamel en el fondo, para que no se pegue.",
+    "Alternar lámina, verdura y un poco de bechamel, acabando en lámina.",
+    "Cubrir con el resto de la bechamel y el queso.",
+    "25 min, y gratinar 5 más.",
+    "Reposar 10 min antes de cortar: recién salida se desmorona."
+   ]
+  },
+  {
+   "plato": "Lentejas con carne y chorizo",
+   "cantidades": [
+    "lentejas: 80 g",
+    "filetes de ternera: 100 g",
+    "chorizo: 40 g",
+    "zanahoria: 50 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "El sofrito:",
+    "Pochar la cebolla picada con el aceite, 8 min.",
+    "Dorar la ternera en dados a fuego fuerte, 5 min.",
+    "Añadir el chorizo en rodajas y la zanahoria en rodajas, 3 min.",
+    "La cocción:",
+    "Echar las lentejas y remover un minuto para que se impregnen.",
+    "Cubrir con agua dos dedos por encima y llevar a hervir. Retirar la espuma.",
+    "35 min a fuego bajo, o 12 min desde que silba en olla rápida.",
+    "Salar solo al final: antes, la piel de la lenteja se endurece.",
+    "Reposar 10 min."
+   ]
+  },
+  {
+   "plato": "Lentejas con pollo y chorizo",
+   "cantidades": [
+    "lentejas: 80 g",
+    "muslos desguesados de pollo: 120 g",
+    "chorizo: 40 g",
+    "zanahoria: 50 g",
+    "cebolla: 50 g",
+    "aceite de oliva: 1 cucharada"
+   ],
+   "pasos": [
+    "El sofrito:",
+    "Pochar la cebolla picada con el aceite, 8 min.",
+    "Dorar el pollo en tacos, 6 min.",
+    "Añadir el chorizo y la zanahoria en rodajas, 3 min.",
+    "La cocción:",
+    "Echar las lentejas y remover un minuto.",
+    "Cubrir con agua dos dedos por encima, hervir y retirar la espuma.",
+    "35 min a fuego bajo, o 12 min desde que silba en olla rápida.",
+    "Salar al final.",
+    "Reposar 10 min: espesan bastante."
+   ]
   }
  ],
  "compras": [],
