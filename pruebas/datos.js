@@ -483,10 +483,10 @@ window.DATOS_PRUEBA = {
    ]
   },
   {
-   "plato": "albóndigas con patatas",
+   "plato": "Albóndigas con patatas",
    "cantidades": [
     "carne picada: 150 g",
-    "patatas: 150 g",
+    "patata: 150 g",
     "tomate triturado: 100 g",
     "aceite de oliva: 1 cucharada"
    ],
@@ -719,7 +719,7 @@ window.DATOS_PRUEBA = {
   {
    "plato": "Sopa de cocido",
    "cantidades": [
-    "muslos desguesados de pollo: 150 g",
+    "muslos deshuesados de pollo: 150 g",
     "hueso de espinazo: 1 unidad",
     "fideos: 40 g",
     "zanahoria: 50 g",
@@ -846,7 +846,7 @@ window.DATOS_PRUEBA = {
    "plato": "Garbanzos con chorizo y pollo",
    "cantidades": [
     "garbanzos cocidos: 180 g",
-    "muslos desguesados de pollo: 120 g",
+    "muslos deshuesados de pollo: 120 g",
     "chorizo: 40 g",
     "cebolla: 50 g",
     "aceite de oliva: 1 cucharada"
@@ -942,7 +942,7 @@ window.DATOS_PRUEBA = {
    "plato": "Lentejas con pollo y chorizo",
    "cantidades": [
     "lentejas: 80 g",
-    "muslos desguesados de pollo: 120 g",
+    "muslos deshuesados de pollo: 120 g",
     "chorizo: 40 g",
     "zanahoria: 50 g",
     "cebolla: 50 g",

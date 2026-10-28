@@ -358,6 +358,19 @@ Partirlo **no añade compilación ni empaquetador**: son tres ficheros que el
 navegador lee tal cual, y Vercel los sirve igual que antes. Para cambiar algo:
 editas, `git push`, y ya está.
 
+## Los ficheros de `supabase/`
+
+```
+01-esquema.sql    las tablas, sus restricciones y la seguridad por filas
+02-datos.sql      la semilla: platos, ingredientes, objetivos y un histórico
+03-recetas.sql    las recetas de los platos de preparación media o alta
+04-limpieza.sql   arreglos de nombres que entraron torcidos con un cargador
+```
+
+Los dos primeros se ejecutan una vez, al montar la base. `04-limpieza.sql` se
+puede repetir sin hacer daño y va **antes** que `03-recetas.sql`, porque las
+recetas usan ya los nombres corregidos.
+
 ## Pruebas
 
 ```

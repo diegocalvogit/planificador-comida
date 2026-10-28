@@ -15,6 +15,11 @@
 --   · Lo que no está en la lista del plato —sal, pimienta, un chorro de aceite—
 --     se nombra en el paso pero no se pesa: no se compra para una receta.
 
+-- OJO CON EL ORDEN: esto usa los nombres ya corregidos por 04-limpieza.sql
+-- («patata», «muslos deshuesados de pollo», «Albóndigas con patatas»), así que
+-- esa limpieza va primero. Al revés, la receta de las albóndigas no encuentra
+-- su plato y la clave ajena tumba el insert entero.
+
 insert into public.recetas (plato, cantidades, pasos) values
 
 /* ───────────────────────── Preparación alta ───────────────────────── */
@@ -356,9 +361,9 @@ insert into public.recetas (plato, cantidades, pasos) values
 
 /* ── Platos que llegaron con los menús de la guardería ── */
 
-  ('albóndigas con patatas',
+  ('Albóndigas con patatas',
    array['carne picada: 150 g',
-         'patatas: 150 g',
+         'patata: 150 g',
          'tomate triturado: 100 g',
          'aceite de oliva: 1 cucharada'],
    array[
@@ -552,7 +557,7 @@ insert into public.recetas (plato, cantidades, pasos) values
    ]),
 
   ('Sopa de cocido',
-   array['muslos desguesados de pollo: 150 g',
+   array['muslos deshuesados de pollo: 150 g',
          'hueso de espinazo: 1 unidad',
          'fideos: 40 g',
          'zanahoria: 50 g',
@@ -661,7 +666,7 @@ insert into public.recetas (plato, cantidades, pasos) values
 
   ('Garbanzos con chorizo y pollo',
    array['garbanzos cocidos: 180 g',
-         'muslos desguesados de pollo: 120 g',
+         'muslos deshuesados de pollo: 120 g',
          'chorizo: 40 g',
          'cebolla: 50 g',
          'aceite de oliva: 1 cucharada'],
@@ -745,7 +750,7 @@ insert into public.recetas (plato, cantidades, pasos) values
 
   ('Lentejas con pollo y chorizo',
    array['lentejas: 80 g',
-         'muslos desguesados de pollo: 120 g',
+         'muslos deshuesados de pollo: 120 g',
          'chorizo: 40 g',
          'zanahoria: 50 g',
          'cebolla: 50 g',
