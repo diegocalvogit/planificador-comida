@@ -4117,6 +4117,57 @@
     }
   }
 
+  /* ============ Dónde vive esto ============ */
+  const REPO = "https://github.com/diegocalvogit/planificador-comida";
+
+  // El navegador se queda con la página vieja y un F5 normal no siempre la
+  // suelta: revalida el documento pero puede servir los ficheros de dentro de
+  // su caché. Entonces ves una versión antigua sin saberlo, y lo que falta
+  // parece un fallo de la base de datos cuando no lo es.
+  //
+  // `cache:"reload"` obliga a pedirle cada fichero al servidor y a quedarse con
+  // lo que venga. Después, recargar ya encuentra lo nuevo.
+  async function traerVersionNueva(boton){
+    boton.disabled = true;
+    const antes = boton.textContent;
+    boton.textContent = "Buscando\u2026";
+    try{
+      await Promise.all(["index.html", "app.js", "estilos.css"].map(function(f){
+        return fetch(f, {cache:"reload"});
+      }));
+      aviso("Al d\u00eda. Recargando\u2026");
+      setTimeout(function(){ location.reload(); }, 700);
+    }catch(e){
+      boton.disabled = false;
+      boton.textContent = antes;
+      aviso("No se ha podido comprobar: " + (e.message || e));
+    }
+  }
+
+  function montarDonde(){
+    const caja = $("cfg-donde");
+    if(!caja) return;
+    caja.textContent = "";
+
+    const actualizar = el("button", {class:"btn", text:"Traer la versi\u00f3n nueva",
+      title:"Pide la p\u00e1gina al servidor saltando la cach\u00e9 del navegador"});
+    actualizar.addEventListener("click", function(){ traerVersionNueva(actualizar); });
+    caja.appendChild(actualizar);
+
+    caja.appendChild(el("div", {class:"cfg-enlaces"}, [
+      el("a", {class:"btn btn-sm", href:"https://vercel.com/dashboard", target:"_blank",
+               rel:"noopener", text:"Panel de Vercel"}),
+      el("a", {class:"btn btn-sm", href:REPO, target:"_blank", rel:"noopener",
+               text:"El c\u00f3digo en GitHub"}),
+      el("a", {class:"btn btn-sm", href:REPO + "/commits/main", target:"_blank", rel:"noopener",
+               text:"\u00daltimos cambios"})
+    ]));
+    caja.appendChild(el("span", {class:"hint", text:
+      "Si la p\u00e1gina no trae algo que deber\u00eda, prueba primero el bot\u00f3n de arriba: casi siempre es " +
+      "el navegador ense\u00f1\u00e1ndote una copia vieja. Si a\u00fan as\u00ed falta, mira en Vercel que el \u00faltimo " +
+      "despliegue est\u00e9 en verde."}));
+  }
+
   /* ============ Reglas del día a día, en Configuración ============ */
   function montarReglas(){
     const lista = $("reglas-lista");
@@ -4719,6 +4770,7 @@
     montarPanelSemana();
     pintarObjetivos();
     montarCopias();
+    montarDonde();
     montarRecetas();
     montarReglas();
     montarAltaRegla();

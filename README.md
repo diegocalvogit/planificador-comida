@@ -381,6 +381,15 @@ aplicación son diez líneas guardadas por `?prueba=1`: sin base falsa puesta
 desde fuera entra por la de siempre, de modo que a la página publicada no le
 pasa nada aunque alguien le añada el parámetro.
 
+**Configuración → Dónde vive esto** — Los tres sitios a los que ir cuando algo falla, por orden: el panel
+de Vercel, el código en GitHub y sus últimos cambios.
+
+Y un botón, **Traer la versión nueva**, que existe por un motivo concreto: el navegador se queda con la
+página vieja y un F5 normal no siempre la suelta — revalida el documento pero puede servir los ficheros de
+dentro desde su caché. Entonces ves una versión antigua sin saberlo, y lo que falta parece un fallo de la
+base de datos cuando no lo es. El botón pide cada fichero con `cache:"reload"`, que obliga a ir al servidor
+y a quedarse con lo que venga, y después recarga.
+
 **Configuración** — Incluye **copia de seguridad**: un botón descarga todo lo que hay en la base en un fichero JSON, y otro lo restaura. Importa porque el plan gratuito de Supabase **no hace copias automáticas** ("Automatic backups: Not included"), así que esa es la única que hay. Antes de restaurar se descarga sola una copia de lo actual, y el fichero se valida entero antes de borrar nada: a media restauración no habría vuelta atrás.
 
 **Configuración** — La cuenta con la que has entrado y el botón de salir, un resumen de lo que hay en la base, y el histórico de semanas: Todas las semanas planificadas, con las comidas resueltas de cada menú y una etiqueta por semana: **guardada** si es idéntica a la del repositorio, **sin guardar** si la has tocado desde la última vez. La pestaña se marca con un punto naranja mientras quede algo sin guardar. De cada semana se ve cuántas comidas tiene resueltas en cada menú y cuántos ingredientes lleva su compra. Botones para abrir o borrar cualquiera de ellas. Borrar una semana se lleva sus dos menús y su compra. Las dos semanas se mueven juntas: cambiar de semana en una pestaña cambia también la otra, porque es la misma semana real de la casa.
