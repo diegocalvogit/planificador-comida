@@ -305,13 +305,24 @@ preparación baja no salen: no hay nada que explicar de poner fruta en un plato,
 lista más larga. Cada ficha lleva el nombre, la dificultad — que es la misma columna *preparación* del
 plato, no un dato nuevo que pueda contradecirla —, sus ingredientes y los pasos numerados.
 
-Los pasos son **cortos y en imperativo, con el tiempo dentro del paso al que pertenece**: esto se consulta
-de pie y con las manos ocupadas, así que lo que importa es el orden y cuándo pasar al siguiente. Los
-ingredientes no se repiten en los pasos porque ya están arriba.
+Las **cantidades van por persona**. Multiplicar por cuatro es fácil; dividir una receta «para seis» por tres
+y medio, no. Cada una es una línea `ingrediente: cantidad`, y el nombre se casa con la lista de ingredientes
+del plato — que sigue siendo la única que manda para la compra: la receta dice **cuánto**, nunca **qué**. Si
+sobra una cantidad de algo que el plato ya no lleva, no se cuela en la ficha; si falta alguna, la ficha lo
+dice.
 
-Se escriben desde la propia ficha, **un paso por línea**, que es lo que más se parece a cómo lo dirías en
-voz alta y evita un editor de listas con sus botones de subir y bajar. Se busca por plato o por ingrediente,
-y se filtra por dificultad o por *sin escribir*, que es la lista de lo que queda por hacer.
+Los pasos van en **apartados**: *asar las berenjenas*, *el relleno*, *montar y gratinar*. Una línea acabada
+en dos puntos es un apartado y lo que viene debajo son sus viñetas — la convención más barata que da
+jerarquía sin inventar un editor de árboles: se escribe igual que se dicta.
+
+Las viñetas son **cortas y en imperativo, con el tiempo dentro del paso al que pertenece**: esto se consulta
+de pie y con las manos ocupadas, así que lo que importa es qué toca ahora y cuándo pasar a lo siguiente. Lo
+que no está en la lista del plato — sal, un chorro de aceite — se nombra en el paso pero no se pesa: no se
+compra para una receta.
+
+Se escribe todo desde la propia ficha, en dos campos de texto, con los ingredientes del plato ya puestos
+esperando su cantidad. Se busca por plato o por ingrediente, y se filtra por dificultad o por *sin escribir*,
+que es la lista de lo que queda por hacer.
 
 ## Los ficheros
 

@@ -109,6 +109,18 @@ def tuplas(sql, tabla):
 sql = io.open(os.path.join(RAIZ, "supabase", "02-datos.sql"), encoding="utf-8").read()
 
 datos = {"reglas": [], "recetas": [], "compras": []}
+
+# Las recetas van en su propio fichero porque son opcionales: la base funciona
+# sin ellas. Pero las pruebas las quieren, que si no no hay nada que mirar.
+receta_sql = io.open(os.path.join(RAIZ, "supabase", "03-recetas-ejemplo.sql"),
+                     encoding="utf-8").read()
+for cruda in tuplas(receta_sql, "recetas"):
+    partes = trozos(cruda)
+    if len(partes) != 3:
+        continue
+    datos["recetas"].append({"plato": valor(partes[0]),
+                             "cantidades": valor(partes[1]),
+                             "pasos": valor(partes[2])})
 for tabla, cols in COLUMNAS.items():
     filas = []
     for cruda in tuplas(sql, tabla):

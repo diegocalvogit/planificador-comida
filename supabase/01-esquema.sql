@@ -94,7 +94,11 @@ create table if not exists public.reglas (
 create table if not exists public.recetas (
   plato text primary key references public.platos(nombre)
               on update cascade on delete cascade,
-  pasos text[] not null default '{}'
+  pasos text[] not null default '{}',
+  -- Cuánto lleva de cada cosa, para una persona: "ingrediente: cantidad".
+  -- El nombre se casa con la lista del plato, que sigue siendo la única que
+  -- manda para la compra: aquí solo se dice cuánto, nunca qué.
+  cantidades text[] not null default '{}'
 );
 
 create table if not exists public.semanas (

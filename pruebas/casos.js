@@ -30,12 +30,14 @@ window.CASOS = [
   // Cazaría: un cambio que no se persiste, o que persiste de más.
   nombre: "Un cambio sube a la base, y solo ese",
   correr: async function(app, banco, t){
-    const antes = banco._tablas.recetas.length;
-    app.fijarPasos("Berenjenas rellenas", ["Partir", "Hornear", "Rellenar"]);
+    const antes = banco._tablas.recetas.length;   // las dos de ejemplo
+    // Un plato que no la tenga: las de ejemplo ya vienen escritas.
+    app.fijarReceta("Brocoli", ["Cortar", "Hervir", "Escurrir"], ["brócoli: 150 g"]);
     await app.persistir();
     t.igual(banco._tablas.recetas.length, antes + 1, "una receta más");
-    const r = banco._tablas.recetas.filter(function(x){ return x.plato === "Berenjenas rellenas"; })[0];
+    const r = banco._tablas.recetas.filter(function(x){ return x.plato === "Brocoli"; })[0];
     t.igual((r || {}).pasos.length, 3, "con sus tres pasos");
+    t.igual((r || {}).cantidades.length, 1, "y su cantidad");
   }
 },
 
@@ -165,12 +167,45 @@ window.CASOS = [
   }
 },
 {
-  nombre: "Los pasos vacíos no se guardan",
+  nombre: "Las líneas vacías no se guardan",
   correr: function(app, banco, t){
-    app.fijarPasos("Brocoli", ["Cortar", "", "   ", "Hervir"]);
+    app.fijarReceta("Brocoli", ["Cortar", "", "   ", "Hervir"], []);
     t.igual(app.pasosDe("Brocoli").length, 2, "las líneas en blanco se caen");
-    app.fijarPasos("Brocoli", []);
-    t.igual(app.pasosDe("Brocoli").length, 0, "y sin pasos no queda receta");
+    app.fijarReceta("Brocoli", [], []);
+    t.cierto(!app.hayReceta("Brocoli"), "y sin nada no queda receta");
+  }
+},
+{
+  // Cazaá: que los apartados dejen de agrupar, que es lo único que distingue
+  // una receta larga legible de una lista de veinte viñetas seguidas.
+  nombre: "Una línea acabada en dos puntos agrupa lo que viene debajo",
+  correr: function(app, banco, t){
+    const g = app.pasosEnApartados(["Sofrito:", "Pochar", "Dorar", "Arroz:", "Echar"]);
+    t.igual(g.length, 2, "dos apartados");
+    t.igual(g[0].titulo, "Sofrito");
+    t.igual(g[0].puntos.length, 2);
+    t.igual(g[1].titulo, "Arroz");
+    t.igual(g[1].puntos.length, 1);
+    // Sin apartados, un solo grupo sin título.
+    const llano = app.pasosEnApartados(["Cortar", "Hervir"]);
+    t.igual(llano.length, 1);
+    t.igual(llano[0].titulo, "");
+    t.igual(llano[0].puntos.length, 2);
+  }
+},
+{
+  nombre: "Las cantidades se casan con los ingredientes del plato",
+  correr: function(app, banco, t){
+    const p = app.plato("adultos", "Paella de marisco y carne");
+    const c = app.cantidadesDe(p);
+    t.igual(c.length, (p.i || []).length, "una fila por ingrediente del plato");
+    t.cierto(c.every(function(x){ return x.cuanto; }), "y todas con su cantidad");
+    const arroz = c.filter(function(x){ return x.que === "arroz"; })[0];
+    t.igual((arroz || {}).cuanto, "100 g");
+    // Una cantidad de algo que el plato ya no lleva no se cuela en la ficha.
+    app.fijarReceta(p.n, app.pasosDe(p.n),
+                    app.recetaDe(p.n).cantidades.concat(["unicornio: 2 kg"]));
+    t.igual(app.cantidadesDe(p).length, (p.i || []).length, "la huérfana no aparece");
   }
 },
 

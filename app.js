@@ -114,17 +114,80 @@
   // fruta en un plato y no necesita que nadie le explique nada. Los de media y
   // alta sí, y lo que hace falta de ellos es el orden y los tiempos, no una
   // receta de revista: se consultan de pie y con las manos ocupadas.
+  // Por plato: cuánto lleva de cada cosa y cómo se hace.
+  //
+  // Las cantidades van **por persona**: multiplicar es fácil y dividir por tres
+  // y medio no, así que la unidad es la ración y no "la fuente".
+  //
+  // Cada cantidad es "ingrediente: cuanto". El nombre se casa con la lista de
+  // ingredientes del plato, que sigue siendo la única que manda para la compra:
+  // aquí solo se dice cuánto, nunca qué.
+  //
+  // En los pasos, una línea acabada en dos puntos es un apartado y el resto
+  // son sus viñetas. Es la convención más barata que da jerarquía sin inventar
+  // un editor de árboles: se escribe igual que se dicta.
   let RECETAS = {};
 
   function necesitaReceta(p){ return !!p && (p.tiempo === "medio" || p.tiempo === "alto"); }
+  function esApartado(linea){ return /:\s*$/.test(String(linea || "")); }
+
+  // Los pasos agrupados: [{titulo, puntos:[]}]. Lo que venga antes del primer
+  // apartado va en un grupo sin título, que es el caso de las recetas simples.
+  function pasosEnApartados(pasos){
+    const grupos = [];
+    let actual = null;
+    (pasos || []).forEach(function(linea){
+      if(esApartado(linea)){
+        actual = {titulo:String(linea).replace(/:\s*$/, ""), puntos:[]};
+        grupos.push(actual);
+        return;
+      }
+      if(!actual){ actual = {titulo:"", puntos:[]}; grupos.push(actual); }
+      actual.puntos.push(linea);
+    });
+    return grupos.filter(function(g){ return g.puntos.length || g.titulo; });
+  }
+
+  function partirCantidad(linea){
+    const i = String(linea).indexOf(":");
+    if(i === -1) return {que:String(linea).trim(), cuanto:""};
+    return {que:String(linea).slice(0, i).trim(), cuanto:String(linea).slice(i + 1).trim()};
+  }
+
+  // Lo que se pinta: los ingredientes del plato, cada uno con su cantidad si la
+  // receta la dice. Así se ve de un vistazo lo que falta por medir, y una
+  // cantidad huérfana —de un ingrediente que ya no lleva— no se cuela.
+  function cantidadesDe(p){
+    const dichas = {};
+    (RECETAS[p.n] || {}).cantidades = (RECETAS[p.n] || {}).cantidades || [];
+    ((RECETAS[p.n] || {}).cantidades || []).forEach(function(l){
+      const x = partirCantidad(l);
+      if(x.que) dichas[x.que.toLowerCase()] = x.cuanto;
+    });
+    return (p.i || []).map(function(ing){
+      return {que:ing, cuanto:dichas[ing.toLowerCase()] || ""};
+    });
+  }
   function platosConReceta(){
     return repertorio().filter(necesitaReceta)
                        .sort(function(a, b){ return a.n.localeCompare(b.n, "es"); });
   }
-  function pasosDe(nombre){ return (RECETAS[nombre] || []).slice(); }
-  function fijarPasos(nombre, pasos){
-    const l = pasos.map(function(x){ return String(x).trim(); }).filter(Boolean);
-    if(l.length) RECETAS[nombre] = l; else delete RECETAS[nombre];
+  function recetaDe(nombre){
+    const r = RECETAS[nombre] || {};
+    return {pasos:(r.pasos || []).slice(), cantidades:(r.cantidades || []).slice()};
+  }
+  function pasosDe(nombre){ return recetaDe(nombre).pasos; }
+  function hayReceta(nombre){
+    const r = recetaDe(nombre);
+    return !!(r.pasos.length || r.cantidades.length);
+  }
+  function limpiar(l){
+    return (l || []).map(function(x){ return String(x).trim(); }).filter(Boolean);
+  }
+  function fijarReceta(nombre, pasos, cantidades){
+    const r = {pasos:limpiar(pasos), cantidades:limpiar(cantidades)};
+    if(r.pasos.length || r.cantidades.length) RECETAS[nombre] = r;
+    else delete RECETAS[nombre];
     guardar();
   }
 
@@ -305,7 +368,7 @@
               orden:String(x.orden), plato:x.plato};
     });
     datos.recetas = recetas.map(function(x){
-      return {plato:x.plato, pasos:tubo(x.pasos)};
+      return {plato:x.plato, pasos:tubo(x.pasos), cantidades:tubo(x.cantidades)};
     });
     datos.platos = platos.map(function(x){
       return {nombre:x.nombre, adultos:sn(x.adultos), nino:sn(x.nino),
@@ -403,7 +466,7 @@
 
     RECETAS = {};
     (datos.recetas || []).forEach(function(x){
-      if(x.plato) RECETAS[x.plato] = lista(x.pasos);
+      if(x.plato) RECETAS[x.plato] = {pasos:lista(x.pasos), cantidades:lista(x.cantidades)};
     });
 
     REGLAS = (datos.reglas || []).filter(function(x){ return x.plato; }).map(function(x){
@@ -3706,8 +3769,11 @@
     // rechazaría. Se queda en memoria por si el plato vuelve con ese nombre.
     const hay = {};
     repertorio().forEach(function(p){ hay[p.n] = 1; });
-    return Object.keys(RECETAS).filter(function(n){ return hay[n] && RECETAS[n].length; })
-                 .map(function(n){ return {plato:n, pasos:RECETAS[n].slice()}; });
+    return Object.keys(RECETAS).filter(function(n){ return hay[n] && hayReceta(n); })
+                 .map(function(n){
+                   const r = recetaDe(n);
+                   return {plato:n, pasos:r.pasos, cantidades:r.cantidades};
+                 });
   }
   function filasReglas(){
     return REGLAS.map(function(r){
@@ -3905,7 +3971,8 @@
         paraComprar:paraComprar, marcarCompra:marcarCompra, huecosIguales:huecosIguales,
         REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
         aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
-        RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarPasos:fijarPasos,
+        RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
+        hayReceta:hayReceta, cantidadesDe:cantidadesDe, pasosEnApartados:pasosEnApartados,
         platosConReceta:platosConReceta, necesitaReceta:necesitaReceta,
         revisaGuarde:revisaGuarde, parecidos:parecidos, pesoPalabras:pesoPalabras,
         palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
@@ -4105,7 +4172,7 @@
     const todos = platosConReceta();
 
     const vistos = todos.filter(function(p){
-      if(RECETA_FILTRO === "falta" && pasosDe(p.n).length) return false;
+      if(RECETA_FILTRO === "falta" && hayReceta(p.n)) return false;
       if((RECETA_FILTRO === "alto" || RECETA_FILTRO === "medio") && p.tiempo !== RECETA_FILTRO) return false;
       if(!q) return true;
       return sinTildes(p.n).indexOf(q) !== -1 ||
@@ -4113,7 +4180,7 @@
     });
 
     cont.textContent = "";
-    const faltan = todos.filter(function(p){ return !pasosDe(p.n).length; }).length;
+    const faltan = todos.filter(function(p){ return !hayReceta(p.n); }).length;
     cont.appendChild(el("p", {class:"hint", style:"margin-bottom:12px", text:
       "Los " + todos.length + " platos de preparaci\u00f3n media o alta. Los de preparaci\u00f3n baja no salen " +
       "aqu\u00ed: no hay nada que explicar de poner fruta en un plato." +
@@ -4129,27 +4196,51 @@
   }
 
   function fichaReceta(p){
-    const pasos = pasosDe(p.n);
-    const caja = el("article", {class:"receta" + (pasos.length ? "" : " vacia")});
+    const escrita = hayReceta(p.n);
+    const caja = el("article", {class:"receta" + (escrita ? "" : " vacia")});
 
     caja.appendChild(el("header", null, [
       el("span", {class:"sw", style:"background:" + colorDe(claveDe(tiposDe(p)[0] || ""))}),
       el("h3", {text:p.n}),
       el("span", {class:"dif dif-" + p.tiempo, text:DIF_LBL[p.tiempo] || p.tiempo})
     ]));
-    if(p.d && p.d !== "Sin descripci\u00f3n.") caja.appendChild(el("p", {class:"desc", text:p.d}));
+    if(p.d && p.d !== "Sin descripción.") caja.appendChild(el("p", {class:"desc", text:p.d}));
 
-    caja.appendChild(el("div", {class:"rec-ings"}, (p.i || []).map(function(i){
-      return el("span", {class:"chip chip-ing", text:i});
+    // Los ingredientes con lo que lleva cada uno, para una persona: multiplicar
+    // es fácil y dividir por tres y medio no.
+    const cantidades = cantidadesDe(p);
+    const faltan = cantidades.filter(function(x){ return !x.cuanto; }).length;
+    caja.appendChild(el("div", {class:"rec-sub"}, [
+      el("span", {class:"t", text:"Ingredientes"}),
+      el("span", {class:"n", text:"para una persona"})
+    ]));
+    caja.appendChild(el("ul", {class:"rec-ings"}, cantidades.map(function(x){
+      return el("li", {class: x.cuanto ? "" : "sin-cuanto"}, [
+        el("span", {class:"que", text:x.que}),
+        el("span", {class:"cuanto", text:x.cuanto || "—"})
+      ]);
     })));
+    if(escrita && faltan){
+      caja.appendChild(el("p", {class:"rec-aviso",
+        text: faltan === 1 ? "Falta la cantidad de un ingrediente."
+                           : "Faltan las cantidades de " + faltan + " ingredientes."}));
+    }
 
-    const lista = el("ol", {class:"pasos"});
-    pasos.forEach(function(x){ lista.appendChild(el("li", {text:x})); });
-    if(pasos.length) caja.appendChild(lista);
-    else caja.appendChild(el("p", {class:"sin-pasos", text:"Sin pasos escritos todav\u00eda."}));
+    const grupos = pasosEnApartados(pasosDe(p.n));
+    if(grupos.length){
+      caja.appendChild(el("div", {class:"rec-sub"}, [el("span", {class:"t", text:"Cómo se hace"})]));
+      grupos.forEach(function(g){
+        if(g.titulo) caja.appendChild(el("h4", {class:"rec-apartado", text:g.titulo}));
+        caja.appendChild(el("ul", {class:"pasos"}, g.puntos.map(function(x){
+          return el("li", {text:x});
+        })));
+      });
+    }else{
+      caja.appendChild(el("p", {class:"sin-pasos", text:"Sin pasos escritos todavía."}));
+    }
 
     caja.appendChild(el("button", {type:"button", class:"btn btn-sm rec-editar",
-      text: pasos.length ? "Editar pasos" : "Escribir los pasos",
+      text: escrita ? "Editar receta" : "Escribir la receta",
       onclick:function(){ abrirPasos(p); }}));
     return caja;
   }
@@ -4163,41 +4254,68 @@
 
   function abrirPasos(p){
     cerrarPasos();
-    const area = el("textarea", {id:"pasos-texto", rows:"12",
-      placeholder:"Un paso por l\u00ednea.\nCortar las berenjenas a lo largo y vaciarlas."});
-    area.value = pasosDe(p.n).join("\n");
+    const r = recetaDe(p.n);
+
+    // Arranca con los ingredientes del plato ya escritos, cada uno esperando su
+    // cantidad: no hay que acordarse de cuáles eran ni copiarlos a mano.
+    const dichas = {};
+    r.cantidades.forEach(function(l){
+      const x = partirCantidad(l);
+      if(x.que) dichas[x.que.toLowerCase()] = x.cuanto;
+    });
+    const cantidades = el("textarea", {id:"rec-cantidades", rows:"7",
+      placeholder:"berenjena: 1 mediana"});
+    cantidades.value = (p.i || []).map(function(i){
+      return i + ": " + (dichas[i.toLowerCase()] || "");
+    }).join("\n");
+
+    const area = el("textarea", {id:"pasos-texto", rows:"14",
+      placeholder:"Asar las berenjenas:\nHorno a 200°.\nPartirlas a lo largo."});
+    area.value = r.pasos.join("\n");
 
     const caja = el("div", {class:"editor", role:"dialog", "aria-modal":"true",
-                            "aria-label":"Pasos de " + p.n}, [
+                            "aria-label":"Receta de " + p.n}, [
       el("header", null, [
         el("div", null, [
           el("h3", {text:p.n}),
-          el("div", {class:"hint", text:"Un paso por l\u00ednea. Cortos: esto se lee de pie."})
+          el("div", {class:"hint", text:"Cantidades para una persona. Esto se lee de pie: corto."})
         ]),
         el("span", {class:"dif dif-" + p.tiempo, text:DIF_LBL[p.tiempo] || p.tiempo})
       ]),
       el("div", {class:"editor-body"}, [
         el("div", {class:"full"}, [
-          el("label", {class:"bloque-lbl", text:"Ingredientes"}),
-          el("div", {class:"rec-ings"}, (p.i || []).map(function(i){
-            return el("span", {class:"chip chip-ing", text:i});
-          }))
+          el("label", {class:"bloque-lbl", for:"rec-cantidades", text:"Cuánto lleva de cada cosa"}),
+          el("p", {class:"hint", style:"margin:-2px 0 6px",
+                   text:"Uno por línea, «ingrediente: cantidad». Los nombres salen del plato: " +
+                        "para cambiar la lista, edita el plato."}),
+          cantidades
         ]),
-        el("div", {class:"full"}, [area])
+        el("div", {class:"full"}, [
+          el("label", {class:"bloque-lbl", for:"pasos-texto", text:"Cómo se hace"}),
+          el("p", {class:"hint", style:"margin:-2px 0 6px",
+                   text:"Un paso por línea. Una línea acabada en dos puntos es un apartado, " +
+                        "y lo que venga debajo son sus pasos."}),
+          area
+        ])
       ]),
       el("footer", null, [
         el("div", {class:"der"}, [
           el("button", {class:"btn", text:"Cancelar", onclick:cerrarPasos}),
           el("button", {class:"btn btn-primary", text:"Guardar", onclick:function(){
-            fijarPasos(p.n, area.value.split("\n"));
+            // Una línea sin cantidad no se guarda: es ruido que luego habría
+            // que distinguir de una cantidad de verdad.
+            const cants = cantidades.value.split("\n").filter(function(l){
+              return partirCantidad(l).cuanto;
+            });
+            fijarReceta(p.n, area.value.split("\n"), cants);
             cerrarPasos(); pintarRecetas();
-            aviso("Pasos de \u00ab" + p.n + "\u00bb guardados");
+            aviso("Receta de «" + p.n + "» guardada");
           }})
         ])
       ])
     ]);
 
-    capaPasos = abrirCapa(caja, area);
+    capaPasos = abrirCapa(caja, cantidades);
   }
 
   /* ============ Copias de seguridad ============ */
