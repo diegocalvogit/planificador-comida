@@ -197,6 +197,7 @@ window.CASOS = [
   nombre: "Las cantidades se casan con los ingredientes del plato",
   correr: function(app, banco, t){
     const p = app.plato("adultos", "Paella de marisco y carne");
+    t.igual(app.estado.comensales, 1, "de partida, una persona");
     const c = app.cantidadesDe(p);
     t.igual(c.length, (p.i || []).length, "una fila por ingrediente del plato");
     t.cierto(c.every(function(x){ return x.cuanto; }), "y todas con su cantidad");
@@ -206,6 +207,55 @@ window.CASOS = [
     app.fijarReceta(p.n, app.pasosDe(p.n),
                     app.recetaDe(p.n).cantidades.concat(["unicornio: 2 kg"]));
     t.igual(app.cantidadesDe(p).length, (p.i || []).length, "la huérfana no aparece");
+  }
+},
+
+{
+  // Cazaría: que al quitar un ingrediente de un plato su cantidad se quede
+  // colgada en la receta, o que renombrarlo deje la receta huérfana.
+  nombre: "Tocar un plato arrastra su receta y sus reglas",
+  correr: function(app, banco, t){
+    const n = "Paella de marisco y carne";
+    t.cierto(app.hayReceta(n), "de partida tiene receta");
+
+    // Quitarle un ingrediente: su cantidad se va.
+    const p = app.plato("adultos", n);
+    const sinAzafran = (p.i || []).filter(function(i){ return i !== "azafrán"; });
+    app.podarCantidades(n, sinAzafran);
+    const quedan = app.recetaDe(n).cantidades.map(function(l){
+      return l.split(":")[0].trim();
+    });
+    t.cierto(quedan.indexOf("azafrán") === -1, "la cantidad del azafrán se va");
+    t.cierto(quedan.indexOf("arroz") !== -1, "las demás se quedan");
+
+    // Renombrarlo: la receta y la regla le siguen.
+    app.ponerReglas([{menu:"casa", dia:"domingo", momento:"comida", orden:"1", plato:n}]);
+    app.renombrarPlato(n, "Paella de los domingos");
+    t.cierto(!app.hayReceta(n), "la receta ya no está con el nombre viejo");
+    t.cierto(app.hayReceta("Paella de los domingos"), "y sí con el nuevo");
+    t.igual(app.REGLAS()[0].plato, "Paella de los domingos", "la regla también");
+
+    // Borrarlo: se lleva las dos por delante.
+    app.renombrarPlato("Paella de los domingos", null);
+    t.cierto(!app.hayReceta("Paella de los domingos"), "borrado, sin receta");
+    t.igual(app.REGLAS().length, 0, "y sin regla");
+  }
+},
+{
+  nombre: "Las cantidades se multiplican por los comensales",
+  correr: function(app, banco, t){
+    const p = app.plato("adultos", "Paella de marisco y carne");
+    const de = function(c, q){
+      return (c.filter(function(x){ return x.que === q; })[0] || {}).cuanto;
+    };
+    app.estado.comensales = 1;
+    t.igual(de(app.cantidadesDe(p), "arroz"), "100 g", "para uno");
+    app.estado.comensales = 3;
+    const tres = app.cantidadesDe(p);
+    t.igual(de(tres, "arroz"), "300 g", "para tres");
+    t.igual(de(tres, "gambas"), "18 unidades (240 g)", "todos los números, no solo el primero");
+    t.igual(de(tres, "azafrán"), "unas hebras", "lo que no lleva números se queda igual");
+    app.estado.comensales = 1;
   }
 },
 

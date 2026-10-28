@@ -77,6 +77,10 @@
   function arrancarApp(){
     // Base nueva por caso: así ninguno hereda lo que el anterior dejó a medias.
     bancoActual = window.bancoFalso(window.DATOS_PRUEBA);
+    // Y preferencias nuevas: la aplicación comparte localStorage con esta
+    // página, así que sin esto una prueba hereda la pestaña, la semana o los
+    // comensales que dejara el navegador, y falla o pasa por lo que no es.
+    try{ localStorage.removeItem("menu-semanal:v6"); }catch(e){}
     const banco = bancoActual;
     return new Promise(function(listo, falla){
       const marco = document.createElement("iframe");

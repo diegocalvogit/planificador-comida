@@ -67,6 +67,11 @@ La pantalla va sin títulos ni textos de ayuda: la pestaña activa ya dice dónd
 
 Todo plato es **editable por completo** desde su botón *Editar*, venga del volcado inicial o lo hayas añadido tú: todos los campos, los grupos a los que pertenece y cuál de ellos es la base que le da color. También se puede eliminar. Al renombrar o borrar un plato, sus huecos en las semanas ya planificadas se actualizan solos.
 
+Tocar un plato **arrastra lo que lo nombra**: renombrarlo mueve su receta y sus reglas del día a día,
+borrarlo se las lleva, y quitarle un ingrediente borra la cantidad que la receta le daba. En la base eso lo
+hace la clave ajena en cascada; en memoria hay que hacerlo a mano, y mientras no se hace la página enseña
+cosas que ya no existen y manda a guardar filas que la base rechaza.
+
 Los ingredientes **solo se eligen del catálogo**: el editor los ofrece con autocompletado y rechaza lo que no esté en él. Así no acaban conviviendo «pimiento», «pimientos» y «piniento». Lo que no esté **se da de alta ahí mismo**: el autocompletado ofrece *Crear «…»*, y lo único que pregunta es la sección del súper, que es lo único que la lista de la compra necesita saber. La sección viene propuesta mirando a los ingredientes que ya tienes —«puerro ecológico» comparte palabra con «puerro», que está en la frutería—, así que casi siempre basta con confirmar. Mandar a la pestaña Ingredientes con el plato a medio escribir era perder el plato.
 
 La columna **Menús** lleva una casilla por menú, marcable desde la propia tabla: así se pasa un plato de un menú a otro sin duplicarlo. Desmarcar la última casilla no borra el plato, solo lo deja fuera de los dos menús; para eliminarlo del repertorio está el botón del editor. Al sacarlo de un menú, se quita también de las semanas de ese menú.
@@ -319,6 +324,15 @@ Las viñetas son **cortas y en imperativo, con el tiempo dentro del paso al que 
 de pie y con las manos ocupadas, así que lo que importa es qué toca ahora y cuándo pasar a lo siguiente. Lo
 que no está en la lista del plato — sal, un chorro de aceite — se nombra en el paso pero no se pesa: no se
 compra para una receta.
+
+Arriba de la pestaña hay un **número de comensales**: las cantidades se guardan siempre por persona y se
+multiplican al pintarlas, así que lo guardado no depende de cuántos seáis hoy. Se escalan *todos* los
+números de la línea y no solo el primero — «6 unidades (80 g)» por cuatro es «24 unidades (320 g)» — y las
+medidas que se cuentan se ponen en plural, que «4 cucharada» canta. Por eso las cantidades **se escriben con
+números**: «media cebolla» no se puede multiplicar y «40 g» sí.
+
+Cada receta ocupa **una fila entera**, con los ingredientes a un lado y los pasos al otro. En tres columnas
+no cabía ninguna entera en pantalla y había que subir y bajar para leer seis viñetas.
 
 Se escribe todo desde la propia ficha, en dos campos de texto, con los ingredientes del plato ya puestos
 esperando su cantidad. Se busca por plato o por ingrediente, y se filtra por dificultad o por *sin escribir*,

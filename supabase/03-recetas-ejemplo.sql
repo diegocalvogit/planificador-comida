@@ -14,14 +14,17 @@
 --   · Los ingredientes no se repiten en los pasos: ya están arriba con su peso.
 --   · Lo que no está en la lista del plato —sal, pimienta, un chorro de aceite—
 --     se nombra en el paso pero no se pesa: no se compra para una receta.
+--   · Las cantidades se escriben CON NÚMEROS, nunca «media cebolla» ni «un
+--     cuarto»: la pantalla las multiplica por los comensales, y una palabra no
+--     se puede multiplicar.
 
 insert into public.recetas (plato, cantidades, pasos) values
 
   ('Berenjenas rellenas',
    array[
-     'berenjena: 1 mediana (250 g)',
+     'berenjena: 1 unidad (250 g)',
      'carne picada de pollo: 100 g',
-     'cebolla: media pequeña (40 g)',
+     'cebolla: 40 g',
      'tomate frito: 3 cucharadas (50 g)',
      'queso rallado: 30 g'
    ],
@@ -49,7 +52,7 @@ insert into public.recetas (plato, cantidades, pasos) values
      'pechuga de pollo: 100 g',
      'calamares: 80 g',
      'gambas: 6 unidades (80 g)',
-     'pimiento rojo: un cuarto (40 g)',
+     'pimiento rojo: 40 g',
      'caldo de pescado: 250 ml',
      'azafrán: unas hebras',
      'aceite de oliva: 1 cucharada'

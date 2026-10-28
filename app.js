@@ -148,6 +148,41 @@
     return grupos.filter(function(g){ return g.puntos.length || g.titulo; });
   }
 
+  // Multiplica los números que haya en una cantidad. "100 g" por tres es
+  // "300 g"; "6 unidades (80 g)" es "18 unidades (240 g)".
+  //
+  // Se escalan *todos* los números del texto y no solo el primero, porque una
+  // cantidad suele llevar la medida de cocina y el peso entre paréntesis, y
+  // dejar uno sin tocar es peor que no escalar nada.
+  //
+  // Por eso las cantidades se escriben con números: "media cebolla" no se puede
+  // multiplicar, y "40 g" sí.
+  // Las medidas de cocina que se cuentan y que, en plural, cambian de forma.
+  // No hace falta una lista completa del idioma: solo las que aparecen en una
+  // cantidad, y si falta alguna se añade aquí.
+  const UNIDADES = ["unidad", "cucharada", "cucharadita", "diente", "rebanada", "loncha",
+                    "rodaja", "hoja", "rama", "lata", "vaso", "puñado", "pizca", "ramita"];
+
+  function escalarCantidad(texto, veces){
+    if(veces === 1) return texto;
+    // El número y, si la hay, la palabra que le sigue: para decir "4 cucharadas"
+    // y no "4 cucharada", que canta más de lo que parece en una lista.
+    return String(texto).replace(/(\d+(?:[.,]\d+)?)(\s*)([a-záéíóúñ]+)?/gi,
+      function(todo, num, hueco, palabra){
+        const v = parseFloat(num.replace(",", ".")) * veces;
+        if(!isFinite(v)) return todo;
+        // Medio kilo de arroz no se escribe "500.00000001 g".
+        const r = Math.round(v * 100) / 100;
+        const n = String(r % 1 === 0 ? r : r.toFixed(1).replace(".", ","));
+        if(palabra === undefined) return n;
+        const baja = palabra.toLowerCase();
+        const plural = (r !== 1 && UNIDADES.indexOf(baja) !== -1)
+                     ? palabra + (/[aeiou]$/i.test(palabra) ? "s" : "es")
+                     : palabra;
+        return n + hueco + plural;
+      });
+  }
+
   function partirCantidad(linea){
     const i = String(linea).indexOf(":");
     if(i === -1) return {que:String(linea).trim(), cuanto:""};
@@ -164,8 +199,10 @@
       const x = partirCantidad(l);
       if(x.que) dichas[x.que.toLowerCase()] = x.cuanto;
     });
+    const veces = Math.max(1, Number(estado.comensales) || 1);
     return (p.i || []).map(function(ing){
-      return {que:ing, cuanto:dichas[ing.toLowerCase()] || ""};
+      const cuanto = dichas[ing.toLowerCase()] || "";
+      return {que:ing, cuanto:cuanto ? escalarCantidad(cuanto, veces) : ""};
     });
   }
   function platosConReceta(){
@@ -407,7 +444,7 @@
   const CLAVE = "menu-semanal:v6";
   function perfilVacio(){ return {semanas:{}}; }
   let estado = { tab:"semana", semana:null, despensa:{}, secciones:{},
-                 compras:{}, semanasBorradas:[], objetivos:{},
+                 compras:{}, semanasBorradas:[], objetivos:{}, comensales:1,
                  platos:{ediciones:{}, borrados:[], extra:[]},
                  ing:{ediciones:{}, borrados:[], extra:[]},
                  adultos:perfilVacio(), nino:perfilVacio() };
@@ -427,6 +464,7 @@
     estado.semana = p.semana || null;
     estado.equilibrioAbierto = (p.equilibrioAbierto && typeof p.equilibrioAbierto === "object")
                              ? p.equilibrioAbierto : {};
+    estado.comensales = Math.min(20, Math.max(1, Number(p.comensales) || 1));
   }
 
   // En el navegador ya solo viven las preferencias: qué pestaña y qué semana
@@ -434,13 +472,15 @@
   function guardarPreferencias(){
     try{
       localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
-                                                  equilibrioAbierto:estado.equilibrioAbierto}));
+                                                  equilibrioAbierto:estado.equilibrioAbierto,
+                                                  comensales:estado.comensales}));
     }catch(e){}
   }
   function guardar(){
     try{
       localStorage.setItem(CLAVE, JSON.stringify({tab:estado.tab, semana:estado.semana,
-                                                  equilibrioAbierto:estado.equilibrioAbierto}));
+                                                  equilibrioAbierto:estado.equilibrioAbierto,
+                                                  comensales:estado.comensales}));
     }catch(e){}
     persistir();
   }
@@ -826,6 +866,43 @@
   }
 
   // Al renombrar o borrar un plato, sus huecos dejan de apuntar a un nombre muerto.
+  // Un plato no sale solo en las semanas: también lo nombran su receta y las
+  // reglas del día a día. En la base eso lo arregla la clave ajena en cascada,
+  // pero en memoria hay que hacerlo a mano, y mientras no se haga la página
+  // enseña cosas que ya no existen y manda a guardar filas que la base rechaza.
+  //
+  // `nuevo` a null quiere decir que el plato se ha ido.
+  function renombrarPlato(viejo, nuevo){
+    if(!viejo || viejo === nuevo) return;
+    PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, viejo, nuevo); });
+
+    if(RECETAS[viejo]){
+      if(nuevo) RECETAS[nuevo] = RECETAS[viejo];
+      delete RECETAS[viejo];
+    }
+    REGLAS = REGLAS.filter(function(r){
+      if(r.plato !== viejo) return true;
+      if(!nuevo) return false;
+      r.plato = nuevo;
+      return true;
+    });
+    guardar();
+  }
+
+  // Al cambiar los ingredientes de un plato, su receta se queda con cantidades
+  // de cosas que ya no lleva. No estorban en la ficha — que se pinta desde la
+  // lista del plato — pero sí en la copia de seguridad y al editar la receta.
+  function podarCantidades(nombre, ingredientes){
+    const r = RECETAS[nombre];
+    if(!r || !r.cantidades || !r.cantidades.length) return;
+    const valen = {};
+    (ingredientes || []).forEach(function(i){ valen[String(i).toLowerCase()] = 1; });
+    r.cantidades = r.cantidades.filter(function(l){
+      return valen[partirCantidad(l).que.toLowerCase()];
+    });
+    if(!r.pasos.length && !r.cantidades.length) delete RECETAS[nombre];
+  }
+
   function reemplazarEnSemanas(pid, viejo, nuevo){
     if(!viejo || viejo === nuevo) return;
     idsSemanas(pid).forEach(function(id){
@@ -2839,7 +2916,7 @@
         if(!window.confirm("¿Eliminar «" + p.n + "» del repertorio, para los dos menús?\n" +
                            "Se quitará de las semanas en las que esté. Para sacarlo de un solo menú, " +
                            "desmarca su casilla.")) return;
-        PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, p.n, null); });
+        renombrarPlato(p.n, null);
         if(p.custom) estado.platos.extra = estado.platos.extra.filter(function(x){ return x.uid !== p.uid; });
         else{
           if(estado.platos.borrados.indexOf(p.orig) === -1) estado.platos.borrados.push(p.orig);
@@ -2851,7 +2928,7 @@
         pie.push(el("button", {class:"btn btn-ghost", text:"Deshacer cambios", onclick:function(){
           const original = PLATOS.filter(function(x){ return x.orig === p.orig; })[0];
           delete estado.platos.ediciones[p.orig];
-          if(original) PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, p.n, original.n); });
+          if(original) renombrarPlato(p.n, original.n);
           guardar(); cerrarEditor(); pintarTodo();
           aviso("Plato devuelto a lo que dice el CSV");
         }}));
@@ -2904,10 +2981,12 @@
         }else if(p.custom){
           const obj = estado.platos.extra.filter(function(x){ return x.uid === p.uid; })[0];
           Object.keys(campos).forEach(function(k){ obj[k] = campos[k]; });
-          PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, nombreAntes, n); });
+          renombrarPlato(nombreAntes, n);
+          podarCantidades(n, ings);
         }else{
           estado.platos.ediciones[p.orig] = campos;
-          PERFILES.forEach(function(pf){ reemplazarEnSemanas(pf.id, nombreAntes, n); });
+          renombrarPlato(nombreAntes, n);
+          podarCantidades(n, ings);
         }
         guardar(); cerrarEditor(); pintarTodo();
         if(nuevo && ini.alGuardar) ini.alGuardar(n);
@@ -3776,7 +3855,11 @@
                  });
   }
   function filasReglas(){
-    return REGLAS.map(function(r){
+    // La clave ajena rechazaría una regla de un plato que ya no está, y el
+    // guardado entero se vendría abajo con él.
+    const hay = {};
+    repertorio().forEach(function(p){ hay[p.n] = 1; });
+    return REGLAS.filter(function(r){ return hay[r.plato]; }).map(function(r){
       return {menu:r.menu, dia:r.dia, momento:r.momento, orden:Number(r.orden), plato:r.plato};
     });
   }
@@ -3973,6 +4056,8 @@
         aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
         hayReceta:hayReceta, cantidadesDe:cantidadesDe, pasosEnApartados:pasosEnApartados,
+        renombrarPlato:renombrarPlato, podarCantidades:podarCantidades,
+        escalarCantidad:escalarCantidad,
         platosConReceta:platosConReceta, necesitaReceta:necesitaReceta,
         revisaGuarde:revisaGuarde, parecidos:parecidos, pesoPalabras:pesoPalabras,
         palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
@@ -4149,6 +4234,17 @@
       b.dataset.listo = "1";
       b.addEventListener("input", pintarRecetas);
     }
+    const c = $("rec-comensales");
+    if(c && !c.dataset.listo){
+      c.dataset.listo = "1";
+      c.value = String(estado.comensales || 1);
+      c.addEventListener("change", function(){
+        estado.comensales = Math.min(20, Math.max(1, Number(c.value) || 1));
+        c.value = String(estado.comensales);
+        guardarPreferencias();
+        pintarRecetas();
+      });
+    }
     const f = $("rec-filtro");
     if(f){
       f.textContent = "";
@@ -4206,42 +4302,52 @@
     ]));
     if(p.d && p.d !== "Sin descripción.") caja.appendChild(el("p", {class:"desc", text:p.d}));
 
-    // Los ingredientes con lo que lleva cada uno, para una persona: multiplicar
-    // es fácil y dividir por tres y medio no.
+    // Dos bloques y no una lista de hijos sueltos: con el grid de dos columnas,
+    // cada hijo directo abriría su propia fila y los ingredientes acababan
+    // entremezclados con los pasos.
+    const izq = el("div", {class:"rec-izq"});
+    const der = el("div", {class:"rec-der"});
+
+    // Los ingredientes con lo que lleva cada uno. Se guardan por persona y se
+    // multiplican al pintarlos: lo guardado no depende de cuántos sesáis hoy.
     const cantidades = cantidadesDe(p);
     const faltan = cantidades.filter(function(x){ return !x.cuanto; }).length;
-    caja.appendChild(el("div", {class:"rec-sub"}, [
+    const cuantos = Math.max(1, Number(estado.comensales) || 1);
+    izq.appendChild(el("div", {class:"rec-sub"}, [
       el("span", {class:"t", text:"Ingredientes"}),
-      el("span", {class:"n", text:"para una persona"})
+      el("span", {class:"n", text: cuantos === 1 ? "para una persona"
+                                                 : "para " + cuantos + " personas"})
     ]));
-    caja.appendChild(el("ul", {class:"rec-ings"}, cantidades.map(function(x){
+    izq.appendChild(el("ul", {class:"rec-ings"}, cantidades.map(function(x){
       return el("li", {class: x.cuanto ? "" : "sin-cuanto"}, [
         el("span", {class:"que", text:x.que}),
         el("span", {class:"cuanto", text:x.cuanto || "—"})
       ]);
     })));
     if(escrita && faltan){
-      caja.appendChild(el("p", {class:"rec-aviso",
+      izq.appendChild(el("p", {class:"rec-aviso",
         text: faltan === 1 ? "Falta la cantidad de un ingrediente."
                            : "Faltan las cantidades de " + faltan + " ingredientes."}));
     }
+    izq.appendChild(el("button", {type:"button", class:"btn btn-sm rec-editar",
+      text: escrita ? "Editar receta" : "Escribir la receta",
+      onclick:function(){ abrirPasos(p); }}));
 
     const grupos = pasosEnApartados(pasosDe(p.n));
     if(grupos.length){
-      caja.appendChild(el("div", {class:"rec-sub"}, [el("span", {class:"t", text:"Cómo se hace"})]));
+      der.appendChild(el("div", {class:"rec-sub"}, [el("span", {class:"t", text:"Cómo se hace"})]));
       grupos.forEach(function(g){
-        if(g.titulo) caja.appendChild(el("h4", {class:"rec-apartado", text:g.titulo}));
-        caja.appendChild(el("ul", {class:"pasos"}, g.puntos.map(function(x){
+        if(g.titulo) der.appendChild(el("h4", {class:"rec-apartado", text:g.titulo}));
+        der.appendChild(el("ul", {class:"pasos"}, g.puntos.map(function(x){
           return el("li", {text:x});
         })));
       });
     }else{
-      caja.appendChild(el("p", {class:"sin-pasos", text:"Sin pasos escritos todavía."}));
+      der.appendChild(el("p", {class:"sin-pasos", text:"Sin pasos escritos todavía."}));
     }
 
-    caja.appendChild(el("button", {type:"button", class:"btn btn-sm rec-editar",
-      text: escrita ? "Editar receta" : "Escribir la receta",
-      onclick:function(){ abrirPasos(p); }}));
+    caja.appendChild(izq);
+    caja.appendChild(der);
     return caja;
   }
 

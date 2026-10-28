@@ -6,9 +6,9 @@ window.DATOS_PRUEBA = {
   {
    "plato": "Berenjenas rellenas",
    "cantidades": [
-    "berenjena: 1 mediana (250 g)",
+    "berenjena: 1 unidad (250 g)",
     "carne picada de pollo: 100 g",
-    "cebolla: media pequeña (40 g)",
+    "cebolla: 40 g",
     "tomate frito: 3 cucharadas (50 g)",
     "queso rallado: 30 g"
    ],
@@ -37,7 +37,7 @@ window.DATOS_PRUEBA = {
     "pechuga de pollo: 100 g",
     "calamares: 80 g",
     "gambas: 6 unidades (80 g)",
-    "pimiento rojo: un cuarto (40 g)",
+    "pimiento rojo: 40 g",
     "caldo de pescado: 250 ml",
     "azafrán: unas hebras",
     "aceite de oliva: 1 cucharada"

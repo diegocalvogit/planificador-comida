@@ -558,13 +558,26 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 /* Recetas: fichas que se leen de pie, no una revista de cocina. */
 .rec-cab{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .rec-cab input[type="search"]{flex:1 1 240px;min-width:0}
+.rec-comensales{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-2);
+  border:1px solid var(--line);border-radius:999px;padding:3px 12px;background:var(--surface)}
+.rec-comensales input{width:46px;padding:2px 4px;text-align:center;
+  font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .rec-filtro{display:flex;gap:6px;flex-wrap:wrap}
 .rec-chip{font-size:12.5px;padding:4px 11px;border:1px solid var(--line);border-radius:999px;
   background:var(--surface);color:var(--ink-2);cursor:pointer}
 .rec-chip:hover{border-color:var(--accent)}
 .rec-chip.activo{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px;
-  align-items:start}
+/* Una receta por fila y a todo el ancho: en tres columnas no cabía ninguna
+   entera en pantalla y había que subir y bajar para leer seis viñetas. */
+.rec-grid{display:grid;gap:12px}
+/* Dentro, los ingredientes a un lado y los pasos al otro, que es lo que
+   aprovecha el ancho sin estirar las líneas de texto hasta hacerlas ilegibles. */
+@media (min-width:760px){
+  .receta{display:grid;grid-template-columns:minmax(220px,290px) 1fr;
+    column-gap:28px;align-items:start}
+  .receta > header, .receta > .desc{grid-column:1/-1}
+  .rec-izq .rec-editar{width:auto;margin-top:10px}
+}
 .receta{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   padding:13px 15px 14px;box-shadow:var(--shadow)}
 .receta.vacia{background:var(--ground);border-style:dashed}
