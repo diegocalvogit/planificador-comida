@@ -142,15 +142,15 @@ insert into public.recetas (plato, cantidades, pasos) values
 
 /* ──────────────────────── Preparación media ──────────────────────── */
 
-  ('Arroz con huevo y carne',
-   array['arroz: 80 g', 'filetes de ternera: 120 g', 'huevos: 1 unidad',
+  ('Arroz con huevo',
+   array['arroz: 80 g', 'huevos: 2 unidades',
          'tomate frito: 3 cucharadas (50 g)', 'aceite de oliva: 1 cucharada'],
    array[
      'Cocer el arroz en agua con sal, 15 min. Escurrir y reservar.',
-     'Mientras, hacer el filete a la plancha a fuego fuerte, 2 min por lado. Salar al sacarlo.',
-     'Freír el huevo en aceite bien caliente, echándole aceite por encima con la cuchara.',
      'Calentar el tomate frito y mezclarlo con el arroz.',
-     'Montar: el arroz de base, el filete al lado y el huevo encima.'
+     'Freír los huevos en aceite bien caliente, echándoles aceite por encima con la cuchara.',
+     'Sacarlos cuando la clara esté cuajada y la yema siga líquida.',
+     'Montar: el arroz de base y los huevos encima.'
    ]),
 
   ('Arroz con pollo',

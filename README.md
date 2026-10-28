@@ -365,6 +365,7 @@ editas, `git push`, y ya está.
 02-datos.sql      la semilla: platos, ingredientes, objetivos y un histórico
 03-recetas.sql    las recetas de los platos de preparación media o alta
 04-limpieza.sql   arreglos de nombres que entraron torcidos con un cargador
+05-arroz-con-huevo.sql   un plato que se quedó sin la carne que decía su nombre
 ```
 
 Los dos primeros se ejecutan una vez, al montar la base. `04-limpieza.sql` se

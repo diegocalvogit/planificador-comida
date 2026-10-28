@@ -164,20 +164,19 @@ window.DATOS_PRUEBA = {
    ]
   },
   {
-   "plato": "Arroz con huevo y carne",
+   "plato": "Arroz con huevo",
    "cantidades": [
     "arroz: 80 g",
-    "filetes de ternera: 120 g",
-    "huevos: 1 unidad",
+    "huevos: 2 unidades",
     "tomate frito: 3 cucharadas (50 g)",
     "aceite de oliva: 1 cucharada"
    ],
    "pasos": [
     "Cocer el arroz en agua con sal, 15 min. Escurrir y reservar.",
-    "Mientras, hacer el filete a la plancha a fuego fuerte, 2 min por lado. Salar al sacarlo.",
-    "Freír el huevo en aceite bien caliente, echándole aceite por encima con la cuchara.",
     "Calentar el tomate frito y mezclarlo con el arroz.",
-    "Montar: el arroz de base, el filete al lado y el huevo encima."
+    "Freír los huevos en aceite bien caliente, echándoles aceite por encima con la cuchara.",
+    "Sacarlos cuando la clara esté cuajada y la yema siga líquida.",
+    "Montar: el arroz de base y los huevos encima."
    ]
   },
   {
@@ -1778,14 +1777,13 @@ window.DATOS_PRUEBA = {
    ]
   },
   {
-   "nombre": "Arroz con huevo y carne",
+   "nombre": "Arroz con huevo",
    "adultos": true,
    "nino": true,
-   "descripcion": "Plato combinado de arroz, huevo a la plancha y carne.",
+   "descripcion": "Arroz con tomate y huevo frito encima.",
    "tipo": [
     "Arroz",
-    "Huevo",
-    "Carne roja"
+    "Huevo"
    ],
    "momento": [
     "comida"
@@ -1796,7 +1794,6 @@ window.DATOS_PRUEBA = {
    "ingredientes": [
     "arroz",
     "huevos",
-    "filetes de ternera",
     "tomate frito",
     "aceite de oliva"
    ]
@@ -3231,7 +3228,7 @@ window.DATOS_PRUEBA = {
    "dia": "sábado",
    "momento": "comida",
    "orden": 1,
-   "plato": "Arroz con huevo y carne"
+   "plato": "Arroz con huevo"
   },
   {
    "es_para_comprar": true,
@@ -3600,7 +3597,7 @@ window.DATOS_PRUEBA = {
    "dia": "sábado",
    "momento": "comida",
    "orden": 1,
-   "plato": "Arroz con huevo y carne"
+   "plato": "Arroz con huevo"
   },
   {
    "es_para_comprar": true,
@@ -3699,7 +3696,7 @@ window.DATOS_PRUEBA = {
    "dia": "martes",
    "momento": "comida",
    "orden": 1,
-   "plato": "Arroz con huevo y carne"
+   "plato": "Arroz con huevo"
   },
   {
    "es_para_comprar": true,
@@ -3933,7 +3930,7 @@ window.DATOS_PRUEBA = {
    "dia": "martes",
    "momento": "comida",
    "orden": 1,
-   "plato": "Arroz con huevo y carne"
+   "plato": "Arroz con huevo"
   },
   {
    "es_para_comprar": true,
