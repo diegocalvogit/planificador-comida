@@ -112,7 +112,7 @@ datos = {"reglas": [], "recetas": [], "compras": []}
 
 # Las recetas van en su propio fichero porque son opcionales: la base funciona
 # sin ellas. Pero las pruebas las quieren, que si no no hay nada que mirar.
-receta_sql = io.open(os.path.join(RAIZ, "supabase", "03-recetas-ejemplo.sql"),
+receta_sql = io.open(os.path.join(RAIZ, "supabase", "03-recetas.sql"),
                      encoding="utf-8").read()
 for cruda in tuplas(receta_sql, "recetas"):
     partes = trozos(cruda)

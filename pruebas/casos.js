@@ -30,14 +30,17 @@ window.CASOS = [
   // Cazaría: un cambio que no se persiste, o que persiste de más.
   nombre: "Un cambio sube a la base, y solo ese",
   correr: async function(app, banco, t){
-    const antes = banco._tablas.recetas.length;   // las dos de ejemplo
-    // Un plato que no la tenga: las de ejemplo ya vienen escritas.
+    // Por el contenido y no por el número de filas: cuántas recetas hay
+    // escritas cambia cada vez que se añade una, y entonces la prueba falla
+    // por algo que no tiene nada que ver con guardar.
+    const antes = banco._tablas.recetas.length;
     app.fijarReceta("Brocoli", ["Cortar", "Hervir", "Escurrir"], ["brócoli: 150 g"]);
     await app.persistir();
-    t.igual(banco._tablas.recetas.length, antes + 1, "una receta más");
     const r = banco._tablas.recetas.filter(function(x){ return x.plato === "Brocoli"; })[0];
-    t.igual((r || {}).pasos.length, 3, "con sus tres pasos");
-    t.igual((r || {}).cantidades.length, 1, "y su cantidad");
+    t.cierto(!!r, "la receta está en la base");
+    t.igual(r.pasos, ["Cortar", "Hervir", "Escurrir"], "con sus pasos");
+    t.igual(r.cantidades, ["brócoli: 150 g"], "y su cantidad");
+    t.igual(banco._tablas.recetas.length, antes, "y no ha aparecido ninguna otra");
   }
 },
 
@@ -256,6 +259,35 @@ window.CASOS = [
     t.igual(de(tres, "gambas"), "18 unidades (240 g)", "todos los números, no solo el primero");
     t.igual(de(tres, "azafrán"), "unas hebras", "lo que no lleva números se queda igual");
     app.estado.comensales = 1;
+  }
+},
+
+{
+  // Cazaía: una receta que nombre una cantidad de algo que el plato no lleva,
+  // o un plato de preparación media o alta que se quede sin escribir.
+  nombre: "Todos los platos que lo piden tienen receta, y cuadra con sus ingredientes",
+  correr: function(app, banco, t){
+    const sinEscribir = app.platosConReceta().filter(function(p){ return !app.hayReceta(p.n); });
+    t.igual(sinEscribir.map(function(p){ return p.n; }), [], "ninguno sin escribir");
+
+    app.platosConReceta().forEach(function(p){
+      // Sin ingredientes no puede haber cantidades: es el caso de un plato al
+      // que le falta la lista, no un fallo de la receta.
+      if(!(p.i || []).length) return;
+      const c = app.cantidadesDe(p);
+      const sin = c.filter(function(x){ return !x.cuanto; }).map(function(x){ return x.que; });
+      t.igual(sin, [], p.n + ": ingredientes sin cantidad");
+      const dichos = app.recetaDe(p.n).cantidades.length;
+      t.igual(dichos, (p.i || []).length, p.n + ": cantidades de más o de menos");
+    });
+  }
+},
+{
+  nombre: "Ninguna receta se queda en un solo paso",
+  correr: function(app, banco, t){
+    app.platosConReceta().forEach(function(p){
+      t.cierto(app.pasosDe(p.n).length >= 3, p.n + " tiene " + app.pasosDe(p.n).length + " pasos");
+    });
   }
 },
 
