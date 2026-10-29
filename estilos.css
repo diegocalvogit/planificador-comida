@@ -325,16 +325,23 @@ table.plantilla{width:100%;min-width:0;border-collapse:collapse;table-layout:fix
 .plantilla .pl-grupo .pl-celda{border-top:1px solid var(--line)}
 .plantilla .pl-grupo:not(:first-of-type) tr:first-child .pl-celda{border-top:2px solid var(--line)}
 .plantilla .pl-celda{padding:1px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.pl-menu{display:flex;gap:6px;margin:0 0 9px}
+/* Cada celda es un botón: con diecinueve tipos y noventa platos dentro, un
+   desplegable obligaba a recorrer la lista con la rueda para llegar al bibe. */
 .plantilla .pl-sel{width:100%;border:0;background:transparent;font:inherit;font-size:11px;
-  color:var(--ink);padding:3px 2px;cursor:pointer;text-align:center;
-  -webkit-appearance:none;appearance:none;text-overflow:ellipsis}
-.plantilla .pl-sel:focus{outline:2px solid var(--accent);outline-offset:-2px}
+  color:var(--ink);padding:4px 2px;cursor:pointer;text-align:center;line-height:1.25;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plantilla .pl-sel:hover{text-decoration:underline;text-underline-offset:2px}
+.plantilla .pl-sel:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 /* Un plato clavado no es un tipo: se distingue sin depender del color, que lo
    gasta el tipo de alimento. */
-.plantilla .pl-plato .pl-sel{font-weight:700;color:var(--accent-ink)}
-.plantilla .pl-blanco{background:repeating-linear-gradient(135deg,
+.plantilla .pl-sel.es-plato{font-weight:700;color:var(--accent-ink)}
+.plantilla .pl-sel.es-roto{color:var(--pimenton);text-decoration:line-through}
+.plantilla .pl-celda:has(.es-blanco){background:repeating-linear-gradient(135deg,
   var(--ground) 0 4px, transparent 4px 8px)}
-.plantilla .pl-blanco .pl-sel{color:var(--ink-3);font-style:italic}
+.plantilla .pl-sel.es-blanco{color:var(--ink-3);font-style:italic}
+/* Las dos opciones que no son platos, al abrir una celda. */
+.opt-libre .on, .opt-blanco .on{font-style:italic}
 @media (max-width:760px){
   .plantilla .pl-momento{width:54px;font-size:8px}
   .plantilla .pl-orden{width:20px}

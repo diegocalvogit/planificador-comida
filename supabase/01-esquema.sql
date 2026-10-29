@@ -69,16 +69,18 @@ create table if not exists public.tipos (
 -- Lo último es lo que permite decir "mis cenas son de un plato". A mano sí se
 -- puede añadir: la plantilla gobierna el reparto automático, no ata las manos.
 --
--- Una sola plantilla para los dos menús, y por eso la aplicación solo deja
--- clavar platos que coman los dos: así no hay que decidir qué come el niño el
--- día que los adultos tienen paella.
+-- Hay una por menú. Hubo una sola para los dos, y por eso solo dejaba clavar
+-- platos que comieran ambos, para no tener que decidir qué come el niño el día
+-- que los adultos tienen paella. Pero eso dejaba fuera justo los casos que más
+-- se querían fijar: el bibe del desayuno y la paella misma.
 create table if not exists public.plantilla (
+  menu    text     not null check (menu in ('casa','nino')),
   dia     text     not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
   momento text     not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
   orden   smallint not null check (orden in (1,2,3)),
   tipo    text     references public.tipos(tipo)    on update cascade on delete cascade,
   plato   text     references public.platos(nombre) on update cascade on delete cascade,
-  primary key (dia, momento, orden),
+  primary key (menu, dia, momento, orden),
   constraint plantilla_una_cosa check (tipo is null or plato is null)
 );
 

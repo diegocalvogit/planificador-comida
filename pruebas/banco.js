@@ -14,7 +14,7 @@ window.bancoFalso = function(datos){
 
   const PK = {
     secciones:["seccion"], tipos:["clave"], ingredientes:["ingrediente"],
-    plantilla:["dia", "momento", "orden"], platos:["nombre"], recetas:["plato"],
+    plantilla:["menu", "dia", "momento", "orden"], platos:["nombre"], recetas:["plato"],
     semanas:["semana_id", "menu", "dia", "momento", "orden"],
     compras:["semana_id", "ingrediente"], despensa:["ingrediente"]
   };

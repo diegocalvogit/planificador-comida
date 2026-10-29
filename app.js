@@ -250,31 +250,24 @@
   // Lo último es lo que permite decir "mis cenas son de un plato". A mano sí se
   // puede añadir: la plantilla gobierna el reparto automático, no ata las manos.
   //
-  // Una sola plantilla para los dos menús, y por eso solo se pueden fijar platos
-  // que coman los dos: así no hay que decidir qué come el niño el día que los
-  // adultos tienen paella. El problema se quita de en medio en vez de resolverse.
+  // Hay una por menú. Hubo una sola para los dos, y por eso solo dejaba clavar
+  // platos que comieran ambos —para no tener que decidir qué come el niño el
+  // día que los adultos tienen paella—, pero eso dejaba fuera justo los casos
+  // que más se querían fijar: el bibe del desayuno, que no lo toma nadie más, y
+  // la paella misma. Con una por menú el problema se evapora en vez de
+  // esquivarse: cada una fija platos de los suyos.
   let PLANTILLA = {};
 
-  function clavePl(dia, momento, orden){ return dia + "|" + momento + "|" + orden; }
-  function celdaDe(dia, momento, orden){ return PLANTILLA[clavePl(dia, momento, orden)] || null; }
-  function fijarCelda(dia, momento, orden, celda){
-    const k = clavePl(dia, momento, orden);
+  function clavePl(pid, dia, momento, orden){
+    return pid + "|" + dia + "|" + momento + "|" + orden;
+  }
+  function celdaDe(pid, dia, momento, orden){
+    return PLANTILLA[clavePl(pid, dia, momento, orden)] || null;
+  }
+  function fijarCelda(pid, dia, momento, orden, celda){
+    const k = clavePl(pid, dia, momento, orden);
     if(celda) PLANTILLA[k] = celda; else delete PLANTILLA[k];
     guardar();
-  }
-  // El tipo que pide un hueco, si pide alguno. Un plato concreto no cuenta como
-  // tipo: ahí no hay nada que elegir.
-  function tipoDeHueco(dia, momento, orden){
-    const c = celdaDe(dia, momento, orden);
-    return c && c.tipo ? c.tipo : "";
-  }
-  function platoDeHueco(dia, momento, orden){
-    const c = celdaDe(dia, momento, orden);
-    return c && c.plato ? c.plato : "";
-  }
-  function huecoEnBlanco(dia, momento, orden){
-    const c = celdaDe(dia, momento, orden);
-    return !!(c && c.blanco);
   }
   // Si un plato lleva ese tipo entre los suyos, sirve. Los platos llevan varios
   // —unas lentejas con chorizo son Legumbre y Embutido— y basta con que uno
@@ -282,11 +275,6 @@
   function cumpleTipo(p, tipo){
     if(!tipo) return true;
     return tiposDe(p).indexOf(tipo) !== -1;
-  }
-  // Los que se pueden fijar: los que comen los dos. Lo demás obligaría a decidir
-  // qué come el otro, y eso es lo que no queremos tener que decidir.
-  function platosFijables(){
-    return repertorio().filter(function(p){ return p.menus && p.menus.adultos && p.menus.nino; });
   }
 
   // Al abrir una semana, los platos concretos de la plantilla ocupan los huecos
@@ -296,24 +284,19 @@
   // Los tipos no se colocan, que un tipo no es un plato: esos los resuelve el
   // generador y el selector.
   function aplicarPlantilla(id){
-    const quiere = {};
-    Object.keys(PLANTILLA).forEach(function(k){
-      const c = PLANTILLA[k];
-      if(c && c.plato && platoPorNombre(c.plato)) quiere[k] = c.plato;
-    });
-    if(!Object.keys(quiere).length) return 0;
-
     let puestos = 0;
     PERFILES.forEach(function(pf){
       const origen = huecos(pf.id, id), h = {};
       Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
       let suyos = 0;
-      Object.keys(quiere).forEach(function(k){
+      clavesDe().forEach(function(k){
+        const c = PLANTILLA[pf.id + "|" + k];
+        if(!(c && c.plato && plato(pf.id, c.plato))) return;
         const slot = k.split("|").slice(0, 2).join("|");
         // Libre es que no haya nada en toda la comida: meter una paella de
         // segundo debajo de unas lentejas no es lo que nadie quiso decir.
         if(ordenesDe().some(function(o){ return !!h[slot + "|" + o]; })) return;
-        h[k] = quiere[k];
+        h[k] = c.plato;
         suyos++;
       });
       if(suyos){ fijarHuecos(pf.id, id, h); puestos += suyos; }
@@ -326,13 +309,13 @@
   // porque son lo único de aquí que has decidido tú y no un reparto. Y se quedan
   // con la comida entera: media comida fijada y media repartida no significa
   // nada.
-  function conPlantilla(semilla){
+  function conPlantilla(pid, semilla){
     const h = {};
     Object.keys(semilla || {}).forEach(function(k){ if(semilla[k]) h[k] = semilla[k]; });
     const quiere = {}, slots = {};
-    Object.keys(PLANTILLA).forEach(function(k){
-      const c = PLANTILLA[k];
-      if(!(c && c.plato && platoPorNombre(c.plato))) return;
+    clavesDe().forEach(function(k){
+      const c = PLANTILLA[pid + "|" + k];
+      if(!(c && c.plato && plato(pid, c.plato))) return;
       quiere[k] = c.plato;
       slots[k.split("|").slice(0, 2).join("|")] = 1;
     });
@@ -423,7 +406,7 @@
       tabla("secciones",    ["orden"]),
       tabla("ingredientes", ["ingrediente"]),
       tabla("tipos",        ["orden"]),
-      tabla("plantilla",    ["dia", "momento", "orden"]),
+      tabla("plantilla",    ["menu", "dia", "momento", "orden"]),
       tabla("recetas",      ["plato"]),
       tabla("platos",       ["nombre"]),
       tabla("semanas",      ["semana_id", "dia", "momento", "orden"]),
@@ -449,7 +432,7 @@
       return {ingrediente:x.ingrediente, seccion:x.seccion};
     });
     datos.plantilla = plantilla.map(function(x){
-      return {dia:x.dia, momento:x.momento, orden:String(x.orden),
+      return {menu:x.menu, dia:x.dia, momento:x.momento, orden:String(x.orden),
               tipo:x.tipo || "", plato:x.plato || ""};
     });
     datos.recetas = recetas.map(function(x){
@@ -565,8 +548,8 @@
     // Sin tipo y sin plato, la fila dice "en blanco": existir ya es el dato.
     PLANTILLA = {};
     (datos.plantilla || []).forEach(function(x){
-      if(!x.dia || !x.momento || !x.orden) return;
-      const k = clavePl(x.dia, x.momento, x.orden);
+      if(!x.menu || !x.dia || !x.momento || !x.orden) return;
+      const k = clavePl(x.menu === "casa" ? "adultos" : "nino", x.dia, x.momento, x.orden);
       if(x.tipo) PLANTILLA[k] = {tipo:x.tipo};
       else if(x.plato) PLANTILLA[k] = {plato:x.plato};
       else PLANTILLA[k] = {blanco:true};
@@ -912,7 +895,7 @@
       const c = PLANTILLA[k];
       if(!c || c.plato !== viejo) return;
       PLANTILLA[k] = nuevo ? {plato:nuevo} : {blanco:true};
-    });
+    });   // vale para las dos plantillas: la clave lleva el menú delante
     guardar();
   }
 
@@ -1039,7 +1022,7 @@
       // Lo que la plantilla pide para cada hueco. Un hueco en blanco no se
       // rellena, y uno con plato clavado ya vino en la semilla.
       const vario = !LIGEROS[momento];
-      const pide = function(orden){ return PLANTILLA[slot + "|" + orden] || null; };
+      const pide = function(orden){ return PLANTILLA[pid + "|" + slot + "|" + orden] || null; };
       const deLaCelda = function(orden, pool){
         const c = pide(orden);
         if(!c || !c.tipo) return pool;
@@ -1102,7 +1085,7 @@
     function fallaPlantilla(hh){
       let t = 0;
       for(let ci = 0; ci < CLAVES.length; ci++){
-        const k = CLAVES[ci], c = PLANTILLA[k];
+        const k = CLAVES[ci], c = PLANTILLA[pid + "|" + k];
         if(!c) continue;
         const p = PORNOMBRE[hh[k]];
         // En blanco: el hueco tiene que estar vacío.
@@ -1135,7 +1118,7 @@
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
         if(fijados[slot]) continue;                    // lo que ya estaba puesto no se toca
-        const celda = PLANTILLA[k];
+        const celda = PLANTILLA[pid + "|" + k];
         // Un hueco en blanco se queda en blanco, y uno con plato clavado se
         // queda con el suyo: la plantilla no es una preferencia que el repaso
         // pueda negociar.
@@ -1262,7 +1245,7 @@
       });
       compacta(semilla, slot);
     });
-    return generar(id, "nino", {semilla:conPlantilla(semilla)});
+    return generar(id, "nino", {semilla:conPlantilla("nino", semilla)});
   }
 
   // La mesa, a partir de lo que come el niño: su mismo plato si los adultos
@@ -1283,7 +1266,7 @@
       const p1 = semilla[slot + "|1"] ? plato("adultos", semilla[slot + "|1"]) : null;
       if(p1 && p1.unico && semilla[slot + "|3"]) delete semilla[slot + "|3"];
     });
-    return generar(id, "adultos", {semilla:conPlantilla(semilla)});
+    return generar(id, "adultos", {semilla:conPlantilla("adultos", semilla)});
   }
 
   // En cuántas comidas la mesa y el niño tienen exactamente lo mismo. Se cuenta
@@ -2031,7 +2014,7 @@
           onclick:function(){
             const id = semanaActual();
             fijarHuecos("adultos", id, {});
-            generar(id, "adultos", {semilla:conPlantilla({})}); pintarTodo();
+            generar(id, "adultos", {semilla:conPlantilla("adultos", {})}); pintarTodo();
             aviso("Menú de adulto generado: " + etiquetaSemana(desdeIso(id)) +
                   " · " + resumenEquilibrio("adultos", id));
           }}),
@@ -2532,7 +2515,7 @@
     // Lo que la plantilla pide para este hueco en concreto. Cada celda manda en
     // el suyo, así que no hay nada que "dar por cumplido": si el 2º pide verdura,
     // la pide aunque el 1º ya la llevara.
-    const celdaPl = celdaDe(dia, momento, orden);
+    const celdaPl = celdaDe(pid, dia, momento, orden);
     const tipoPedido = celdaPl && celdaPl.tipo ? celdaPl.tipo : "";
     const pideTipo = !!tipoPedido;
 
@@ -3881,7 +3864,8 @@
         // ajena lo rechazaría. La celda baja a "en blanco", que es lo que es.
         const tipo  = c.tipo  && hayTipo[c.tipo]   ? c.tipo  : null;
         const plato = c.plato && hayPlato[c.plato] ? c.plato : null;
-        return {dia:t[0], momento:t[1], orden:Number(t[2]), tipo:tipo, plato:plato};
+        return {menu:t[0] === "adultos" ? "casa" : "nino",
+                dia:t[1], momento:t[2], orden:Number(t[3]), tipo:tipo, plato:plato};
       });
   }
   function filasRecetas(){
@@ -3958,7 +3942,7 @@
   const TABLAS = [
     {n:"secciones",    pk:["seccion"],      filas:filasSecciones},
     {n:"tipos",        pk:["clave"],        filas:filasTipos},
-    {n:"plantilla",    pk:["dia","momento","orden"], filas:filasPlantilla},
+    {n:"plantilla",    pk:["menu","dia","momento","orden"], filas:filasPlantilla},
     {n:"ingredientes", pk:["ingrediente"],  filas:filasIngredientes},
     {n:"platos",       pk:["nombre"],       filas:filasPlatos},
     {n:"recetas",      pk:["plato"],        filas:filasRecetas},
@@ -4085,8 +4069,7 @@
         paraComprar:paraComprar, marcarCompra:marcarCompra, marcaEfectiva:marcaEfectiva,
         huecosIguales:huecosIguales,
         aplicarPlantilla:aplicarPlantilla, conPlantilla:conPlantilla,
-        celdaDe:celdaDe, fijarCelda:fijarCelda, platosFijables:platosFijables,
-        tipoDeHueco:tipoDeHueco, platoDeHueco:platoDeHueco, huecoEnBlanco:huecoEnBlanco,
+        celdaDe:celdaDe, fijarCelda:fijarCelda, abrirCelda:abrirCelda,
         PLANTILLA:function(){ return PLANTILLA; },
         cumpleTipo:cumpleTipo, platoEnSemana:platoEnSemana,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
@@ -4206,18 +4189,29 @@
   }
 
   /* ============ La rejilla de la plantilla, en Configuración ============ */
-  // Quince filas por siete días: cada momento con sus tres platos. Un
-  // desplegable por celda y nada más, porque es la tabla que uno mira para
-  // decidir la semana entera y cuanto menos adorno tenga, mejor.
-  //
-  // El desplegable mezcla dos cosas que no son lo mismo —un tipo de alimento y
-  // un plato concreto— y por eso van en grupos separados, con los tipos
-  // primero: clavar un plato es la excepción.
+  // Quince filas por siete días: cada momento con sus tres platos. Una por
+  // menú, y se ven de una en una con un conmutador arriba: puestas una debajo
+  // de otra eran treinta filas de scroll para comparar dos celdas.
+  let PL_MENU = "nino";   // el niño primero, que es de quien parte la semana
+
   function montarPlantilla(){
     const tabla = $("tabla-plantilla");
     if(!tabla) return;
-    tabla.textContent = "";
 
+    const sel = $("plantilla-menu");
+    if(sel){
+      sel.textContent = "";
+      PERFILES.slice().reverse().forEach(function(pf){
+        sel.appendChild(el("button", {
+          type:"button", class:"btn btn-sm" + (PL_MENU === pf.id ? " btn-primary" : ""),
+          "aria-pressed":String(PL_MENU === pf.id),
+          text: pf.casa ? "Adulto" : "Niño",
+          onclick:function(){ PL_MENU = pf.id; montarPlantilla(); }
+        }));
+      });
+    }
+
+    tabla.textContent = "";
     const cab = el("tr", null, [
       el("th", {scope:"col", class:"pl-momento", text:""}),
       el("th", {scope:"col", class:"pl-orden", text:""})
@@ -4227,10 +4221,7 @@
     });
     tabla.appendChild(el("thead", null, [cab]));
 
-    const fijables = platosFijables().map(function(p){ return p.n; })
-      .sort(function(a, b){ return a.localeCompare(b, "es"); });
     const ORDS = ordenesDe();
-
     MOMENTOS.forEach(function(mo){
       const cuerpo = el("tbody", {class:"pl-grupo"});
       ORDS.forEach(function(ord, fila){
@@ -4240,49 +4231,8 @@
                                    rowspan:String(ORDS.length), text:mo.lbl}));
         }
         tr.appendChild(el("th", {scope:"row", class:"pl-orden", text:ORDEN_LBL[ord]}));
-
         DIAS.forEach(function(dia){
-          const sel = el("select", {class:"pl-sel",
-            "aria-label":ORDEN_LBL[ord] + " plato de " + mo.lbl.toLowerCase() + " del " + dia});
-          sel.appendChild(el("option", {value:"", text:"—"}));
-          sel.appendChild(el("option", {value:"!blanco", text:"en blanco"}));
-
-          const gt = el("optgroup", {label:"Tipo de alimento"});
-          TIPOS.forEach(function(t){ gt.appendChild(el("option", {value:"t:" + t, text:t})); });
-          sel.appendChild(gt);
-
-          const gp = el("optgroup", {label:"Un plato concreto"});
-          fijables.forEach(function(n){ gp.appendChild(el("option", {value:"p:" + n, text:n})); });
-          sel.appendChild(gp);
-
-          const c = celdaDe(dia, mo.id, ord);
-          sel.value = !c ? "" : c.blanco ? "!blanco" : c.tipo ? "t:" + c.tipo : "p:" + c.plato;
-          // Un plato que ya no comen los dos no está en la lista, y el
-          // desplegable lo dejaría en "—" sin decir nada. Se añade suelto y
-          // avisando, que es un hueco que hay que revisar.
-          if(c && c.plato && sel.value !== "p:" + c.plato){
-            sel.appendChild(el("option", {value:"p:" + c.plato, text:c.plato + " (ya no vale)"}));
-            sel.value = "p:" + c.plato;
-          }
-
-          const celda = el("td", {class:"pl-celda"}, [sel]);
-          const pinta = function(){
-            const v = sel.value;
-            celda.className = "pl-celda" + (v === "!blanco" ? " pl-blanco" : "") +
-                              (v.indexOf("p:") === 0 ? " pl-plato" : "");
-            celda.style.background = v.indexOf("t:") === 0
-              ? "color-mix(in srgb, " + colorDe(claveDe(v.slice(2))) + " 55%, var(--surface))"
-              : "";
-          };
-          pinta();
-          sel.addEventListener("change", function(){
-            const v = sel.value;
-            fijarCelda(dia, mo.id, ord,
-              !v ? null : v === "!blanco" ? {blanco:true}
-                 : v.indexOf("t:") === 0 ? {tipo:v.slice(2)} : {plato:v.slice(2)});
-            pinta(); pieDePlantilla(); pintarSemana();
-          });
-          tr.appendChild(celda);
+          tr.appendChild(celdaPlantilla(PL_MENU, dia, mo.id, ord));
         });
         cuerpo.appendChild(tr);
       });
@@ -4292,21 +4242,205 @@
     pieDePlantilla();
   }
 
+  // Cada celda es un botón, no un desplegable. Con diecinueve tipos y noventa
+  // platos dentro, un <select> obliga a recorrer la lista entera con la rueda
+  // para encontrar el bibe; el botón abre el mismo selector con buscador que se
+  // usa en la Semana.
+  function celdaPlantilla(pid, dia, momento, orden){
+    const c = celdaDe(pid, dia, momento, orden);
+    const roto = !!(c && c.plato && !plato(pid, c.plato));
+    const texto = !c ? "—" : c.blanco ? "en blanco" : c.tipo ? c.tipo : c.plato;
+    const quien = pid === "nino" ? "el niño" : "el adulto";
+
+    const b = el("button", {
+      type:"button",
+      class:"pl-sel" + (c && c.blanco ? " es-blanco" : "") +
+            (c && c.plato ? " es-plato" : "") + (roto ? " es-roto" : ""),
+      text: texto + (roto ? " (ya no vale)" : ""),
+      title: (!c ? "Libre: lo reparte el generador"
+              : c.blanco ? "En blanco: aquí no va nada"
+              : c.tipo ? "Cualquier plato de " + c.tipo
+              : roto ? c.plato + " ya no está en el menú de " + quien
+              : "Siempre " + c.plato) + " · pulsa para cambiarlo",
+      "aria-label": ORDEN_LBL[orden] + " plato de " + mo_lbl(momento).toLowerCase() +
+                    " del " + dia + ", " + quien + ": " + texto,
+      onclick:function(){ abrirCelda(pid, dia, momento, orden); }
+    });
+
+    const celda = el("td", {class:"pl-celda"}, [b]);
+    if(c && c.tipo && !roto){
+      celda.style.background = "color-mix(in srgb, " + colorDe(claveDe(c.tipo)) +
+                               " 55%, var(--surface))";
+    }
+    return celda;
+  }
+  function mo_lbl(id){ return MOMENTO_LBL[id] || id; }
+
+  // El selector de una celda. Es el mismo de la Semana con una vuelta de
+  // tuerca: aquí arriba van las dos opciones que no son platos —libre y en
+  // blanco— y los tipos de alimento, y debajo el repertorio. El buscador filtra
+  // las tres cosas a la vez, que es lo que se quiere al escribir "bibe" o
+  // "legum" sin acordarse de en qué grupo estaba.
+  let capaCelda = null;
+  function cerrarCelda(){
+    if(capaCelda){ cerrarCapa(capaCelda); capaCelda = null; }
+  }
+
+  function abrirCelda(pid, dia, momento, orden){
+    cerrarCelda();
+    const quien = pid === "nino" ? "niño" : "adulto";
+    const actual = celdaDe(pid, dia, momento, orden);
+    const buscar = el("input", {type:"search", id:"celda-buscar",
+                                placeholder:"Buscar un tipo o un plato"});
+    const lst = el("div", {class:"picker-list"});
+
+    const pon = function(celda){
+      fijarCelda(pid, dia, momento, orden, celda);
+      cerrarCelda(); montarPlantilla(); pintarSemana();
+    };
+
+    function opcion(o){
+      const puesto = o.igual(actual);
+      return el("button", {
+        type:"button", class:"opt" + (puesto ? " used" : "") + (o.clase ? " " + o.clase : ""),
+        onclick:function(){ pon(o.celda); }
+      }, [
+        el("span", {class:"sw", style:o.color ? "background:" + o.color : "background:transparent"}),
+        el("div", null, [
+          el("div", {class:"on", text:o.n}),
+          el("div", {class:"om", text:o.nota + (puesto ? " · es lo que hay ahora" : "")})
+        ])
+      ]);
+    }
+
+    function pinta(){
+      const q = sinTildes(buscar.value.trim());
+      const cuela = function(txt){ return !q || sinTildes(txt).indexOf(q) !== -1; };
+      lst.textContent = "";
+
+      const sueltas = [
+        {n:"—  Libre", nota:"Lo reparte el generador según los objetivos",
+         celda:null, color:"", clase:"opt-libre",
+         igual:function(c){ return !c; }},
+        {n:"En blanco", nota:"Aquí no va nada. A mano sí puedes añadirlo",
+         celda:{blanco:true}, color:"", clase:"opt-blanco",
+         igual:function(c){ return !!(c && c.blanco); }}
+      ].filter(function(o){ return cuela(o.n + " " + o.nota); });
+      sueltas.forEach(function(o){ lst.appendChild(opcion(o)); });
+
+      const tipos = TIPOS.filter(cuela);
+      if(tipos.length){
+        lst.appendChild(el("div", {class:"opt-sep", text:"Un tipo de alimento"}));
+        tipos.forEach(function(t){
+          const cuantos = platos(pid).filter(function(p){
+            return cumpleTipo(p, t) && elegible(p, momento);
+          }).length;
+          lst.appendChild(opcion({
+            n:t, color:colorDe(claveDe(t)), celda:{tipo:t},
+            nota: cuantos ? cuantos + (cuantos === 1 ? " plato" : " platos") + " donde elegir"
+                          : "ningún plato de " + quien + " de ese tipo a esa hora",
+            clase: cuantos ? "" : "ajeno",
+            igual:function(c){ return !!(c && c.tipo === t); }
+          }));
+        });
+      }
+
+      // Solo los de este menú: clavar en la plantilla del niño algo que no come
+      // no significa nada. Antes había una sola plantilla y por eso se exigía
+      // que el plato valiera para los dos; con una por menú, cada una tiene los
+      // suyos y el bibe cabe donde debía caber.
+      const suyos = platos(pid).filter(function(p){
+        return cuela(p.n + " " + p.i.join(" ") + " " + tiposDe(p).join(" "));
+      });
+      if(suyos.length){
+        lst.appendChild(el("div", {class:"opt-sep", text:"Un plato concreto, siempre ese"}));
+        suyos.sort(function(a, b){
+          const ra = elegible(a, momento) ? 1 : 0, rb = elegible(b, momento) ? 1 : 0;
+          return (rb - ra) || a.n.localeCompare(b.n, "es");
+        }).forEach(function(p){
+          const aqui = elegible(p, momento);
+          lst.appendChild(opcion({
+            n:p.n, color:colorDe(base(p)), celda:{plato:p.n},
+            nota: tipoTexto(p) + (aqui ? "" : " · es de " + momentoTexto(p).toLowerCase()),
+            clase: aqui ? "" : "ajeno",
+            igual:function(c){ return !!(c && c.plato === p.n); }
+          }));
+        });
+      }
+
+      if(!lst.children.length){
+        lst.appendChild(el("div", {style:"padding:22px 16px;color:var(--ink-3)",
+                                   text:"Nada coincide con eso."}));
+      }
+    }
+    buscar.addEventListener("input", pinta);
+    pinta();
+
+    const caja = el("div", {class:"picker", role:"dialog", "aria-modal":"true",
+                            "aria-label":"Qué va en el " + ORDEN_LBL[orden] + " plato"}, [
+      el("header", null, [
+        el("h3", {text:mayus(dia) + " · " + mo_lbl(momento) + " · " +
+                       ORDEN_LBL[orden] + " plato · " + quien}),
+        buscar
+      ]),
+      lst,
+      el("footer", null, [
+        el("span", {class:"hint", text:"Es la plantilla, no una semana: vale para todas."}),
+        el("div", {class:"pie-botones"}, [
+          el("button", {class:"btn", text:"Cancelar", onclick:cerrarCelda})
+        ])
+      ])
+    ]);
+    capaCelda = abrirCapa(caja, buscar);
+  }
+
   function pieDePlantilla(){
     const pie = $("plantilla-foot");
     if(!pie) return;
     pie.textContent = "";
-    const celdas = Object.keys(PLANTILLA).map(function(k){ return PLANTILLA[k]; }).filter(Boolean);
-    const tipos = celdas.filter(function(c){ return !!c.tipo; }).length;
-    const platos = celdas.filter(function(c){ return !!c.plato; }).length;
-    const blancos = celdas.filter(function(c){ return !!c.blanco; }).length;
+    const mias = Object.keys(PLANTILLA).filter(function(k){
+      return k.indexOf(PL_MENU + "|") === 0 && PLANTILLA[k];
+    }).map(function(k){ return PLANTILLA[k]; });
+    const tipos = mias.filter(function(c){ return !!c.tipo; }).length;
+    const platos = mias.filter(function(c){ return !!c.plato; }).length;
+    const blancos = mias.filter(function(c){ return !!c.blanco; }).length;
+    const quien = PL_MENU === "nino" ? "del niño" : "del adulto";
 
-    pie.appendChild(el("button", {class:"btn btn-sm", text:"Vaciar la plantilla",
-      disabled: celdas.length ? null : "disabled",
+    pie.appendChild(el("button", {class:"btn btn-sm", text:"Vaciar la " + quien,
+      disabled: mias.length ? null : "disabled",
       onclick:function(){
-        if(!window.confirm("¿Quitar las " + celdas.length + " celdas de la plantilla?")) return;
-        PLANTILLA = {}; guardar(); montarPlantilla(); pintarSemana();
-        aviso("Plantilla vacía");
+        if(!window.confirm("¿Quitar las " + mias.length + " celdas de la plantilla " +
+                           quien + "?")) return;
+        Object.keys(PLANTILLA).forEach(function(k){
+          if(k.indexOf(PL_MENU + "|") === 0) delete PLANTILLA[k];
+        });
+        guardar(); montarPlantilla(); pintarSemana();
+        aviso("Plantilla " + quien + " vacía");
+      }}));
+
+    // Copiar de una a otra: casi siempre se empieza con la misma y se cambian
+    // tres celdas, y hacerlo a mano son ciento cinco clics.
+    const otro = otroPerfil(PL_MENU);
+    pie.appendChild(el("button", {class:"btn btn-sm",
+      text:"Copiar desde " + (otro === "nino" ? "el niño" : "el adulto"),
+      onclick:function(){
+        if(!window.confirm("¿Sustituir la plantilla " + quien + " por la " +
+                           (otro === "nino" ? "del niño" : "del adulto") + "?")) return;
+        Object.keys(PLANTILLA).forEach(function(k){
+          if(k.indexOf(PL_MENU + "|") === 0) delete PLANTILLA[k];
+        });
+        Object.keys(PLANTILLA).slice().forEach(function(k){
+          if(k.indexOf(otro + "|") !== 0) return;
+          const c = PLANTILLA[k];
+          // Un plato del otro menú que aquí no se come no se puede copiar: la
+          // celda queda libre, que es menos mentira que clavar algo imposible.
+          if(c.plato && !plato(PL_MENU, c.plato)) return;
+          PLANTILLA[PL_MENU + k.slice(otro.length)] = c.tipo ? {tipo:c.tipo}
+                                                     : c.plato ? {plato:c.plato}
+                                                     : {blanco:true};
+        });
+        guardar(); montarPlantilla(); pintarSemana();
+        aviso("Plantilla copiada");
       }}));
 
     const partes = [];

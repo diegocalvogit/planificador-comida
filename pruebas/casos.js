@@ -130,12 +130,15 @@ window.CASOS = [
   nombre: "Un plato clavado ocupa su hueco al abrir la semana",
   correr: function(app, banco, t){
     const id = "2030-02-11";
-    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
+    app.fijarCelda("adultos", "domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {});
     app.fijarHuecos("nino", id, {});
     app.aplicarPlantilla(id);
     t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
-    // Una sola plantilla para los dos, y solo se clavan platos que coman ambos.
+    // Cada plantilla es de su menú: la del adulto no toca la del niño.
+    t.igual(app.huecos("nino", id)["domingo|comida|1"] || "", "", "el niño, a lo suyo");
+    app.fijarCelda("nino", "domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
+    app.aplicarPlantilla(id);
     t.igual(app.huecos("nino", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
   }
 },
@@ -143,7 +146,7 @@ window.CASOS = [
   nombre: "Un plato clavado no pisa lo que ya hubiera puesto",
   correr: function(app, banco, t){
     const id = "2030-02-18";
-    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
+    app.fijarCelda("adultos", "domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {"domingo|comida|1":"Tortilla"});
     app.aplicarPlantilla(id);
     t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Tortilla");
@@ -154,9 +157,9 @@ window.CASOS = [
   nombre: "El generador no se lleva por delante un plato clavado",
   correr: function(app, banco, t){
     const id = "2030-02-25";
-    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
+    app.fijarCelda("adultos", "domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {});
-    app.generar(id, "adultos", {semilla:app.conPlantilla({})});
+    app.generar(id, "adultos", {semilla:app.conPlantilla("adultos", {})});
     t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
   }
 },
@@ -166,7 +169,7 @@ window.CASOS = [
   correr: function(app, banco, t){
     const id = app.semanaActual();
     app.ordenesDe().forEach(function(o){
-      if(o !== "1") app.fijarCelda("lunes", "cena", o, {blanco:true});
+      if(o !== "1") app.fijarCelda("adultos", "lunes", "cena", o, {blanco:true});
     });
     const h = app.huecos("adultos", id);
     app.clavesDe().forEach(function(k){ delete h[k]; });
@@ -255,18 +258,18 @@ window.CASOS = [
     t.cierto(quedan.indexOf("arroz") !== -1, "las demás se quedan");
 
     // Renombrarlo: la receta y la celda de la plantilla le siguen.
-    app.fijarCelda("domingo", "comida", "1", {plato:n});
+    app.fijarCelda("adultos", "domingo", "comida", "1", {plato:n});
     app.renombrarPlato(n, "Paella de los domingos");
     t.cierto(!app.hayReceta(n), "la receta ya no está con el nombre viejo");
     t.cierto(app.hayReceta("Paella de los domingos"), "y sí con el nuevo");
-    t.igual(app.celdaDe("domingo", "comida", "1").plato, "Paella de los domingos",
+    t.igual(app.celdaDe("adultos", "domingo", "comida", "1").plato, "Paella de los domingos",
             "la plantilla también");
 
     // Borrarlo: la receta se va y la celda baja a "en blanco", que es lo único
     // honesto: dijiste que ahí iba algo concreto y ese algo ya no existe.
     app.renombrarPlato("Paella de los domingos", null);
     t.cierto(!app.hayReceta("Paella de los domingos"), "borrado, sin receta");
-    t.cierto(app.celdaDe("domingo", "comida", "1").blanco, "y la celda, en blanco");
+    t.cierto(app.celdaDe("adultos", "domingo", "comida", "1").blanco, "y la celda, en blanco");
   }
 },
 {
@@ -365,8 +368,8 @@ window.CASOS = [
     app.clavesDe().forEach(function(k){ delete hn[k]; delete ha[k]; });
     app.fijarHuecos("nino", id, hn);
     app.fijarHuecos("adultos", id, ha);
-    app.fijarCelda("lunes", "comida", "1", {tipo:"Legumbre"});
-    app.fijarCelda("lunes", "comida", "2", {tipo:"Verdura"});
+    app.fijarCelda("nino", "lunes", "comida", "1", {tipo:"Legumbre"});
+    app.fijarCelda("nino", "lunes", "comida", "2", {tipo:"Verdura"});
     app.verTab("semana"); app.pintarTodo();
 
     const grupo = function(){ return d.querySelectorAll(".picker-filtro")[0]; };
@@ -394,9 +397,14 @@ window.CASOS = [
     t.cierto(grupo().hidden, "al tercero, que no tiene celda, no le pide nada");
     cierra();
 
-    // Pero el adulto no ha comido legumbres todavía.
+    // El adulto tiene su propia plantilla: la del niño no le dice nada.
     app.abrirSelector("adultos", "lunes", "comida", "1");
-    t.cierto(!grupo().hidden, "el adulto cumple por su cuenta");
+    t.cierto(grupo().hidden, "al adulto no le pide lo del niño");
+    cierra();
+    app.fijarCelda("adultos", "lunes", "comida", "1", {tipo:"Pasta"});
+    app.abrirSelector("adultos", "lunes", "comida", "1");
+    t.cierto(d.querySelector(".picker-toca").textContent.indexOf("Pasta") !== -1,
+             "le pide lo suyo");
     cierra();
   }
 },
@@ -414,7 +422,7 @@ window.CASOS = [
                   "viernes|comida|1":"Pescado blanco", "lunes|comida|2":"Verdura"};
     Object.keys(pide).forEach(function(k){
       const x = k.split("|");
-      app.fijarCelda(x[0], x[1], x[2], {tipo:pide[k]});
+      app.fijarCelda("adultos", x[0], x[1], x[2], {tipo:pide[k]});
     });
     // Desde cero, para que lo que salga sea cosa del generador y no de la semilla.
     const h = app.huecos("adultos", id);
