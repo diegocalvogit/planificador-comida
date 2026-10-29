@@ -82,8 +82,22 @@ La línea para añadir el siguiente aparece sola en cuanto pones uno, y lo hace 
 
 El segundo no siempre hace falta: eso es lo que dice la columna `plato_unico`. Un plato marcado como único (paella, lentejas con pollo, fajitas) resuelve la comida él solo; uno marcado como no único (tomate con mozzarella, tortilla, gambas al ajillo) es medio menú y pide acompañante. Eso **gobierna al generador, no a ti**: junto a un plato único el reparto automático pone un segundo — el postre — y ahí se para, pero a mano se llega siempre a los tres. La guardería manda garbanzos y un yogur, los garbanzos vienen marcados como plato único, y que eso impidiera añadir la fruta no tenía ninguna defensa. La semana se identifica como *3ª semana de septiembre (14-20)*: el ordinal cuenta desde la semana que contiene el día 1, y el mes es el del jueves de esa semana, así que una semana a caballo entre dos meses se atribuye a uno solo. Las flechas mueven a la semana anterior o siguiente.
 
-Dentro de cada día, cada momento abre con su banda de color — melocotón el desayuno, verde el almuerzo,
-ámbar la comida, lila la merienda y azul la cena — y cada plato lleva delante su 1º o 2º. Los platos se pintan del color de su **base** — el primer tipo de su columna `tipo` — así que la semana se lee de un vistazo: pescado azul en azul, carne roja en rojo, verdura en verde, legumbre en ocre. La leyenda está bajo el calendario.
+Dentro de cada día, **cada comida es un bloque de color**, y el color lo pone **el momento del día**:
+amarillo crema el desayuno, melocotón el almuerzo, coral la comida, amarillo pálido la merienda y lavanda la
+cena. Antes el color lo ponía el tipo de alimento del plato, y con cinco comidas al día y veinte tipos la
+semana era un mosaico en el que no se distinguía nada. El punto de color por tipo sigue donde sí ayuda —
+Platos, Equilibrio, Recetas —, pero fuera de la semana.
+
+**El niño va primero.** Sus platos encabezan cada comida, porque es de quien parte la semana: su menú se
+completa con el cargador de la guardería y el equilibrio, y el de la mesa sale de él. Donde los dos comen
+exactamente lo mismo, **la línea de la mesa no se pinta**: repetirla no añade nada y dobla el alto de la
+columna. Lo que la mesa come distinto aparece debajo, en un tono más claro del mismo color, sin necesidad de
+rotular de quién es cada cosa.
+
+No hay ordinales 1º/2º/3º ni etiquetas de *niño*: entre los dos se comían un tercio del ancho de la columna
+para decir algo que el orden y el color ya dicen. El puesto sigue existiendo en la base y en el texto que lee
+un lector de pantalla, que es donde hace falta. Y al final de cada comida hay una sola línea con **+ niño**
+y **+ mesa**, en vez de un «Añadir 2º plato» por cada hueco libre.
 
 *Generar semana* propone un reparto que:
 

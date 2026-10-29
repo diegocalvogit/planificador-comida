@@ -2182,88 +2182,14 @@
       ]);
 
       MOMENTOS.forEach(function(mo){
-        const momento = mo.id, slot = dia + "|" + momento;
-        card.appendChild(el("div", {class:"momento-head " + momento, text:mo.lbl}));
-
-        // Se enseña lo que hay y una línea más para lo siguiente: ni un hueco
-        // vacío de más, pero sin cerrar el paso al tercero.
-        const tope = PLATOS_POR_COMIDA;
-        let vistos = 0, ofrecido = false;
-        ordenesDe().forEach(function(o){
-          const clave = slot + "|" + o;
-          const p = h[clave] ? platoEnSemana("adultos", h[clave]) : null;
-          const ajeno = !!(p && !(p.menus && p.menus.adultos));
-          const roto = !!(h[clave] && !p);
-
-          if(!p && !h[clave]){
-            // Una sola línea de "añadir", la del hueco siguiente al último puesto:
-            // ofrecer a la vez el 2º y el 3º sería justo el ruido que se quiere evitar.
-            if(ofrecido || vistos !== Number(o) - 1 || Number(o) > tope) return;
-            ofrecido = true;
-            card.appendChild(el("button", {
-              type:"button", class:"slot-add",
-              "aria-label":"Añadir " + (o === "1" ? "plato" : ORDEN_LBL[o] + " plato") +
-                           " de adulto " + deMomento(momento) + " del " + dia,
-              onclick:function(){ abrirSelector("adultos", dia, momento, o); }
-            }, [
-              el("span", {class:"orden", text:ORDEN_LBL[o]}),
-              el("span", {text: o === "1" ? "Añadir plato adulto"
-                                          : "Añadir " + ORDEN_LBL[o] + " plato adulto"})
-            ]));
-            return;
-          }
-          vistos++;
-
-          const cuerpo = [el("div", {class:"slot-dish", text: p ? p.n : (h[clave] || "Sin asignar")})];
-          // Solo el nombre: los tipos ya los dice el color del hueco y la leyenda
-          // de abajo, y repetirlos en texto comía la mitad del alto de cada día.
-          if(p && ajeno){
-            cuerpo.push(el("div", {class:"slot-meta"}, [
-              el("span", {class:"marca-ajeno", text:"fuera de este menú"})
-            ]));
-          }else if(roto){
-            cuerpo.push(el("div", {class:"slot-meta"}, [
-              el("span", {class:"marca-ajeno", text:"este plato ya no existe"})
-            ]));
-          }
-
-          card.appendChild(el("div", {class:"slot" + (p ? " g-" + base(p) : (roto ? " roto" : " empty")) +
-                                             (ajeno ? " ajeno" : "") +
-                                             (paraComprar(id, "adultos", clave) ? "" : " sin-compra")}, [
-            checkCompra(id, "adultos", clave, p ? p.n : null),
-            el("button", {
-              type:"button", class:"slot-main",
-              "aria-label": ORDEN_LBL[o] + " plato " + deMomento(momento) + " del " + dia +
-                            ": " + (p ? p.n : "sin asignar") + ". Pulsa para cambiarlo.",
-              title: p ? tipoTexto(p) : null,
-              onclick:function(){ abrirSelector("adultos", dia, momento, o); }
-            }, [
-              el("span", {class:"orden", text:ORDEN_LBL[o]}),
-              el("div", {class:"cuerpo"}, cuerpo)
-            ])
-          ]));
-        });
-        card.appendChild(bloqueNino(id, dia, momento, h, hn));
+        card.appendChild(bloqueMomento(id, dia, mo, h, hn));
       });
       cont.appendChild(card);
     });
 
-    const ley = $("legend"); ley.textContent = "";
-    const bases = [];
-    clavesDe().forEach(function(k){
-      const p = h[k] && platoEnSemana("adultos", h[k]);
-      const t = p ? tiposDe(p)[0] : null;
-      if(t && bases.indexOf(t) === -1) bases.push(t);
-    });
-    bases.sort(function(a, b){ return TIPOS.indexOf(a) - TIPOS.indexOf(b); }).forEach(function(t){
-      ley.appendChild(el("span", {class:"lg"}, [
-        el("span", {class:"sw", style:"background:" + colorDe(claveDe(t))}),
-        el("span", {text:t})
-      ]));
-    });
-
-    $("n-semana").textContent = llenos("adultos", id) + "/" + slotsDe().length;
-
+    // La leyenda de colores por tipo de alimento se fue con ellos.
+    const ley = $("legend");
+    if(ley) ley.textContent = "";
   }
 
   // La casilla de "esto hay que comprarlo". Nace marcada y casi nunca se toca:
@@ -2295,91 +2221,124 @@
   // mismo que en la mesa solo hay un botón; en cuanto le pones un plato suyo, el
   // momento pasa a ser suyo y el botón reaparece para el siguiente, hasta llenar
   // los huecos que ese momento admite — uno en el almuerzo, dos en los demás.
-  function bloqueNino(id, dia, momento, h, hn){
-    const slot = dia + "|" + momento, ords = ordenesDe();
-    // Mientras no haya nada suyo, el niño come lo de la mesa y no se desglosa.
-    const propio = ords.some(function(o){
-      return (hn[slot + "|" + o] || "") !== (h[slot + "|" + o] || "");
+  // Una comida entera: su rótulo y sus platos.
+  //
+  // El niño va primero porque es de quien parte la semana: su menú se completa
+  // con el cargador de la guardería y el equilibrio, y el de la mesa sale de él.
+  // Donde los dos comen exactamente lo mismo, la línea de la mesa no se pinta:
+  // repetirla no añade nada y dobla el alto de la columna.
+  //
+  // El color lo pone el momento del día y no el tipo de alimento. Con cinco
+  // comidas al día y veinte tipos de alimento, lo segundo era un mosaico en el
+  // que no se distinguía nada; así cada comida es un bloque y el ojo baja por
+  // la columna sin leer los rótulos.
+  function bloqueMomento(id, dia, mo, h, hn){
+    const momento = mo.id, slot = dia + "|" + momento, ords = ordenesDe();
+    const caja = el("section", {class:"comida m-" + momento});
+    caja.appendChild(el("div", {class:"comida-cab", text:mo.lbl}));
+
+    const lineas = [];
+    ords.forEach(function(o){
+      if(hn[slot + "|" + o]) lineas.push({pid:"nino", orden:o, nombre:hn[slot + "|" + o]});
     });
-    const suyos = propio ? ords.filter(function(o){ return !!hn[slot + "|" + o]; }) : [];
-    const caja = el("div", {class:"nino-bloque" + (propio ? " propio" : "")});
-
-    // Su primera línea solo aparece cuando en la mesa hay algo: sin plato de
-    // adulto no hay nada de lo que diferenciarse.
-    if(!h[slot + "|1"] && !suyos.length) return caja;
-
-    suyos.forEach(function(o){
-      const crudo = hn[slot + "|" + o], p = platoEnSemana("nino", crudo);
-      caja.appendChild(el("div", {class:"nino-row" +
-                                         (paraComprar(id, "nino", slot + "|" + o) ? "" : " sin-compra")}, [
-        checkCompra(id, "nino", slot + "|" + o, p ? p.n : crudo),
-        el("span", {class:"etq", text:"niño"}),
-        el("span", {class:"ord", text:ORDEN_LBL[o]}),
-        el("button", {type:"button", class:"nino-plato" + (!p ? " roto" : ""),
-          text: p ? p.n : crudo,
-          title: p ? tipoTexto(p) : "Este plato ya no está en el repertorio",
-          onclick:function(){ abrirSelector("nino", dia, momento, o); }}),
-        el("button", {type:"button", class:"nino-quita", text:"×",
-          title: suyos.length > 1 ? "Quitar este plato del niño"
-                                  : "Quitar: vuelve a comer lo mismo que en la mesa",
-          "aria-label":"Quitar el " + ORDEN_LBL[o] + " plato del niño " + deMomento(momento) + " del " + dia,
-          onclick:function(){ quitaNino(id, slot, o); }})
-      ]));
+    ords.forEach(function(o){
+      const suyo = h[slot + "|" + o];
+      // La repetición exacta, en el mismo puesto, no se pinta dos veces.
+      if(suyo && suyo !== hn[slot + "|" + o]){
+        lineas.push({pid:"adultos", orden:o, nombre:suyo});
+      }
     });
 
-    // Y una línea más para el siguiente, hasta llegar a los tres.
-    if(suyos.length < PLATOS_POR_COMIDA){
-      const siguiente = String(suyos.length + 1);
-      caja.appendChild(el("button", {type:"button", class:"nino-add",
-        text: propio ? "Añadir " + ORDEN_LBL[siguiente] + " plato niño" : "Añadir plato niño",
-        title: propio ? "El niño come " + (suyos.length + 1) + " platos " + deMomento(momento)
-                      : "Que el niño coma algo distinto " + deMomento(momento),
-        onclick:function(){ nuevoPlatoNino(id, dia, momento, propio ? null : "1"); }}));
-    }
+    lineas.forEach(function(x){ caja.appendChild(filaPlato(id, dia, momento, x)); });
+    caja.appendChild(filaAnadir(id, dia, momento, h, hn));
     return caja;
   }
 
-  // Abre el selector para el siguiente hueco libre del niño. Si hasta ahora comía
-  // lo mismo que en la mesa, el plato que elijas no se suma a lo que había: pasa
-  // a ser lo único que come, y el segundo lo añades tú si quieres.
-  function nuevoPlatoNino(id, dia, momento, primero){
-    const slot = dia + "|" + momento, hn = huecos("nino", id);
-    const orden = primero || (ordenesDe().filter(function(o){ return !hn[slot + "|" + o]; })[0]);
-    if(!orden) return;
-    abrirSelector("nino", dia, momento, orden, {soloEste: !!primero});
+  function filaPlato(id, dia, momento, x){
+    const clave = dia + "|" + momento + "|" + x.orden;
+    const p = platoEnSemana(x.pid, x.nombre);
+    const roto = !p;
+    const ajeno = !!(p && !(p.menus && p.menus[x.pid]));
+    const quien = x.pid === "nino" ? "el niño" : "la mesa";
+
+    const fila = el("div", {class:"plato" + (x.pid === "adultos" ? " de-mesa" : "") +
+                                   (roto ? " roto" : "") + (ajeno ? " ajeno" : "") +
+                                   (paraComprar(id, x.pid, clave) ? "" : " sin-compra")});
+    fila.appendChild(checkCompra(id, x.pid, clave, p ? p.n : x.nombre));
+    fila.appendChild(el("button", {
+      type:"button", class:"plato-nombre",
+      // El rótulo que se quitó de la pantalla sigue aquí para quien no la ve:
+      // sin él, un lector de pantalla lee quince platos sin saber de quién son.
+      "aria-label": (p ? p.n : x.nombre) + ", " + ORDEN_LBL[x.orden] + " plato de " + quien +
+                    " " + deMomento(momento) + " del " + dia + ". Pulsa para cambiarlo.",
+      title: roto ? "Este plato ya no está en el repertorio"
+                  : (ajeno ? p.n + " — fuera del menú de " + quien : tipoTexto(p)),
+      text: p ? p.n : x.nombre,
+      onclick:function(){ abrirSelector(x.pid, dia, momento, x.orden); }
+    }));
+    fila.appendChild(el("button", {
+      type:"button", class:"plato-quita", text:"\u00d7",
+      title:"Quitar de " + quien,
+      "aria-label":"Quitar " + (p ? p.n : x.nombre) + " de " + quien,
+      onclick:function(){
+        if(x.pid === "nino") quitaNino(id, dia + "|" + momento, x.orden);
+        else quitaAdulto(id, dia + "|" + momento, x.orden);
+      }
+    }));
+    return fila;
   }
 
-  // Quita un plato del niño. Si era el último, el momento vuelve a lo de la mesa.
-  function quitaNino(id, slot, orden){
-    const hn = huecos("nino", id), copia = {}, mom = slot.split("|")[1], ords = ordenesDe();
-    Object.keys(hn).forEach(function(k){ copia[k] = hn[k]; });
-    delete copia[slot + "|" + orden];
+  // Una sola línea al final de la comida en vez de un "Añadir 2º plato" por cada
+  // hueco libre, que eran hasta seis renglones de relleno por comida.
+  function filaAnadir(id, dia, momento, h, hn){
+    const slot = dia + "|" + momento, ords = ordenesDe();
+    const libre = function(huecos0){
+      return ords.filter(function(o){ return !huecos0[slot + "|" + o]; })[0];
+    };
+    const fila = el("div", {class:"plato-add"});
+    const oN = libre(hn), oA = libre(h);
+    if(oN){
+      fila.appendChild(el("button", {type:"button", class:"mas", text:"+ niño",
+        "aria-label":"Añadir un plato al niño " + deMomento(momento) + " del " + dia,
+        onclick:function(){ abrirSelector("nino", dia, momento, oN); }}));
+    }
+    if(oA){
+      fila.appendChild(el("button", {type:"button", class:"mas", text:"+ mesa",
+        "aria-label":"Añadir un plato a la mesa " + deMomento(momento) + " del " + dia,
+        onclick:function(){ abrirSelector("adultos", dia, momento, oA); }}));
+    }
+    return fila;
+  }
 
-    // Si queda el segundo suelto, sube a primero: no hay platos huérfanos.
+  // Quitar un plato de la mesa. Lo del niño no se toca: desde que su menú va
+  // primero, la mesa ya no arrastra nada.
+  function quitaAdulto(id, slot, orden){
+    const ha = huecos("adultos", id), copia = {}, ords = ordenesDe();
+    Object.keys(ha).forEach(function(k){ copia[k] = ha[k]; });
+    delete copia[slot + "|" + orden];
+    // Sin huecos a medias: lo que quede sube.
     const quedan = ords.map(function(o){ return copia[slot + "|" + o]; }).filter(Boolean);
     ords.forEach(function(o, i){
       if(quedan[i]) copia[slot + "|" + o] = quedan[i]; else delete copia[slot + "|" + o];
     });
+    fijarHuecos("adultos", id, copia);
+    pintarTodo();
+  }
 
-    let aviso2 = "";
-    if(!quedan.length){
-      const casa = huecos("adultos", id);
-      ords.forEach(function(o){
-        const x = espejo(casa[slot + "|" + o], mom, "nino");
-        if(x) copia[slot + "|" + o] = x;
-      });
-      const p1 = copia[slot + "|1"] ? plato("nino", copia[slot + "|1"]) : null;
-      if((p1 && p1.unico) || copia[slot + "|2"] === copia[slot + "|1"]) delete copia[slot + "|2"];
-      const enMesa = casa[slot + "|1"] || "";
-      if(enMesa && copia[slot + "|1"] !== enMesa){
-        aviso2 = "«" + enMesa + "» no está en el menú del niño: le queda " +
-                 (copia[slot + "|1"] ? "«" + copia[slot + "|1"] + "»" : "el hueco vacío") +
-                 ". Marca su casilla en Platos si también puede comerlo.";
-      }
-    }
+  // Quita un plato del niño. Ya no rellena el hueco con lo de la mesa: desde
+  // que su menú va primero, quitar algo suyo es quitarlo y punto, igual que en
+  // la mesa. Antes se reponía solo porque su semana se derivaba de la otra.
+  function quitaNino(id, slot, orden){
+    const hn = huecos("nino", id), copia = {}, ords = ordenesDe();
+    Object.keys(hn).forEach(function(k){ copia[k] = hn[k]; });
+    delete copia[slot + "|" + orden];
+    // Sin huecos a medias: lo que quede sube.
+    const quedan = ords.map(function(o){ return copia[slot + "|" + o]; }).filter(Boolean);
+    ords.forEach(function(o, i){
+      if(quedan[i]) copia[slot + "|" + o] = quedan[i]; else delete copia[slot + "|" + o];
+    });
     fijarHuecos("nino", id, copia);
     pintarTodo();
-    if(aviso2) aviso(aviso2);
   }
 
   // De qué tipo suele ser un ingrediente, mirando los platos que ya lo usan. Si
