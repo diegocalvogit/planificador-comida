@@ -300,6 +300,34 @@ window.CASOS = [
   }
 },
 
+{
+  // Cazó: poner el primer bibe del niño le plantaba un café con leche al
+  // adulto. El arrastre miraba si el adulto tenía «justo el equivalente de lo
+  // que el niño tenía», y con los dos huecos vacíos eso se cumplía, porque
+  // los dos tenían nada.
+  nombre: "Poner un plato al niño no toca el menú del adulto",
+  correr: function(app, banco, t, w){
+    const id = app.semanaActual(), d = w.document;
+    // Los dos huecos vacíos, que es donde se notó.
+    const ha = app.huecos("adultos", id), hn = app.huecos("nino", id);
+    app.clavesDe().forEach(function(k){ delete ha[k]; delete hn[k]; });
+    app.fijarHuecos("adultos", id, ha);
+    app.fijarHuecos("nino", id, hn);
+    app.verTab("semana"); app.pintarTodo();
+
+    app.abrirSelector("nino", "lunes", "desayuno", "1");
+    const opt = d.querySelectorAll(".picker-list .opt")[0];
+    const elegido = opt.textContent;
+    opt.click();
+
+    const despues = app.huecos("adultos", id);
+    t.igual(Object.keys(despues).filter(function(k){ return !!despues[k]; }), [],
+            "el adulto sigue sin nada");
+    t.cierto(!!app.huecos("nino", id)["lunes|desayuno|1"], "y el niño sí tiene lo suyo");
+    t.cierto(elegido.indexOf(app.huecos("nino", id)["lunes|desayuno|1"]) === 0, "lo que se eligió");
+  }
+},
+
 /* ───────── Cargador de la guardería ───────── */
 {
   // Cazaría: la validación dejando pasar un fichero que luego rompe la carga.

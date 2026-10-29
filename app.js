@@ -684,22 +684,6 @@
     return cands[0].n;
   }
 
-  // Al cambiar un plato del niño, la mesa le sigue si tenía justo su equivalente.
-  // Si ahí habías puesto otra cosa a mano, no se toca.
-  //
-  // Antes el arrastre iba al revés, de la mesa al niño. Cambió con el orden de
-  // trabajo: ahora se carga la guardería, se completa la semana del niño y de
-  // ella sale la de la mesa. El origen es él.
-  function sigueAdulto(id, clave, viejo, nuevo){
-    const ha = huecos("adultos", id), mom = clave.split("|")[1];
-    if((ha[clave] || "") !== espejo(viejo, mom, "adultos")) return;
-    const copia = {};
-    Object.keys(ha).forEach(function(k){ copia[k] = ha[k]; });
-    const ahora = espejo(nuevo, mom, "adultos");
-    if(ahora) copia[clave] = ahora; else delete copia[clave];
-    fijarHuecos("adultos", id, copia);
-  }
-
   // En cuántos huecos el niño no come lo que hay en la mesa. La guardería va
   // aparte: ahí no es que coma otra cosa, es que no come en casa. Un hueco en
   // la guardería cuenta entero, sin mirar si en la mesa había uno o dos platos.
@@ -2398,9 +2382,14 @@
     // Los demás platos de esa misma comida, para no ofrecer dos veces el mismo.
     const yaEnLaComida = ordenesDe().filter(function(o){ return o !== orden; })
       .map(function(o){ return h[dia + "|" + momento + "|" + o]; }).filter(Boolean);
-    const previo = origen[clave] || "";
-    // Cambiar un plato de la mesa arrastra al niño, salvo que ahí tuviera lo suyo.
-    const arrastra = function(nuevo){ if(pid === "nino") sigueAdulto(id, clave, previo, nuevo); };
+    // Poner un plato en un menú no toca el otro. Hubo un arrastre automático
+    // del niño al adulto y daba esto: con los dos huecos vacíos, su condición
+    // —«el adulto tiene justo el equivalente de lo que el niño tenía»— se
+    // cumplía porque los dos tenían nada, así que poner el primer bibe del
+    // niño le plantaba un café con leche al adulto sin preguntar. Y era
+    // asimétrico: poner arrastraba, quitar no. Lo que come el adulto sale del
+    // botón «Generar menú adulto a partir de niño», que es explícito, o de
+    // tocarlo a mano.
     // Estrenar los platos propios del niño: lo elegido sustituye a todo el momento.
     const soloEste = !!(opciones && opciones.soloEste);
     const limpia = function(){
@@ -2475,7 +2464,7 @@
             // Si viene del otro menú, entra en este antes de ocupar el hueco.
             if(ajeno) marcarMenu(p, pid, true);
             limpia();
-            h[clave] = p.n; fijarHuecos(pid, id, h); arrastra(p.n);
+            h[clave] = p.n; fijarHuecos(pid, id, h);
             marcarCompra(id, pid, clave, !noCompra.checked);
             // El mismo plato en la misma comida y en el otro menú es el mismo
             // plato encima de la mesa: comprarlo por uno y no por el otro no
@@ -2550,7 +2539,7 @@
         sinCompra,
         el("div", {class:"pie-botones"}, [
           el("button", {class:"btn btn-ghost", text:"Dejar el hueco vacío", onclick:function(){
-            delete h[clave]; fijarHuecos(pid, id, h); arrastra("");
+            delete h[clave]; fijarHuecos(pid, id, h);
             cerrarSelector(); pintarTodo();
           }}),
           el("button", {class:"btn", text:"Cancelar", onclick:cerrarSelector})
