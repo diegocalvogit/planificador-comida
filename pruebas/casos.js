@@ -375,6 +375,37 @@ window.CASOS = [
   }
 },
 
+{
+  // El motivo de que exista la plantilla: el reparto por cuotas semanales daba
+  // resultados raros porque medía la semana entera sin saber qué tocaba cada
+  // día. Ahora el tipo pedido entra en el mismo coste que el equilibrio, con
+  // más peso, así que el repaso no solo lo respeta: lo repara.
+  nombre: "El generador pone en cada comida lo que pide la plantilla",
+  correr: function(app, banco, t){
+    const id = app.semanaActual();
+    const pide = {"lunes|comida":"Legumbre", "martes|comida":"Pasta",
+                  "miércoles|comida":"Arroz", "jueves|cena":"Huevo",
+                  "viernes|comida":"Pescado blanco"};
+    Object.keys(pide).forEach(function(k){
+      const x = k.split("|");
+      app.fijarPlantilla(x[0], x[1], pide[k]);
+    });
+    // Desde cero, para que lo que salga sea cosa del generador y no de la semilla.
+    const h = app.huecos("adultos", id);
+    app.clavesDe().forEach(function(k){ delete h[k]; });
+    app.fijarHuecos("adultos", id, h);
+    app.generar(id, "adultos");
+
+    const hh = app.huecos("adultos", id);
+    const sinCumplir = Object.keys(pide).filter(function(k){
+      return !app.ordenesDe().some(function(o){
+        return app.cumpleTipo(app.platoEnSemana("adultos", hh[k + "|" + o]), pide[k]);
+      });
+    });
+    t.igual(sinCumplir, [], "todas las comidas de la plantilla, cumplidas");
+  }
+},
+
 /* ───────── Cargador de la guardería ───────── */
 {
   // Cazaría: la validación dejando pasar un fichero que luego rompe la carga.

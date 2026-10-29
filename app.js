@@ -988,12 +988,22 @@
       const aptos = APTOS[momento] || [];
       if(!aptos.length) return;
 
+      // Lo que la plantilla pide para esta comida va al primer plato, que es el
+      // de referencia. Si no hubiera ninguno de ese tipo que se coma a esa hora,
+      // se reparte como siempre: mejor una comida puesta que un hueco vacío, y
+      // el coste de arriba se encarga de que siga constando como pendiente.
+      const tipoToca = PLANTILLA[slot];
+      const delTipo = tipoToca
+        ? aptos.filter(function(p){ return tiposDe(p).indexOf(tipoToca) !== -1; })
+        : aptos;
+      const base0 = delTipo.length ? delTipo : aptos;
+
       // Primer plato: se prefiere no repetir dentro de la semana, pero antes que
       // dejar el hueco vacío se repite. En desayunos, almuerzos y meriendas
       // repetir es lo normal.
       const vario = !LIGEROS[momento];
-      let cands = vario ? aptos.filter(function(p){ return !usados[p.n]; }) : aptos;
-      const primero = elige(cands.length ? cands : aptos, dia, momento);
+      let cands = vario ? base0.filter(function(p){ return !usados[p.n]; }) : base0;
+      const primero = elige(cands.length ? cands : base0, dia, momento);
       if(!primero) return;
       apunta(slot, "1", primero);
 
@@ -1024,15 +1034,39 @@
       }
       return c;
     }
-    function desvioDe(c){
+    // Lo que el reparto intenta bajar: lo que se sale de los objetivos de la
+    // semana, más lo que incumple la plantilla.
+    //
+    // La plantilla pesa seis veces más porque manda sobre el equilibrio: decías
+    // que el martes tocan legumbres, y un reparto que las pone a costa de
+    // quedarse corto de fruta es el que querías. Metido en el mismo número y no
+    // como una regla aparte, el repaso no solo la respeta: la repara, porque
+    // cualquier cambio que cumpla una comida pendiente ya puntúa mejor.
+    const PESO_PLANTILLA = 6;
+    function fallaPlantilla(hh){
+      let t = 0;
+      for(let si = 0; si < SLOTS.length; si++){
+        const slot = SLOTS[si], tipo = PLANTILLA[slot];
+        if(!tipo) continue;
+        const ords = ORD[slot];
+        let cumplida = false;
+        for(let oi = 0; oi < ords.length && !cumplida; oi++){
+          const p = PORNOMBRE[hh[slot + "|" + ords[oi]]];
+          if(p && tiposDe(p).indexOf(tipo) !== -1) cumplida = true;
+        }
+        if(!cumplida) t++;
+      }
+      return t;
+    }
+    function desvioDe(c, hh){
       let t = 0;
       for(let i = 0; i < metas.length; i++){
         t += Math.max(0, metas[i].min - c[i]) + Math.max(0, c[i] - metas[i].max);
       }
-      return t;
+      return t + PESO_PLANTILLA * fallaPlantilla(hh || h);
     }
     function repasa(){
-      let cuentas = conteo(h), mejor = desvioDe(cuentas);
+      let cuentas = conteo(h), mejor = desvioDe(cuentas, h);
       // Se recorren todos los huecos, ocupados o no: cambiar un plato y añadir
       // uno donde cabe son el mismo movimiento desde el punto de vista del
       // equilibrio, y el repaso solo acepta lo que acerca la semana a su sitio.
@@ -1063,7 +1097,7 @@
           // Si se quita el de en medio, el siguiente sube para no dejar un salto.
           const movido = (orden === "2" && h[slot + "|3"]) ? h[slot + "|3"] : null;
           if(movido){ h[slot + "|2"] = movido; delete h[slot + "|3"]; }
-          const tras = conteo(h), dq = desvioDe(tras);
+          const tras = conteo(h), dq = desvioDe(tras, h);
           if(dq < mejor){ mejor = dq; cuentas = tras; continue; }
           if(movido){ h[slot + "|3"] = movido; }
           h[k] = guardado;
@@ -1124,7 +1158,7 @@
           });
         }
         h[k] = cand.n;
-        const ahora = conteo(h), d = desvioDe(ahora);
+        const ahora = conteo(h), d = desvioDe(ahora, h);
         if(d < mejor){ mejor = d; cuentas = ahora; }
         else {
           if(previo) h[k] = previo; else delete h[k];
