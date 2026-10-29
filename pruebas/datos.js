@@ -1,7 +1,6 @@
 // Generado por pruebas/generar-datos.py desde supabase/02-datos.sql.
 // No se edita a mano.
 window.DATOS_PRUEBA = {
- "reglas": [],
  "recetas": [
   {
    "plato": "Berenjenas rellenas",

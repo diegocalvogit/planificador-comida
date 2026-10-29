@@ -125,40 +125,57 @@ window.CASOS = [
   }
 },
 
-/* ───────── Reglas del día a día ───────── */
+/* ───────── Platos clavados en la plantilla ───────── */
 {
-  nombre: "Una regla ocupa su hueco al abrir la semana",
+  nombre: "Un plato clavado ocupa su hueco al abrir la semana",
   correr: function(app, banco, t){
     const id = "2030-02-11";
-    app.ponerReglas([{menu:"casa", dia:"domingo", momento:"comida", orden:"1",
-                      plato:"Paella de marisco y carne"}]);
+    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {});
     app.fijarHuecos("nino", id, {});
-    app.aplicarReglas(id);
-    t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Paella de marisco y carne");
+    app.aplicarPlantilla(id);
+    t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
+    // Una sola plantilla para los dos, y solo se clavan platos que coman ambos.
+    t.igual(app.huecos("nino", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
   }
 },
 {
-  nombre: "Una regla no pisa lo que ya hubiera puesto",
+  nombre: "Un plato clavado no pisa lo que ya hubiera puesto",
   correr: function(app, banco, t){
     const id = "2030-02-18";
-    app.ponerReglas([{menu:"casa", dia:"domingo", momento:"comida", orden:"1",
-                      plato:"Paella de marisco y carne"}]);
+    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {"domingo|comida|1":"Tortilla"});
-    app.aplicarReglas(id);
+    app.aplicarPlantilla(id);
     t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Tortilla");
   }
 },
 {
-  // Cazaría: que "Generar menú adulto" se lleve por delante las reglas.
-  nombre: "El generador no se lleva por delante una regla",
+  // Cazaría: que "Generar menú adulto" se lleve por delante lo clavado.
+  nombre: "El generador no se lleva por delante un plato clavado",
   correr: function(app, banco, t){
     const id = "2030-02-25";
-    app.ponerReglas([{menu:"casa", dia:"domingo", momento:"comida", orden:"1",
-                      plato:"Paella de marisco y carne"}]);
+    app.fijarCelda("domingo", "comida", "1", {plato:"Lentejas con verduras y pollo"});
     app.fijarHuecos("adultos", id, {});
-    app.generar(id, "adultos", {semilla:app.huecosDeReglas("adultos")});
-    t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Paella de marisco y carne");
+    app.generar(id, "adultos", {semilla:app.conPlantilla({})});
+    t.igual(app.huecos("adultos", id)["domingo|comida|1"], "Lentejas con verduras y pollo");
+  }
+},
+{
+  // Lo que permite decir "mis cenas son de un plato".
+  nombre: "Un hueco en blanco se queda vacío al generar",
+  correr: function(app, banco, t){
+    const id = app.semanaActual();
+    app.ordenesDe().forEach(function(o){
+      if(o !== "1") app.fijarCelda("lunes", "cena", o, {blanco:true});
+    });
+    const h = app.huecos("adultos", id);
+    app.clavesDe().forEach(function(k){ delete h[k]; });
+    app.fijarHuecos("adultos", id, h);
+    app.generar(id, "adultos");
+    const hh = app.huecos("adultos", id);
+    t.cierto(!!hh["lunes|cena|1"], "el primero sí se llena");
+    t.igual(hh["lunes|cena|2"] || "", "", "el segundo se queda en blanco");
+    t.igual(hh["lunes|cena|3"] || "", "", "y el tercero también");
   }
 },
 
@@ -222,7 +239,7 @@ window.CASOS = [
 {
   // Cazaría: que al quitar un ingrediente de un plato su cantidad se quede
   // colgada en la receta, o que renombrarlo deje la receta huérfana.
-  nombre: "Tocar un plato arrastra su receta y sus reglas",
+  nombre: "Tocar un plato arrastra su receta y la plantilla",
   correr: function(app, banco, t){
     const n = "Paella de marisco y carne";
     t.cierto(app.hayReceta(n), "de partida tiene receta");
@@ -237,17 +254,19 @@ window.CASOS = [
     t.cierto(quedan.indexOf("azafrán") === -1, "la cantidad del azafrán se va");
     t.cierto(quedan.indexOf("arroz") !== -1, "las demás se quedan");
 
-    // Renombrarlo: la receta y la regla le siguen.
-    app.ponerReglas([{menu:"casa", dia:"domingo", momento:"comida", orden:"1", plato:n}]);
+    // Renombrarlo: la receta y la celda de la plantilla le siguen.
+    app.fijarCelda("domingo", "comida", "1", {plato:n});
     app.renombrarPlato(n, "Paella de los domingos");
     t.cierto(!app.hayReceta(n), "la receta ya no está con el nombre viejo");
     t.cierto(app.hayReceta("Paella de los domingos"), "y sí con el nuevo");
-    t.igual(app.REGLAS()[0].plato, "Paella de los domingos", "la regla también");
+    t.igual(app.celdaDe("domingo", "comida", "1").plato, "Paella de los domingos",
+            "la plantilla también");
 
-    // Borrarlo: se lleva las dos por delante.
+    // Borrarlo: la receta se va y la celda baja a "en blanco", que es lo único
+    // honesto: dijiste que ahí iba algo concreto y ese algo ya no existe.
     app.renombrarPlato("Paella de los domingos", null);
     t.cierto(!app.hayReceta("Paella de los domingos"), "borrado, sin receta");
-    t.igual(app.REGLAS().length, 0, "y sin regla");
+    t.cierto(app.celdaDe("domingo", "comida", "1").blanco, "y la celda, en blanco");
   }
 },
 {
@@ -339,14 +358,15 @@ window.CASOS = [
   // La restricción es de la comida entera y no de cada hueco: puestas las
   // lentejas el martes, el segundo y el tercero quedan libres. Y se mira por
   // menú, porque el niño y el adulto cumplen cada uno por su lado.
-  nombre: "El tipo de la plantilla se pide hasta que la comida lo cumple",
+  nombre: "Cada celda de la plantilla manda en su hueco",
   correr: function(app, banco, t, w){
     const d = w.document, id = app.semanaActual();
     const hn = app.huecos("nino", id), ha = app.huecos("adultos", id);
     app.clavesDe().forEach(function(k){ delete hn[k]; delete ha[k]; });
     app.fijarHuecos("nino", id, hn);
     app.fijarHuecos("adultos", id, ha);
-    app.fijarPlantilla("lunes", "comida", "Legumbre");
+    app.fijarCelda("lunes", "comida", "1", {tipo:"Legumbre"});
+    app.fijarCelda("lunes", "comida", "2", {tipo:"Verdura"});
     app.verTab("semana"); app.pintarTodo();
 
     const grupo = function(){ return d.querySelectorAll(".picker-filtro")[0]; };
@@ -362,10 +382,16 @@ window.CASOS = [
     t.cierto(opciones().length > 0, "que haberlos haylos");
     opciones()[0].click();
 
-    // Cumplida la comida, el segundo hueco va libre.
+    // Cada celda manda en su hueco: el segundo pide lo suyo, no lo del primero.
     app.abrirSelector("nino", "lunes", "comida", "2");
-    t.cierto(grupo().hidden, "al segundo ya no se lo pide");
-    t.cierto(!d.querySelector(".picker-toca"), "ni lo anuncia");
+    t.cierto(!grupo().hidden, "al segundo le pide el suyo");
+    t.cierto(d.querySelector(".picker-toca").textContent.indexOf("Verdura") !== -1,
+             "y el suyo es Verdura");
+    cierra();
+
+    // Un hueco sin celda no pide nada.
+    app.abrirSelector("nino", "lunes", "comida", "3");
+    t.cierto(grupo().hidden, "al tercero, que no tiene celda, no le pide nada");
     cierra();
 
     // Pero el adulto no ha comido legumbres todavía.
@@ -383,12 +409,12 @@ window.CASOS = [
   nombre: "El generador pone en cada comida lo que pide la plantilla",
   correr: function(app, banco, t){
     const id = app.semanaActual();
-    const pide = {"lunes|comida":"Legumbre", "martes|comida":"Pasta",
-                  "miércoles|comida":"Arroz", "jueves|cena":"Huevo",
-                  "viernes|comida":"Pescado blanco"};
+    const pide = {"lunes|comida|1":"Legumbre", "martes|comida|1":"Pasta",
+                  "miércoles|comida|1":"Arroz", "jueves|cena|1":"Huevo",
+                  "viernes|comida|1":"Pescado blanco", "lunes|comida|2":"Verdura"};
     Object.keys(pide).forEach(function(k){
       const x = k.split("|");
-      app.fijarPlantilla(x[0], x[1], pide[k]);
+      app.fijarCelda(x[0], x[1], x[2], {tipo:pide[k]});
     });
     // Desde cero, para que lo que salga sea cosa del generador y no de la semilla.
     const h = app.huecos("adultos", id);
@@ -397,12 +423,11 @@ window.CASOS = [
     app.generar(id, "adultos");
 
     const hh = app.huecos("adultos", id);
+    // Cada celda manda en SU hueco, no en la comida entera.
     const sinCumplir = Object.keys(pide).filter(function(k){
-      return !app.ordenesDe().some(function(o){
-        return app.cumpleTipo(app.platoEnSemana("adultos", hh[k + "|" + o]), pide[k]);
-      });
+      return !app.cumpleTipo(app.platoEnSemana("adultos", hh[k]), pide[k]);
     });
-    t.igual(sinCumplir, [], "todas las comidas de la plantilla, cumplidas");
+    t.igual(sinCumplir, [], "todos los huecos de la plantilla, cumplidos");
   }
 },
 

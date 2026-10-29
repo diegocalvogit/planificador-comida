@@ -54,18 +54,32 @@ create table if not exists public.tipos (
   constraint tipos_rango check (maximo >= minimo)
 );
 
--- Qué tipo de alimento toca en cada comida de la semana. Una fila por día y
--- momento; sin fila, ese momento da igual. Una sola plantilla para los dos
--- menús: el martes tocan legumbres para todos, y lo que cambia es el plato.
+-- Qué va en cada hueco de la semana, antes de saber de qué semana hablamos.
+-- Tres filas por comida, una por plato, y cada una manda en su hueco. Admite
+-- un tipo de alimento ("el martes, legumbres") o un plato concreto ("los
+-- domingos, paella"); lo segundo fue una tabla aparte, `reglas`, que hacía
+-- exactamente esto en otra pantalla.
 --
--- Un solo tipo por comida y no uno por plato a propósito: lo que se fija es el
--- eje de la comida, y el acompañamiento sale de lo que pida el equilibrio.
+-- Tres maneras de estar una celda:
+--
+--   sin fila                 libre: que lo reparta el generador
+--   con tipo o con plato     eso es lo que va ahí
+--   fila con los dos a null  en blanco: ahí no va nada
+--
+-- Lo último es lo que permite decir "mis cenas son de un plato". A mano sí se
+-- puede añadir: la plantilla gobierna el reparto automático, no ata las manos.
+--
+-- Una sola plantilla para los dos menús, y por eso la aplicación solo deja
+-- clavar platos que coman los dos: así no hay que decidir qué come el niño el
+-- día que los adultos tienen paella.
 create table if not exists public.plantilla (
-  dia     text not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
-  momento text not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
-  tipo    text not null references public.tipos(tipo)
-                          on update cascade on delete cascade,
-  primary key (dia, momento)
+  dia     text     not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
+  momento text     not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
+  orden   smallint not null check (orden in (1,2,3)),
+  tipo    text     references public.tipos(tipo)    on update cascade on delete cascade,
+  plato   text     references public.platos(nombre) on update cascade on delete cascade,
+  primary key (dia, momento, orden),
+  constraint plantilla_una_cosa check (tipo is null or plato is null)
 );
 
 create table if not exists public.platos (
@@ -89,19 +103,6 @@ create table if not exists public.platos (
 -- Una sola tabla para los dos menús: `menu` dice cuál. El identificador de la
 -- semana es el lunes, y la etiqueta ("3ª semana de septiembre") se calcula en
 -- la página: guardarla sería repetirse.
--- Platos clavados en un hueco de la semana: paella los domingos, pasta los
--- martes. Es la misma forma que `semanas` sin la columna de la semana, porque
--- la semana que te toque vivir no cambia que los domingos haya paella.
-create table if not exists public.reglas (
-  menu    text     not null check (menu in ('casa','nino')),
-  dia     text     not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
-  momento text     not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
-  orden   smallint not null check (orden in (1,2,3)),
-  plato   text     not null references public.platos(nombre)
-                        on update cascade on delete cascade,
-  primary key (menu, dia, momento, orden)
-);
-
 -- Los pasos de un plato, para los de preparación media o alta. Un plato de
 -- preparación baja no necesita que nadie le explique nada.
 create table if not exists public.recetas (
@@ -155,7 +156,7 @@ do $$
 declare t text;
 begin
   foreach t in array array['secciones','ingredientes','tipos','plantilla',
-                           'reglas','recetas','platos','semanas','compras','despensa']
+                           'recetas','platos','semanas','compras','despensa']
   loop
     execute format('alter table public.%I enable row level security', t);
     execute format('drop policy if exists "solo la casa" on public.%I', t);

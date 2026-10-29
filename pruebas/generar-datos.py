@@ -136,7 +136,7 @@ def tuplas(sql, tabla):
 
 sql = io.open(os.path.join(RAIZ, "supabase", "02-datos.sql"), encoding="utf-8").read()
 
-datos = {"reglas": [], "recetas": [], "compras": []}
+datos = {"recetas": [], "compras": []}
 
 # Las recetas van en su propio fichero porque son opcionales: la base funciona
 # sin ellas. Pero las pruebas las quieren, que si no no hay nada que mirar.

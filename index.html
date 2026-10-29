@@ -85,10 +85,12 @@
 
     <div class="cfg-bloque">
       <h3>Tipos de alimentos por comidas</h3>
-      <p class="hint" style="margin:0 0 10px">Qué tipo de alimento manda en cada comida de la semana: el
-        eje del plato, no el plato entero. Lo que dejes en blanco se reparte solo. Vale para los dos menús
-        —si el martes tocan legumbres, tocan para todos— y lo que cambia es el plato que come cada uno.
-        Al elegir plato en la Semana, se te ofrecen primero los de ese tipo.</p>
+      <p class="hint" style="margin:0 0 10px">Qué va en cada hueco de la semana. Cada celda manda en su
+        plato y admite dos cosas: un <strong>tipo de alimento</strong> —el martes, legumbres— o
+        <strong>un plato concreto</strong> —los domingos, paella—, que se coloca solo al abrir la semana.
+        Dejar una celda en <strong>—</strong> es decir «repártelo tú»; ponerla <strong>en blanco</strong> es
+        decir «aquí no va nada», y así se limita una cena a un solo plato. A mano siempre puedes añadir lo
+        que quieras. Vale para los dos menús, y por eso solo se pueden clavar platos que comáis los dos.</p>
       <div class="table-wrap">
         <table class="plantilla" id="tabla-plantilla"></table>
       </div>
@@ -112,14 +114,6 @@
       <div class="cfg-fila" id="cfg-donde"></div>
     </div>
 
-    <div class="cfg-bloque">
-      <h3>Reglas del día a día</h3>
-      <p class="hint" style="margin:0 0 10px">Platos clavados en un hueco de la semana: paella los domingos,
-        pasta los martes. No son objetivos que el reparto persiga, son sitios que ya están ocupados: cada vez
-        que abres una semana ocupan su hueco si lo encuentran libre, y a partir de ahí el generador las
-        respeta igual que respeta lo que pongas tú. Por eso mandan sobre el equilibrio.</p>
-      <div id="reglas-lista"></div>
-      <div id="reglas-alta"></div>
     </div>
 
     <div class="cfg-bloque">

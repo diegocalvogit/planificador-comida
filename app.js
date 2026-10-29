@@ -228,64 +228,114 @@
     guardar();
   }
 
-  /* ============ Reglas del día a día ============ */
-  // "Paella los domingos", "pasta los martes". No son objetivos de equilibrio y
-  // no se persiguen: se ponen. Al abrir una semana, cada regla ocupa su hueco si
-  // está libre, y a partir de ahí el reparto las respeta como respeta lo que
-  // pongas tú a mano — por eso mandan sobre el equilibrio sin tener que pelearse
-  // con él: cuando el generador entra, el hueco ya no está en juego.
+  /* ============ La plantilla de la semana ============ */
+  // Qué va en cada hueco de la semana, antes de saber de qué semana hablamos:
+  // tres celdas por comida, una por plato. Cada celda manda en su hueco.
   //
-  // La tabla es la misma forma que `semanas` sin la columna de la semana: la
-  // semana que te toque vivir no cambia que los domingos haya paella.
-  let REGLAS = [];
+  // Una celda admite dos cosas distintas:
+  //
+  //   un tipo    "el martes, legumbres" — cualquier plato que lo lleve
+  //   un plato   "los domingos, paella" — ese y no otro
+  //
+  // Lo segundo era una pantalla aparte, las reglas del día a día, con su propia
+  // tabla y su propio editor. Hacía exactamente esto, así que se fue: dos sitios
+  // para decir dónde va cada cosa eran uno de más.
+  //
+  // Y hay tres maneras de estar una celda:
+  //
+  //   sin entrada            libre: que lo reparta el generador
+  //   con tipo o con plato   eso es lo que va ahí
+  //   {blanco:true}          en blanco: ahí no va nada
+  //
+  // Lo último es lo que permite decir "mis cenas son de un plato". A mano sí se
+  // puede añadir: la plantilla gobierna el reparto automático, no ata las manos.
+  //
+  // Una sola plantilla para los dos menús, y por eso solo se pueden fijar platos
+  // que coman los dos: así no hay que decidir qué come el niño el día que los
+  // adultos tienen paella. El problema se quita de en medio en vez de resolverse.
+  let PLANTILLA = {};
 
-  function reglasDe(pid){
-    const menu = pid === "adultos" ? "casa" : "nino";
-    return REGLAS.filter(function(r){ return r.menu === menu; });
+  function clavePl(dia, momento, orden){ return dia + "|" + momento + "|" + orden; }
+  function celdaDe(dia, momento, orden){ return PLANTILLA[clavePl(dia, momento, orden)] || null; }
+  function fijarCelda(dia, momento, orden, celda){
+    const k = clavePl(dia, momento, orden);
+    if(celda) PLANTILLA[k] = celda; else delete PLANTILLA[k];
+    guardar();
   }
-  function claveRegla(r){ return r.menu + "|" + r.dia + "|" + r.momento + "|" + r.orden; }
+  // El tipo que pide un hueco, si pide alguno. Un plato concreto no cuenta como
+  // tipo: ahí no hay nada que elegir.
+  function tipoDeHueco(dia, momento, orden){
+    const c = celdaDe(dia, momento, orden);
+    return c && c.tipo ? c.tipo : "";
+  }
+  function platoDeHueco(dia, momento, orden){
+    const c = celdaDe(dia, momento, orden);
+    return c && c.plato ? c.plato : "";
+  }
+  function huecoEnBlanco(dia, momento, orden){
+    const c = celdaDe(dia, momento, orden);
+    return !!(c && c.blanco);
+  }
+  // Si un plato lleva ese tipo entre los suyos, sirve. Los platos llevan varios
+  // —unas lentejas con chorizo son Legumbre y Embutido— y basta con que uno
+  // coincida.
+  function cumpleTipo(p, tipo){
+    if(!tipo) return true;
+    return tiposDe(p).indexOf(tipo) !== -1;
+  }
+  // Los que se pueden fijar: los que comen los dos. Lo demás obligaría a decidir
+  // qué come el otro, y eso es lo que no queremos tener que decidir.
+  function platosFijables(){
+    return repertorio().filter(function(p){ return p.menus && p.menus.adultos && p.menus.nino; });
+  }
 
-  // Lo que las reglas dicen que debe haber en esa semana, en forma de huecos.
-  function huecosDeReglas(pid){
-    const h = {};
-    reglasDe(pid).forEach(function(r){
-      if(!platoPorNombre(r.plato)) return;      // el plato ya no existe
-      h[r.dia + "|" + r.momento + "|" + r.orden] = r.plato;
+  // Al abrir una semana, los platos concretos de la plantilla ocupan los huecos
+  // que encuentren libres. No pisan nada: si esa comida ya tenía algo —puesto
+  // por ti, por el generador o por el menú de la guardería— se respeta.
+  //
+  // Los tipos no se colocan, que un tipo no es un plato: esos los resuelve el
+  // generador y el selector.
+  function aplicarPlantilla(id){
+    const quiere = {};
+    Object.keys(PLANTILLA).forEach(function(k){
+      const c = PLANTILLA[k];
+      if(c && c.plato && platoPorNombre(c.plato)) quiere[k] = c.plato;
     });
-    return h;
-  }
+    if(!Object.keys(quiere).length) return 0;
 
-  // Al abrir una semana, las reglas ocupan los huecos que encuentren libres. No
-  // pisan nada: si ese día ya había algo puesto — por ti, por el generador o por
-  // el menú de la guardería — se respeta, que para eso lo pusiste.
-  function aplicarReglas(id){
-    if(!REGLAS.length) return 0;
     let puestos = 0;
     PERFILES.forEach(function(pf){
-      const quiere = huecosDeReglas(pf.id), origen = huecos(pf.id, id), h = {};
+      const origen = huecos(pf.id, id), h = {};
       Object.keys(origen).forEach(function(k){ h[k] = origen[k]; });
+      let suyos = 0;
       Object.keys(quiere).forEach(function(k){
         const slot = k.split("|").slice(0, 2).join("|");
         // Libre es que no haya nada en toda la comida: meter una paella de
         // segundo debajo de unas lentejas no es lo que nadie quiso decir.
         if(ordenesDe().some(function(o){ return !!h[slot + "|" + o]; })) return;
         h[k] = quiere[k];
-        puestos++;
+        suyos++;
       });
-      if(puestos) fijarHuecos(pf.id, id, h);
+      if(suyos){ fijarHuecos(pf.id, id, h); puestos += suyos; }
     });
     return puestos;
   }
 
-  // Una semilla de generación con las reglas puestas encima. Mandan sobre lo
-  // demás — sobre el espejo del niño, sobre lo que hubiera — porque son lo único
-  // de aquí que has decidido tú y no un reparto. Y se quedan con la comida
-  // entera: media comida de regla y media de reparto no significa nada.
-  function conReglas(pid, semilla){
+  // Una semilla de generación con los platos de la plantilla puestos encima.
+  // Mandan sobre lo demás —sobre el espejo del niño, sobre lo que hubiera—
+  // porque son lo único de aquí que has decidido tú y no un reparto. Y se quedan
+  // con la comida entera: media comida fijada y media repartida no significa
+  // nada.
+  function conPlantilla(semilla){
     const h = {};
     Object.keys(semilla || {}).forEach(function(k){ if(semilla[k]) h[k] = semilla[k]; });
-    const quiere = huecosDeReglas(pid), slots = {};
-    Object.keys(quiere).forEach(function(k){ slots[k.split("|").slice(0, 2).join("|")] = 1; });
+    const quiere = {}, slots = {};
+    Object.keys(PLANTILLA).forEach(function(k){
+      const c = PLANTILLA[k];
+      if(!(c && c.plato && platoPorNombre(c.plato))) return;
+      quiere[k] = c.plato;
+      slots[k.split("|").slice(0, 2).join("|")] = 1;
+    });
     Object.keys(slots).forEach(function(slot){
       ordenesDe().forEach(function(o){ delete h[slot + "|" + o]; });
     });
@@ -373,15 +423,14 @@
       tabla("secciones",    ["orden"]),
       tabla("ingredientes", ["ingrediente"]),
       tabla("tipos",        ["orden"]),
-      tabla("plantilla",    ["dia", "momento"]),
-      tabla("reglas",       ["menu", "dia", "momento", "orden"]),
+      tabla("plantilla",    ["dia", "momento", "orden"]),
       tabla("recetas",      ["plato"]),
       tabla("platos",       ["nombre"]),
       tabla("semanas",      ["semana_id", "dia", "momento", "orden"]),
       tabla("compras",      ["semana_id", "ingrediente"]),
       tabla("despensa",     ["ingrediente"])
     ]);
-    const [secciones, ingredientes, tipos, plantilla, reglas, recetas,
+    const [secciones, ingredientes, tipos, plantilla, recetas,
            platos, semanas, compras, despensa] = r;
 
     // El orden de las secciones es el del súper y manda en la lista de la compra:
@@ -400,11 +449,8 @@
       return {ingrediente:x.ingrediente, seccion:x.seccion};
     });
     datos.plantilla = plantilla.map(function(x){
-      return {dia:x.dia, momento:x.momento, tipo:x.tipo};
-    });
-    datos.reglas = reglas.map(function(x){
-      return {menu:x.menu, dia:x.dia, momento:x.momento,
-              orden:String(x.orden), plato:x.plato};
+      return {dia:x.dia, momento:x.momento, orden:String(x.orden),
+              tipo:x.tipo || "", plato:x.plato || ""};
     });
     datos.recetas = recetas.map(function(x){
       return {plato:x.plato, pasos:tubo(x.pasos), cantidades:tubo(x.cantidades)};
@@ -490,7 +536,6 @@
   let SECCION = {}, SECCIONES = [], REPO_COMPRAS = {}, TIPOS = [], CLAVE_TIPO = {};
   let PLATOS = [];      // el repertorio entero, con su marca de menú
   let OBJETIVOS = [];   // el objetivo semanal de cada tipo, que es de la casa
-  let PLANTILLA = {};   // "dia|momento" -> tipo de referencia de esa comida
   const REP = { adultos:{REPO:{}}, nino:{REPO:{}} };
 
   function construir(){
@@ -517,18 +562,19 @@
                min:Number(x.minimo) || 0, max:Number(x.maximo) || 0 };
     });
 
+    // Sin tipo y sin plato, la fila dice "en blanco": existir ya es el dato.
     PLANTILLA = {};
     (datos.plantilla || []).forEach(function(x){
-      if(x.dia && x.momento && x.tipo) PLANTILLA[x.dia + "|" + x.momento] = x.tipo;
+      if(!x.dia || !x.momento || !x.orden) return;
+      const k = clavePl(x.dia, x.momento, x.orden);
+      if(x.tipo) PLANTILLA[k] = {tipo:x.tipo};
+      else if(x.plato) PLANTILLA[k] = {plato:x.plato};
+      else PLANTILLA[k] = {blanco:true};
     });
 
     RECETAS = {};
     (datos.recetas || []).forEach(function(x){
       if(x.plato) RECETAS[x.plato] = {pasos:lista(x.pasos), cantidades:lista(x.cantidades)};
-    });
-
-    REGLAS = (datos.reglas || []).filter(function(x){ return x.plato; }).map(function(x){
-      return {menu:x.menu, dia:x.dia, momento:x.momento, orden:String(x.orden), plato:x.plato};
     });
 
     PERFILES.forEach(function(pf){
@@ -859,11 +905,13 @@
       if(nuevo) RECETAS[nuevo] = RECETAS[viejo];
       delete RECETAS[viejo];
     }
-    REGLAS = REGLAS.filter(function(r){
-      if(r.plato !== viejo) return true;
-      if(!nuevo) return false;
-      r.plato = nuevo;
-      return true;
+    // La plantilla puede tener ese plato clavado en un hueco. Si se renombra le
+    // sigue; si se borra, la celda baja a "en blanco", que es lo único honesto:
+    // dijiste que ahí iba algo concreto y ese algo ya no existe.
+    Object.keys(PLANTILLA).forEach(function(k){
+      const c = PLANTILLA[k];
+      if(!c || c.plato !== viejo) return;
+      PLANTILLA[k] = nuevo ? {plato:nuevo} : {blanco:true};
     });
     guardar();
   }
@@ -988,30 +1036,38 @@
       const aptos = APTOS[momento] || [];
       if(!aptos.length) return;
 
-      // Lo que la plantilla pide para esta comida va al primer plato, que es el
-      // de referencia. Si no hubiera ninguno de ese tipo que se coma a esa hora,
-      // se reparte como siempre: mejor una comida puesta que un hueco vacío, y
-      // el coste de arriba se encarga de que siga constando como pendiente.
-      const tipoToca = PLANTILLA[slot];
-      const delTipo = tipoToca
-        ? aptos.filter(function(p){ return tiposDe(p).indexOf(tipoToca) !== -1; })
-        : aptos;
-      const base0 = delTipo.length ? delTipo : aptos;
-
-      // Primer plato: se prefiere no repetir dentro de la semana, pero antes que
-      // dejar el hueco vacío se repite. En desayunos, almuerzos y meriendas
-      // repetir es lo normal.
+      // Lo que la plantilla pide para cada hueco. Un hueco en blanco no se
+      // rellena, y uno con plato clavado ya vino en la semilla.
       const vario = !LIGEROS[momento];
+      const pide = function(orden){ return PLANTILLA[slot + "|" + orden] || null; };
+      const deLaCelda = function(orden, pool){
+        const c = pide(orden);
+        if(!c || !c.tipo) return pool;
+        const suyos = pool.filter(function(p){ return tiposDe(p).indexOf(c.tipo) !== -1; });
+        // Sin ninguno de ese tipo a esa hora, se reparte como siempre: mejor una
+        // comida puesta que un hueco vacío, y el coste de arriba se encarga de
+        // que siga constando como pendiente.
+        return suyos.length ? suyos : pool;
+      };
+
+      const c1 = pide("1");
+      if(c1 && c1.blanco) return;                     // la comida entera se salta
+
+      const base0 = deLaCelda("1", aptos);
       let cands = vario ? base0.filter(function(p){ return !usados[p.n]; }) : base0;
       const primero = elige(cands.length ? cands : base0, dia, momento);
       if(!primero) return;
       apunta(slot, "1", primero);
 
-      // Un plato único basta. Si no lo es, se le busca otro plato que tampoco lo sea.
       // Un plato único resuelve la comida: el postre y el tercero, si hacen
-      // falta, los pone el repaso cuando con ellos cuadra algún objetivo.
-      if(primero.unico) return;
-      const parejas = aptos.filter(function(p){ return !p.unico && p.n !== primero.n; });
+      // falta, los pone el repaso cuando con ellos cuadra algún objetivo. Salvo
+      // que la plantilla pida algo concreto en el segundo, que entonces manda.
+      const c2 = pide("2");
+      if(c2 && c2.blanco) return;
+      if(primero.unico && !(c2 && c2.tipo)) return;
+      const parejas = deLaCelda("2", aptos.filter(function(p){
+        return !p.unico && p.n !== primero.n;
+      }));
       if(!parejas.length) return;
       const libres = vario ? parejas.filter(function(p){ return !usados[p.n]; }) : parejas;
       const segundo = elige(libres.length ? libres : parejas, dia, momento);
@@ -1045,16 +1101,16 @@
     const PESO_PLANTILLA = 6;
     function fallaPlantilla(hh){
       let t = 0;
-      for(let si = 0; si < SLOTS.length; si++){
-        const slot = SLOTS[si], tipo = PLANTILLA[slot];
-        if(!tipo) continue;
-        const ords = ORD[slot];
-        let cumplida = false;
-        for(let oi = 0; oi < ords.length && !cumplida; oi++){
-          const p = PORNOMBRE[hh[slot + "|" + ords[oi]]];
-          if(p && tiposDe(p).indexOf(tipo) !== -1) cumplida = true;
-        }
-        if(!cumplida) t++;
+      for(let ci = 0; ci < CLAVES.length; ci++){
+        const k = CLAVES[ci], c = PLANTILLA[k];
+        if(!c) continue;
+        const p = PORNOMBRE[hh[k]];
+        // En blanco: el hueco tiene que estar vacío.
+        if(c.blanco){ if(hh[k]) t++; continue; }
+        // Un plato concreto: ese y no otro.
+        if(c.plato){ if(hh[k] !== c.plato) t++; continue; }
+        // Un tipo: cualquier plato que lo lleve, pero en este hueco.
+        if(c.tipo && !(p && tiposDe(p).indexOf(c.tipo) !== -1)) t++;
       }
       return t;
     }
@@ -1079,6 +1135,11 @@
         const partes = k.split("|"), dia = partes[0], momento = partes[1], orden = partes[2];
         const slot = dia + "|" + momento;
         if(fijados[slot]) continue;                    // lo que ya estaba puesto no se toca
+        const celda = PLANTILLA[k];
+        // Un hueco en blanco se queda en blanco, y uno con plato clavado se
+        // queda con el suyo: la plantilla no es una preferencia que el repaso
+        // pueda negociar.
+        if(celda && (celda.blanco || celda.plato)) continue;
 
         const actual = h[k] ? PORNOMBRE[h[k]] : null;
         if(h[k] && !actual) continue;                  // un plato que ya no existe
@@ -1201,7 +1262,7 @@
       });
       compacta(semilla, slot);
     });
-    return generar(id, "nino", {semilla:conReglas("nino", semilla)});
+    return generar(id, "nino", {semilla:conPlantilla(semilla)});
   }
 
   // La mesa, a partir de lo que come el niño: su mismo plato si los adultos
@@ -1222,7 +1283,7 @@
       const p1 = semilla[slot + "|1"] ? plato("adultos", semilla[slot + "|1"]) : null;
       if(p1 && p1.unico && semilla[slot + "|3"]) delete semilla[slot + "|3"];
     });
-    return generar(id, "adultos", {semilla:conReglas("adultos", semilla)});
+    return generar(id, "adultos", {semilla:conPlantilla(semilla)});
   }
 
   // En cuántas comidas la mesa y el niño tienen exactamente lo mismo. Se cuenta
@@ -1970,7 +2031,7 @@
           onclick:function(){
             const id = semanaActual();
             fijarHuecos("adultos", id, {});
-            generar(id, "adultos", {semilla:conReglas("adultos", {})}); pintarTodo();
+            generar(id, "adultos", {semilla:conPlantilla({})}); pintarTodo();
             aviso("Menú de adulto generado: " + etiquetaSemana(desdeIso(id)) +
                   " · " + resumenEquilibrio("adultos", id));
           }}),
@@ -2171,11 +2232,11 @@
   }
   function irASemana(id){
     estado.semana = id;
-    // Las reglas se aplican al abrir la semana, no en cada repintado: así
-    // "Vaciar" vacía de verdad y no se te vuelven a colar solas.
-    const n = aplicarReglas(id);
+    // Los platos de la plantilla se colocan al abrir la semana, no en cada
+    // repintado: así "Vaciar" vacía de verdad y no se te vuelven a colar solos.
+    const n = aplicarPlantilla(id);
     guardar(); pintarTodo();
-    if(n) aviso(n + (n === 1 ? " plato puesto" : " platos puestos") + " por tus reglas del día a día");
+    if(n) aviso(n + (n === 1 ? " plato puesto" : " platos puestos") + " por la plantilla");
   }
 
   function pintarSemana(){
@@ -2468,16 +2529,12 @@
       cuantosFuera
     ]);
 
-    // El tipo que la plantilla pide para esta comida. Deja de pedirse en cuanto
-    // uno de los platos de la comida ya lo cumple: la restricción era de la
-    // comida entera, no de cada hueco, así que puestas las lentejas el martes,
-    // el segundo y el tercero quedan libres. Se mira por menú, porque el niño
-    // y el adulto cumplen cada uno por su lado.
-    const tipoPedido = tipoDePlantilla(dia, momento);
-    const yaCumplido = !!tipoPedido && yaEnLaComida.some(function(n){
-      return cumpleTipo(platoEnSemana(pid, n), tipoPedido);
-    });
-    const pideTipo = !!tipoPedido && !yaCumplido;
+    // Lo que la plantilla pide para este hueco en concreto. Cada celda manda en
+    // el suyo, así que no hay nada que "dar por cumplido": si el 2º pide verdura,
+    // la pide aunque el 1º ya la llevara.
+    const celdaPl = celdaDe(dia, momento, orden);
+    const tipoPedido = celdaPl && celdaPl.tipo ? celdaPl.tipo : "";
+    const pideTipo = !!tipoPedido;
 
     const verGrupos = el("input", {type:"checkbox", id:"picker-grupos"});
     const cuantosGrupo = el("span", {class:"om"});
@@ -2604,10 +2661,18 @@
                        (pid === "nino" ? " · niño" : "")}),
         buscar,
         pideTipo ? el("p", {class:"picker-toca"}, [
-          document.createTextNode("Hoy toca "),
+          document.createTextNode("Aquí toca "),
           el("strong", {text:tipoPedido}),
           document.createTextNode(", según la plantilla.")
-        ]) : null,
+        ]) : (celdaPl && celdaPl.blanco ? el("p", {class:"picker-toca"}, [
+          document.createTextNode("La plantilla deja este hueco "),
+          el("strong", {text:"en blanco"}),
+          document.createTextNode(". Puedes poner algo igualmente.")
+        ]) : (celdaPl && celdaPl.plato ? el("p", {class:"picker-toca"}, [
+          document.createTextNode("La plantilla clava aquí "),
+          el("strong", {text:celdaPl.plato}),
+          document.createTextNode(".")
+        ]) : null)),
         filtroGrupo,
         filtroMom
       ]),
@@ -3806,10 +3871,17 @@
     });
   }
   function filasPlantilla(){
+    const hayPlato = {}, hayTipo = {};
+    repertorio().forEach(function(p){ hayPlato[p.n] = 1; });
+    TIPOS.forEach(function(t){ hayTipo[t] = 1; });
     return Object.keys(PLANTILLA).filter(function(k){ return !!PLANTILLA[k]; })
       .map(function(k){
-        const t = k.split("|");
-        return {dia:t[0], momento:t[1], tipo:PLANTILLA[k]};
+        const t = k.split("|"), c = PLANTILLA[k];
+        // Un tipo o un plato que ya no existe no se puede guardar: la clave
+        // ajena lo rechazaría. La celda baja a "en blanco", que es lo que es.
+        const tipo  = c.tipo  && hayTipo[c.tipo]   ? c.tipo  : null;
+        const plato = c.plato && hayPlato[c.plato] ? c.plato : null;
+        return {dia:t[0], momento:t[1], orden:Number(t[2]), tipo:tipo, plato:plato};
       });
   }
   function filasRecetas(){
@@ -3822,15 +3894,6 @@
                    const r = recetaDe(n);
                    return {plato:n, pasos:r.pasos, cantidades:r.cantidades};
                  });
-  }
-  function filasReglas(){
-    // La clave ajena rechazaría una regla de un plato que ya no está, y el
-    // guardado entero se vendría abajo con él.
-    const hay = {};
-    repertorio().forEach(function(p){ hay[p.n] = 1; });
-    return REGLAS.filter(function(r){ return hay[r.plato]; }).map(function(r){
-      return {menu:r.menu, dia:r.dia, momento:r.momento, orden:Number(r.orden), plato:r.plato};
-    });
   }
   function filasPlatos(){
     return repertorio().map(function(p){
@@ -3895,10 +3958,9 @@
   const TABLAS = [
     {n:"secciones",    pk:["seccion"],      filas:filasSecciones},
     {n:"tipos",        pk:["clave"],        filas:filasTipos},
-    {n:"plantilla",    pk:["dia","momento"], filas:filasPlantilla},
+    {n:"plantilla",    pk:["dia","momento","orden"], filas:filasPlantilla},
     {n:"ingredientes", pk:["ingrediente"],  filas:filasIngredientes},
     {n:"platos",       pk:["nombre"],       filas:filasPlatos},
-    {n:"reglas",       pk:["menu","dia","momento","orden"], filas:filasReglas},
     {n:"recetas",      pk:["plato"],        filas:filasRecetas},
     {n:"semanas",      pk:["semana_id","menu","dia","momento","orden"], filas:filasSemanas},
     {n:"compras",      pk:["semana_id","ingrediente"], filas:filasCompras},
@@ -4022,10 +4084,11 @@
         fueraDeRango:fueraDeRango, ingredientesDeSemana:ingredientesDeSemana,
         paraComprar:paraComprar, marcarCompra:marcarCompra, marcaEfectiva:marcaEfectiva,
         huecosIguales:huecosIguales,
-        REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
-        aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
-        PLANTILLA:function(){ return PLANTILLA; }, fijarPlantilla:fijarPlantilla,
-        tipoDePlantilla:tipoDePlantilla, cumpleTipo:cumpleTipo, platoEnSemana:platoEnSemana,
+        aplicarPlantilla:aplicarPlantilla, conPlantilla:conPlantilla,
+        celdaDe:celdaDe, fijarCelda:fijarCelda, platosFijables:platosFijables,
+        tipoDeHueco:tipoDeHueco, platoDeHueco:platoDeHueco, huecoEnBlanco:huecoEnBlanco,
+        PLANTILLA:function(){ return PLANTILLA; },
+        cumpleTipo:cumpleTipo, platoEnSemana:platoEnSemana,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
         hayReceta:hayReceta, cantidadesDe:cantidadesDe, pasosEnApartados:pasosEnApartados,
         renombrarPlato:renombrarPlato, podarCantidades:podarCantidades,
@@ -4142,191 +4205,117 @@
       "despliegue est\u00e9 en verde."}));
   }
 
-  /* ============ Reglas del día a día, en Configuración ============ */
-  /* ============ La plantilla de la semana ============ */
-  // Qué tipo de alimento manda en cada comida. Una rejilla de siete días por
-  // cinco momentos, con un desplegable por celda y nada más: es la tabla que
-  // uno mira para decidir la semana, y cuanto menos adorno tenga, mejor.
+  /* ============ La rejilla de la plantilla, en Configuración ============ */
+  // Quince filas por siete días: cada momento con sus tres platos. Un
+  // desplegable por celda y nada más, porque es la tabla que uno mira para
+  // decidir la semana entera y cuanto menos adorno tenga, mejor.
   //
-  // Un tipo por comida y no uno por plato: lo que se fija es el eje de la
-  // comida —el martes, legumbres— y el acompañamiento sale de lo que pida el
-  // equilibrio. Y una sola plantilla para los dos menús: si el martes tocan
-  // legumbres, tocan para todos, y lo que cambia es el plato de cada uno.
-  function tipoDePlantilla(dia, momento){ return PLANTILLA[dia + "|" + momento] || ""; }
-  function fijarPlantilla(dia, momento, tipo){
-    const k = dia + "|" + momento;
-    if(tipo) PLANTILLA[k] = tipo; else delete PLANTILLA[k];
-    guardar();
-  }
-  // Si un plato lleva ese tipo entre los suyos, sirve para esa comida. Los
-  // platos llevan varios —unas lentejas con chorizo son Legumbre y Embutido— y
-  // basta con que uno coincida.
-  function cumpleTipo(p, tipo){
-    if(!tipo) return true;
-    return tiposDe(p).indexOf(tipo) !== -1;
-  }
-
+  // El desplegable mezcla dos cosas que no son lo mismo —un tipo de alimento y
+  // un plato concreto— y por eso van en grupos separados, con los tipos
+  // primero: clavar un plato es la excepción.
   function montarPlantilla(){
     const tabla = $("tabla-plantilla");
     if(!tabla) return;
     tabla.textContent = "";
 
-    const cab = el("tr", null, [el("th", {scope:"col", text:""})]);
+    const cab = el("tr", null, [
+      el("th", {scope:"col", class:"pl-momento", text:""}),
+      el("th", {scope:"col", class:"pl-orden", text:""})
+    ]);
     DIAS.forEach(function(d){
       cab.appendChild(el("th", {scope:"col", class:"pl-dia", text:mayus(d).slice(0, 3)}));
     });
     tabla.appendChild(el("thead", null, [cab]));
 
-    const cuerpo = el("tbody");
+    const fijables = platosFijables().map(function(p){ return p.n; })
+      .sort(function(a, b){ return a.localeCompare(b, "es"); });
+    const ORDS = ordenesDe();
+
     MOMENTOS.forEach(function(mo){
-      const fila = el("tr", null, [el("th", {scope:"row", class:"pl-momento", text:mo.lbl})]);
-      DIAS.forEach(function(dia){
-        const sel = el("select", {class:"pl-sel",
-          "aria-label":"Tipo de alimento para " + mo.lbl.toLowerCase() + " del " + dia});
-        sel.appendChild(el("option", {value:"", text:"—"}));
-        TIPOS.forEach(function(t){
-          sel.appendChild(el("option", {value:t, text:t}));
-        });
-        sel.value = tipoDePlantilla(dia, mo.id);
-        const celda = el("td", {class:"pl-celda"}, [sel]);
-        const pinta = function(){
-          const t = sel.value;
-          celda.style.background = t
-            ? "color-mix(in srgb, " + colorDe(claveDe(t)) + " 55%, var(--surface))"
-            : "";
-        };
-        pinta();
-        sel.addEventListener("change", function(){
-          fijarPlantilla(dia, mo.id, sel.value);
-          pinta(); montarPlantilla(); pintarSemana();
-        });
-        fila.appendChild(celda);
-      });
-      cuerpo.appendChild(fila);
-    });
-    tabla.appendChild(cuerpo);
+      const cuerpo = el("tbody", {class:"pl-grupo"});
+      ORDS.forEach(function(ord, fila){
+        const tr = el("tr");
+        if(fila === 0){
+          tr.appendChild(el("th", {scope:"rowgroup", class:"pl-momento",
+                                   rowspan:String(ORDS.length), text:mo.lbl}));
+        }
+        tr.appendChild(el("th", {scope:"row", class:"pl-orden", text:ORDEN_LBL[ord]}));
 
-    const pie = $("plantilla-foot");
-    if(pie){
-      pie.textContent = "";
-      const puestas = Object.keys(PLANTILLA).filter(function(k){ return !!PLANTILLA[k]; }).length;
-      pie.appendChild(el("button", {class:"btn btn-sm", text:"Vaciar la plantilla",
-        disabled: puestas ? null : "disabled",
-        onclick:function(){
-          if(!window.confirm("¿Quitar los " + puestas + " tipos de la plantilla?")) return;
-          PLANTILLA = {}; guardar(); montarPlantilla(); pintarSemana();
-          aviso("Plantilla vacía");
-        }}));
-      pie.appendChild(el("span", {class:"hint",
-        text: puestas ? puestas + " de 35 comidas con tipo fijado"
-                      : "Sin nada fijado: el reparto va solo por los objetivos de abajo."}));
-    }
-  }
+        DIAS.forEach(function(dia){
+          const sel = el("select", {class:"pl-sel",
+            "aria-label":ORDEN_LBL[ord] + " plato de " + mo.lbl.toLowerCase() + " del " + dia});
+          sel.appendChild(el("option", {value:"", text:"—"}));
+          sel.appendChild(el("option", {value:"!blanco", text:"en blanco"}));
 
-  function montarReglas(){
-    const lista = $("reglas-lista");
-    if(!lista) return;
-    lista.textContent = "";
+          const gt = el("optgroup", {label:"Tipo de alimento"});
+          TIPOS.forEach(function(t){ gt.appendChild(el("option", {value:"t:" + t, text:t})); });
+          sel.appendChild(gt);
 
-    if(!REGLAS.length){
-      lista.appendChild(el("p", {class:"hint", text:"Todavía no hay ninguna."}));
-    }
-    REGLAS.slice().sort(function(a, b){
-      return (DIAS.indexOf(a.dia) - DIAS.indexOf(b.dia)) ||
-             (IDS_MOMENTO.indexOf(a.momento) - IDS_MOMENTO.indexOf(b.momento)) ||
-             (Number(a.orden) - Number(b.orden)) ||
-             a.menu.localeCompare(b.menu);
-    }).forEach(function(r){
-      const p = platoPorNombre(r.plato);
-      lista.appendChild(el("div", {class:"regla-fila" + (p ? "" : " rota")}, [
-        el("span", {class:"swatch", style:"background:" +
-                    (p && tiposDe(p).length ? colorDe(claveDe(tiposDe(p)[0])) : "var(--surface-2)")}),
-        el("span", {class:"cuando", text:r.dia + " · " + (MOMENTO_LBL[r.momento] || r.momento) +
-                                         " · " + ORDEN_LBL[r.orden]}),
-        el("span", {class:"que", text:r.plato}),
-        el("span", {class:"quien", text:r.menu === "casa" ? "adulto" : "niño"}),
-        p ? null : el("span", {class:"aviso-roto", text:"ese plato ya no existe"}),
-        el("button", {type:"button", class:"quita", text:"×",
-          "aria-label":"Quitar la regla de " + r.plato + " el " + r.dia,
-          onclick:function(){
-            REGLAS = REGLAS.filter(function(x){ return claveRegla(x) !== claveRegla(r); });
-            guardar(); montarReglas();
-            aviso("Regla quitada. Lo que ya estuviera puesto se queda.");
-          }})
-      ]));
-    });
-  }
+          const gp = el("optgroup", {label:"Un plato concreto"});
+          fijables.forEach(function(n){ gp.appendChild(el("option", {value:"p:" + n, text:n})); });
+          sel.appendChild(gp);
 
-  function montarAltaRegla(){
-    const caja = $("reglas-alta");
-    if(!caja) return;
-    caja.textContent = "";
-
-    const sel = function(opciones, valor){
-      const e = el("select");
-      opciones.forEach(function(o){
-        e.appendChild(el("option", {value:o.id, text:o.lbl, selected:o.id === valor ? "selected" : null}));
-      });
-      return e;
-    };
-    const eMenu = sel(PERFILES.map(function(pf){
-      return {id:pf.casa ? "casa" : "nino", lbl:pf.casa ? "El adulto" : "El niño"};
-    }), "casa");
-    const eDia = sel(DIAS.map(function(d){ return {id:d, lbl:d}; }), "domingo");
-    const eMom = sel(MOMENTOS.map(function(m){ return {id:m.id, lbl:m.lbl}; }), "comida");
-    const eOrden = sel(ordenesDe().map(function(o){ return {id:o, lbl:ORDEN_LBL[o]}; }), "1");
-    const ePlato = el("select");
-
-    // Solo los platos de ese menú y de ese momento: una regla que pone un
-    // desayuno en la cena no la quiere nadie, y ofrecerla es invitar al error.
-    function pintaPlatos(){
-      const antes = ePlato.value;
-      ePlato.textContent = "";
-      const pid = eMenu.value === "casa" ? "adultos" : "nino";
-      const aptos = platos(pid).filter(function(p){ return elegible(p, eMom.value); })
-                               .sort(function(a, b){ return a.n.localeCompare(b.n, "es"); });
-      if(!aptos.length){
-        ePlato.appendChild(el("option", {value:"", text:"— nada de ese menú en ese momento —"}));
-        return;
-      }
-      aptos.forEach(function(p){ ePlato.appendChild(el("option", {value:p.n, text:p.n})); });
-      if(aptos.some(function(p){ return p.n === antes; })) ePlato.value = antes;
-    }
-    eMenu.addEventListener("change", pintaPlatos);
-    eMom.addEventListener("change", pintaPlatos);
-    pintaPlatos();
-
-    const campo = function(lbl, control){
-      return el("label", {class:"obj-campo"}, [el("span", {class:"obj-lbl", text:lbl}), control]);
-    };
-
-    caja.appendChild(el("div", {class:"regla-alta"}, [
-      campo("Quién", eMenu), campo("Qué día", eDia),
-      campo("Qué momento", eMom), campo("Qué puesto", eOrden),
-      el("div", {class:"obj-campo full"}, [
-        el("span", {class:"obj-lbl", text:"Qué plato"}), ePlato
-      ]),
-      el("div", {class:"full"}, [
-        el("button", {class:"btn btn-sm btn-primary", text:"Añadir la regla", onclick:function(){
-          if(!ePlato.value){ aviso("Ese menú no tiene platos para ese momento"); return; }
-          const r = {menu:eMenu.value, dia:eDia.value, momento:eMom.value,
-                     orden:eOrden.value, plato:ePlato.value};
-          const choque = REGLAS.filter(function(x){ return claveRegla(x) === claveRegla(r); })[0];
-          if(choque){
-            if(!window.confirm("Ya hay una regla ahí, con «" + choque.plato + "». ¿La cambias?")) return;
-            REGLAS = REGLAS.filter(function(x){ return claveRegla(x) !== claveRegla(r); });
+          const c = celdaDe(dia, mo.id, ord);
+          sel.value = !c ? "" : c.blanco ? "!blanco" : c.tipo ? "t:" + c.tipo : "p:" + c.plato;
+          // Un plato que ya no comen los dos no está en la lista, y el
+          // desplegable lo dejaría en "—" sin decir nada. Se añade suelto y
+          // avisando, que es un hueco que hay que revisar.
+          if(c && c.plato && sel.value !== "p:" + c.plato){
+            sel.appendChild(el("option", {value:"p:" + c.plato, text:c.plato + " (ya no vale)"}));
+            sel.value = "p:" + c.plato;
           }
-          REGLAS.push(r);
-          guardar(); montarReglas();
-          // Se aplica ya a la semana abierta, que si no parece que no ha hecho nada.
-          const puestos = aplicarReglas(semanaActual());
-          pintarTodo();
-          aviso("«" + r.plato + "» los " + r.dia + (r.dia === "sábado" || r.dia === "domingo" ? "s" : "") +
-                " para " + (r.menu === "casa" ? "el adulto" : "el niño") +
-                (puestos ? " · puesto ya en la semana abierta" : ""));
-        }})
-      ])
-    ]));
+
+          const celda = el("td", {class:"pl-celda"}, [sel]);
+          const pinta = function(){
+            const v = sel.value;
+            celda.className = "pl-celda" + (v === "!blanco" ? " pl-blanco" : "") +
+                              (v.indexOf("p:") === 0 ? " pl-plato" : "");
+            celda.style.background = v.indexOf("t:") === 0
+              ? "color-mix(in srgb, " + colorDe(claveDe(v.slice(2))) + " 55%, var(--surface))"
+              : "";
+          };
+          pinta();
+          sel.addEventListener("change", function(){
+            const v = sel.value;
+            fijarCelda(dia, mo.id, ord,
+              !v ? null : v === "!blanco" ? {blanco:true}
+                 : v.indexOf("t:") === 0 ? {tipo:v.slice(2)} : {plato:v.slice(2)});
+            pinta(); pieDePlantilla(); pintarSemana();
+          });
+          tr.appendChild(celda);
+        });
+        cuerpo.appendChild(tr);
+      });
+      tabla.appendChild(cuerpo);
+    });
+
+    pieDePlantilla();
+  }
+
+  function pieDePlantilla(){
+    const pie = $("plantilla-foot");
+    if(!pie) return;
+    pie.textContent = "";
+    const celdas = Object.keys(PLANTILLA).map(function(k){ return PLANTILLA[k]; }).filter(Boolean);
+    const tipos = celdas.filter(function(c){ return !!c.tipo; }).length;
+    const platos = celdas.filter(function(c){ return !!c.plato; }).length;
+    const blancos = celdas.filter(function(c){ return !!c.blanco; }).length;
+
+    pie.appendChild(el("button", {class:"btn btn-sm", text:"Vaciar la plantilla",
+      disabled: celdas.length ? null : "disabled",
+      onclick:function(){
+        if(!window.confirm("¿Quitar las " + celdas.length + " celdas de la plantilla?")) return;
+        PLANTILLA = {}; guardar(); montarPlantilla(); pintarSemana();
+        aviso("Plantilla vacía");
+      }}));
+
+    const partes = [];
+    if(tipos) partes.push(tipos + (tipos === 1 ? " tipo" : " tipos"));
+    if(platos) partes.push(platos + (platos === 1 ? " plato clavado" : " platos clavados"));
+    if(blancos) partes.push(blancos + " en blanco");
+    pie.appendChild(el("span", {class:"hint",
+      text: partes.length ? partes.join(" · ") + " de 105 huecos"
+                          : "Sin nada fijado: el reparto va solo por los objetivos de abajo."}));
   }
 
   /* ============ Panel: recetas ============ */
@@ -4831,8 +4820,6 @@
     montarDonde();
     montarRecetas();
     montarPlantilla();
-    montarReglas();
-    montarAltaRegla();
 
     // La primera vez la semana en curso se rellena sola, para no abrir en blanco.
     // Si en la base ya hay semanas no se toca nada: inventar una marcaría filas

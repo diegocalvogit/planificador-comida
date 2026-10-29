@@ -312,23 +312,33 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 .meter.fuera .val{font-weight:700}
 .meter .flecha{font-size:11px;color:var(--pimenton);margin-left:-4px}
 
-/* La plantilla de la semana: siete días por cinco momentos, un desplegable por
-   celda. Se mira entera de un vistazo, así que nada de adornos. */
-/* Sin el min-width de 860 de las demás tablas: esta tiene que caber entera
-   en pantalla, porque la gracia es verla de un vistazo. */
+/* La plantilla: quince filas —cinco momentos por tres platos— y siete días.
+   Se mira entera de un vistazo, así que nada de adornos y sin el min-width de
+   860 de las demás tablas, que la sacaba con scroll. */
 table.plantilla{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}
-.plantilla th{font-size:11px;font-weight:700;color:var(--ink-2);padding:5px 4px;text-align:center}
-.plantilla .pl-momento{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.1em;
-  text-transform:uppercase;text-align:left;width:86px;white-space:nowrap}
+.plantilla th{font-size:11px;font-weight:700;color:var(--ink-2);padding:4px;text-align:center}
+.plantilla .pl-momento{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.09em;
+  text-transform:uppercase;text-align:left;width:74px;white-space:nowrap;vertical-align:middle;
+  border-top:2px solid var(--line)}
+.plantilla .pl-orden{width:26px;font-size:10px;color:var(--ink-3);font-weight:600}
 .plantilla .pl-dia{text-transform:capitalize}
-.plantilla .pl-celda{padding:2px;border:1px solid var(--line);border-radius:0}
-.plantilla .pl-sel{width:100%;border:0;background:transparent;font:inherit;font-size:11.5px;
-  color:var(--ink);padding:4px 2px;cursor:pointer;text-align:center;
+.plantilla .pl-grupo .pl-celda{border-top:1px solid var(--line)}
+.plantilla .pl-grupo:not(:first-of-type) tr:first-child .pl-celda{border-top:2px solid var(--line)}
+.plantilla .pl-celda{padding:1px;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.plantilla .pl-sel{width:100%;border:0;background:transparent;font:inherit;font-size:11px;
+  color:var(--ink);padding:3px 2px;cursor:pointer;text-align:center;
   -webkit-appearance:none;appearance:none;text-overflow:ellipsis}
 .plantilla .pl-sel:focus{outline:2px solid var(--accent);outline-offset:-2px}
+/* Un plato clavado no es un tipo: se distingue sin depender del color, que lo
+   gasta el tipo de alimento. */
+.plantilla .pl-plato .pl-sel{font-weight:700;color:var(--accent-ink)}
+.plantilla .pl-blanco{background:repeating-linear-gradient(135deg,
+  var(--ground) 0 4px, transparent 4px 8px)}
+.plantilla .pl-blanco .pl-sel{color:var(--ink-3);font-style:italic}
 @media (max-width:760px){
-  .plantilla .pl-momento{width:62px;font-size:8.5px}
-  .plantilla .pl-sel{font-size:10px}
+  .plantilla .pl-momento{width:54px;font-size:8px}
+  .plantilla .pl-orden{width:20px}
+  .plantilla .pl-sel{font-size:9.5px}
 }
 
 .obj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
