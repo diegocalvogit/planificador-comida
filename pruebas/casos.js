@@ -164,6 +164,32 @@ window.CASOS = [
   }
 },
 {
+  // Para no tener que desmarcar el bibe todos los lunes.
+  nombre: "Lo que la plantilla deja fuera de la compra nace fuera",
+  correr: function(app, banco, t){
+    const id = app.semanaActual();
+    const n = "Vaso de leche con cacao";
+    app.fijarCelda("nino", "lunes", "desayuno", "1", {plato:n, compra:false});
+    const h = app.huecos("nino", id);
+    app.clavesDe().forEach(function(k){ delete h[k]; });
+    app.fijarHuecos("nino", id, h);
+
+    app.aplicarPlantilla(id);
+    t.igual(app.huecos("nino", id)["lunes|desayuno|1"], n, "el plato se pone");
+    t.cierto(!app.paraComprar(id, "nino", "lunes|desayuno|1"), "y fuera de la compra");
+
+    // Sus ingredientes no entran en la lista por ese hueco.
+    const p = app.plato("nino", n), mapa = app.ingredientesDeSemana(id);
+    (p.i || []).forEach(function(ing){
+      t.cierto((mapa[ing] || []).indexOf(n) === -1, "la compra no lo trae por «" + ing + "»");
+    });
+
+    // Y es un valor de partida, no una imposición: se puede desmarcar.
+    app.marcarCompra(id, "nino", "lunes|desayuno|1", true);
+    t.cierto(app.paraComprar(id, "nino", "lunes|desayuno|1"), "desmarcarlo funciona");
+  }
+},
+{
   // Lo que permite decir "mis cenas son de un plato".
   nombre: "Un hueco en blanco se queda vacío al generar",
   correr: function(app, banco, t){

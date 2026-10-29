@@ -299,9 +299,28 @@
         h[k] = c.plato;
         suyos++;
       });
-      if(suyos){ fijarHuecos(pf.id, id, h); puestos += suyos; }
+      if(suyos) fijarHuecos(pf.id, id, h);
+      // Las marcas se repasan siempre, no solo cuando se ha puesto algo: el
+      // hueco puede venir lleno de antes y seguir sin tener que comprarse.
+      marcasDePlantilla(id, pf.id);
+      puestos += suyos;
     });
     return puestos;
+  }
+
+  // Lo que la plantilla deja fuera de la compra. Se pasa a la semana después
+  // de llenarla —al abrirla y al generar— y nunca antes: la marca cuelga del
+  // plato, y un hueco vacío no tiene de qué colgar.
+  //
+  // Es un valor de partida, no una imposición: desmarcarlo en una semana
+  // suelta desde el selector sigue funcionando, y la plantilla no lo deshace.
+  function marcasDePlantilla(id, pid){
+    const h = huecos(pid, id);
+    clavesDe().forEach(function(k){
+      const c = PLANTILLA[pid + "|" + k];
+      if(!c || c.compra !== false || !h[k]) return;
+      marcarCompra(id, pid, k, false);
+    });
   }
 
   // Una semilla de generación con los platos de la plantilla puestos encima.
@@ -433,7 +452,8 @@
     });
     datos.plantilla = plantilla.map(function(x){
       return {menu:x.menu, dia:x.dia, momento:x.momento, orden:String(x.orden),
-              tipo:x.tipo || "", plato:x.plato || ""};
+              tipo:x.tipo || "", plato:x.plato || "",
+              es_para_comprar: x.es_para_comprar === false ? "no" : "si"};
     });
     datos.recetas = recetas.map(function(x){
       return {plato:x.plato, pasos:tubo(x.pasos), cantidades:tubo(x.cantidades)};
@@ -550,9 +570,9 @@
     (datos.plantilla || []).forEach(function(x){
       if(!x.menu || !x.dia || !x.momento || !x.orden) return;
       const k = clavePl(x.menu === "casa" ? "adultos" : "nino", x.dia, x.momento, x.orden);
-      if(x.tipo) PLANTILLA[k] = {tipo:x.tipo};
-      else if(x.plato) PLANTILLA[k] = {plato:x.plato};
-      else PLANTILLA[k] = {blanco:true};
+      const c = x.tipo ? {tipo:x.tipo} : x.plato ? {plato:x.plato} : {blanco:true};
+      if(x.es_para_comprar === "no") c.compra = false;
+      PLANTILLA[k] = c;
     });
 
     RECETAS = {};
@@ -1213,6 +1233,9 @@
     repasa();
 
     fijarHuecos(pid, id, h);
+    // Lo que la plantilla deja fuera de la compra, ahora que los huecos ya
+    // tienen plato del que colgar la marca.
+    marcasDePlantilla(id, pid);
     return diferencias(id);
   }
 
@@ -2488,7 +2511,12 @@
     // cuando uno sabe si lo va a comprar. Nace como esté el hueco ahora: al
     // cambiar un plato de la guardería por otro, lo normal es que siga igual.
     const noCompra = el("input", {type:"checkbox", id:"picker-sin-compra"});
-    noCompra.checked = !marcaEfectiva(id, pid, clave);
+    // Si el hueco ya tiene plato, manda lo que hayas marcado en él. Si está
+    // vacío no hay nada que respetar, y entonces manda la plantilla: es la que
+    // sabe que el bibe del desayuno no se compra nunca.
+    const celdaPl = celdaDe(pid, dia, momento, orden);
+    noCompra.checked = h[clave] ? !marcaEfectiva(id, pid, clave)
+                                : !!(celdaPl && celdaPl.compra === false);
     const sinCompra = el("label", {class:"picker-compra", for:"picker-sin-compra",
       title:"Lo de la guardería, lo que se come fuera y lo que ya tengas en la nevera"}, [
       noCompra,
@@ -2515,7 +2543,6 @@
     // Lo que la plantilla pide para este hueco en concreto. Cada celda manda en
     // el suyo, así que no hay nada que "dar por cumplido": si el 2º pide verdura,
     // la pide aunque el 1º ya la llevara.
-    const celdaPl = celdaDe(pid, dia, momento, orden);
     const tipoPedido = celdaPl && celdaPl.tipo ? celdaPl.tipo : "";
     const pideTipo = !!tipoPedido;
 
@@ -3865,7 +3892,8 @@
         const tipo  = c.tipo  && hayTipo[c.tipo]   ? c.tipo  : null;
         const plato = c.plato && hayPlato[c.plato] ? c.plato : null;
         return {menu:t[0] === "adultos" ? "casa" : "nino",
-                dia:t[1], momento:t[2], orden:Number(t[3]), tipo:tipo, plato:plato};
+                dia:t[1], momento:t[2], orden:Number(t[3]), tipo:tipo, plato:plato,
+                es_para_comprar: c.compra !== false};
       });
   }
   function filasRecetas(){
@@ -4255,13 +4283,16 @@
     const b = el("button", {
       type:"button",
       class:"pl-sel" + (c && c.blanco ? " es-blanco" : "") +
-            (c && c.plato ? " es-plato" : "") + (roto ? " es-roto" : ""),
+            (c && c.plato ? " es-plato" : "") + (roto ? " es-roto" : "") +
+            (c && c.compra === false ? " es-sin-compra" : ""),
       text: texto + (roto ? " (ya no vale)" : ""),
       title: (!c ? "Libre: lo reparte el generador"
               : c.blanco ? "En blanco: aquí no va nada"
               : c.tipo ? "Cualquier plato de " + c.tipo
               : roto ? c.plato + " ya no está en el menú de " + quien
-              : "Siempre " + c.plato) + " · pulsa para cambiarlo",
+              : "Siempre " + c.plato) +
+             (c && c.compra === false ? " · no cuenta para la compra" : "") +
+             " · pulsa para cambiarlo",
       "aria-label": ORDEN_LBL[orden] + " plato de " + mo_lbl(momento).toLowerCase() +
                     " del " + dia + ", " + quien + ": " + texto,
       onclick:function(){ abrirCelda(pid, dia, momento, orden); }
@@ -4294,7 +4325,21 @@
                                 placeholder:"Buscar un tipo o un plato"});
     const lst = el("div", {class:"picker-list"});
 
+    // La misma casilla que en la Semana, pero dicha una vez para todas las
+    // semanas: el bibe del desayuno no se compra nunca, y la merienda que pone
+    // la guardería tampoco. Lo que caiga en este hueco nacerá fuera de la
+    // compra, y seguirás pudiendo desmarcarlo en una semana suelta.
+    const noCompra = el("input", {type:"checkbox", id:"celda-sin-compra"});
+    noCompra.checked = !!(actual && actual.compra === false);
+    const sinCompra = el("label", {class:"picker-compra", for:"celda-sin-compra",
+      title:"Lo de la guardería, lo que se come fuera y lo que ya tengas en casa"}, [
+      noCompra,
+      el("span", {text:"No contar para la compra"})
+    ]);
+
     const pon = function(celda){
+      // "Libre" y "en blanco" no llevan marca: no hay plato del que colgarla.
+      if(celda && !celda.blanco && noCompra.checked) celda.compra = false;
       fijarCelda(pid, dia, momento, orden, celda);
       cerrarCelda(); montarPlantilla(); pintarSemana();
     };
@@ -4385,7 +4430,7 @@
       ]),
       lst,
       el("footer", null, [
-        el("span", {class:"hint", text:"Es la plantilla, no una semana: vale para todas."}),
+        sinCompra,
         el("div", {class:"pie-botones"}, [
           el("button", {class:"btn", text:"Cancelar", onclick:cerrarCelda})
         ])

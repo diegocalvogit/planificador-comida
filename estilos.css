@@ -337,6 +337,9 @@ table.plantilla{width:100%;min-width:0;border-collapse:collapse;table-layout:fix
    gasta el tipo de alimento. */
 .plantilla .pl-sel.es-plato{font-weight:700;color:var(--accent-ink)}
 .plantilla .pl-sel.es-roto{color:var(--pimenton);text-decoration:line-through}
+/* Lo que no se compra, tachado, igual que en la semana. */
+.plantilla .pl-sel.es-sin-compra{text-decoration:line-through;
+  text-decoration-color:var(--ink-3);text-decoration-thickness:1px;opacity:.75}
 .plantilla .pl-celda:has(.es-blanco){background:repeating-linear-gradient(135deg,
   var(--ground) 0 4px, transparent 4px 8px)}
 .plantilla .pl-sel.es-blanco{color:var(--ink-3);font-style:italic}

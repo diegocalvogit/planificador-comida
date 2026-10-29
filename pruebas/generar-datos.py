@@ -25,7 +25,7 @@ COLUMNAS = {
     "despensa":     ["ingrediente", "en_casa"],
 }
 # Columnas con valor por defecto que la semilla no escribe pero la aplicación lee.
-DEFECTOS = {"semanas": {"es_para_comprar": True}}
+DEFECTOS = {"semanas": {"es_para_comprar": True}, "plantilla": {"es_para_comprar": True}}
 # Tablas que la semilla no escribe pero la aplicación consulta al arrancar.
 VACIAS = ["plantilla"]
 

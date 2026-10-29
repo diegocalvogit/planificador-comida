@@ -80,6 +80,11 @@ create table if not exists public.plantilla (
   orden   smallint not null check (orden in (1,2,3)),
   tipo    text     references public.tipos(tipo)    on update cascade on delete cascade,
   plato   text     references public.platos(nombre) on update cascade on delete cascade,
+  -- Si lo que caiga en este hueco entra en la lista de la compra. Dicho una
+  -- vez y para todas las semanas: el bibe del desayuno no se compra nunca.
+  -- Es el valor de partida, no una imposición: en una semana suelta se puede
+  -- desmarcar desde el selector.
+  es_para_comprar boolean not null default true,
   primary key (menu, dia, momento, orden),
   constraint plantilla_una_cosa check (tipo is null or plato is null)
 );
