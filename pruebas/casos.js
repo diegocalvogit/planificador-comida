@@ -403,6 +403,35 @@ window.CASOS = [
   }
 },
 
+{
+  // Cazó: vaciar una semana desde el botón se dejaba su lista de la compra.
+  // La misma operación vivía escrita dos veces —el botón de la semana y la
+  // tabla de Configuración— y solo una de las dos la borraba, así que quedaban
+  // marcas de «ya lo tengo en casa» sin menú al que pertenecer.
+  nombre: "Vaciar una semana se la lleva entera de la base",
+  correr: async function(app, banco, t){
+    // Una de las que trae la semilla, no la de hoy, que nace vacía.
+    const id = app.idsSemanas("adultos")[0];
+    t.cierto(!!id, "la semilla trae alguna semana");
+    const ing = Object.keys(app.ingredientesDeSemana(id))[0];
+    t.cierto(!!ing, "con su lista de la compra");
+    app.marcar(id, ing, true);
+    await app.persistir();
+    t.cierto(banco._tablas.semanas.some(function(f){ return f.semana_id === id; }),
+             "sus platos están en la base");
+    t.cierto(banco._tablas.compras.some(function(f){ return f.semana_id === id; }),
+             "y su compra también");
+
+    app.vaciarSemana(id);
+    await app.persistir();
+    t.igual(banco._tablas.semanas.filter(function(f){ return f.semana_id === id; }), [],
+            "no le quedan platos");
+    t.igual(banco._tablas.compras.filter(function(f){ return f.semana_id === id; }), [],
+            "ni marcas de compra");
+    t.igual(app.idsSemanas("adultos").indexOf(id), -1, "y deja de contar como semana");
+  }
+},
+
 /* ───────── Copia de seguridad ───────── */
 {
   // Cazaría: una copia que no vale para restaurar, que es cuando más duele.

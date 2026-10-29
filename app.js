@@ -444,7 +444,7 @@
   const CLAVE = "menu-semanal:v6";
   function perfilVacio(){ return {semanas:{}}; }
   let estado = { tab:"semana", semana:null, despensa:{}, secciones:{},
-                 compras:{}, semanasBorradas:[], objetivos:{}, comensales:1,
+                 compras:{}, objetivos:{}, comensales:1,
                  platos:{ediciones:{}, borrados:[], extra:[]},
                  ing:{ediciones:{}, borrados:[], extra:[]},
                  adultos:perfilVacio(), nino:perfilVacio() };
@@ -761,11 +761,6 @@
       if(c.indexOf(prefijo) !== 0) return;
       if(!h[c.slice(prefijo.length)]) delete NO_COMPRA[c];
     });
-    // Volver a poner platos en una semana borrada la resucita: si no, quedaba
-    // invisible en el histórico y no llegaba nunca al repositorio.
-    if(Object.keys(h).some(function(k){ return !!h[k]; })){
-      estado.semanasBorradas = estado.semanasBorradas.filter(function(x){ return x !== id; });
-    }
     guardar();
   }
 
@@ -789,26 +784,16 @@
       .map(function(n){ return n ? platoEnSemana(pid, n) : null; })
       .filter(Boolean);
   }
-  // Se cuentan las comidas resueltas, no los platos: un plato único ya cubre la suya.
-  function llenos(pid, id){
-    const h = huecos(pid, id);
-    return slotsDe().filter(function(s){ return !!h[s + "|1"]; }).length;
-  }
-
   function idsSemanas(pid){
     const s = {};
     Object.keys(REP[pid].REPO).forEach(function(k){ s[k] = 1; });
     Object.keys(estado[pid].semanas).forEach(function(k){ s[k] = 1; });
+    // Una semana es una semana porque tiene platos. No hace falta una lista
+    // aparte de borradas: vaciarla la quita de aquí, y de la base con ella.
     return Object.keys(s).filter(function(id){
-      if(estado.semanasBorradas.indexOf(id) !== -1) return false;
       const h = huecos(pid, id);
       return Object.keys(h).some(function(k){ return !!h[k]; });
     }).sort().reverse();
-  }
-  function idsTodas(){
-    const s = {};
-    PERFILES.forEach(function(pf){ idsSemanas(pf.id).forEach(function(id){ s[id] = 1; }); });
-    return Object.keys(s).sort().reverse();
   }
 
   // Cada semana guarda su propia foto de lo que había en casa.
@@ -816,7 +801,7 @@
     const s = {};
     Object.keys(REPO_COMPRAS).forEach(function(k){ s[k] = 1; });
     Object.keys(estado.compras).forEach(function(k){ s[k] = 1; });
-    return Object.keys(s).filter(function(k){ return estado.semanasBorradas.indexOf(k) === -1; }).sort();
+    return Object.keys(s).sort();
   }
   function marcaDe(id, ing){
     const l = estado.compras[id];
@@ -1251,7 +1236,11 @@
     {id:"compra",         lbl:"Compra"},
     {id:"ingredientes",   lbl:"Ingredientes"},
     {id:"recetas",        lbl:"Recetas"},
-    {id:"historico",      lbl:"Configuración"}
+    // Configuración no lleva número: lo que tenía era la cuenta de semanas
+    // guardadas, y esa tabla ya no está.
+    // Se llamó "historico" mientras su contenido fue la tabla de semanas
+    // guardadas. Ahora son los ajustes, y el nombre lo dice.
+    {id:"ajustes",        lbl:"Configuración", sinCuenta:true}
   ];
   function montarPestanas(){
     const nav = $("tabs");
@@ -1259,7 +1248,7 @@
     PESTANAS.forEach(function(t){
       const hijos = [document.createTextNode(t.lbl + " ")];
       if(t.quien) hijos.push(el("span", {class:"quien", text:t.quien}));
-      hijos.push(el("span", {class:"n", id:"n-" + t.id, text:"–"}));
+      if(!t.sinCuenta) hijos.push(el("span", {class:"n", id:"n-" + t.id, text:"–"}));
       nav.appendChild(el("button", {
         class:"tab", id:"tab-" + t.id, role:"tab", "aria-controls":"panel-" + t.id,
         "aria-selected":"false", "data-panel":t.id,
@@ -1940,13 +1929,15 @@
                   " · " + resumenEquilibrio("adultos", id));
           }}),
         el("button", {class:"btn", text:"Vaciar",
-                      title:"Deja la semana en blanco, los dos menús",
+                      title:"Deja la semana en blanco: los dos menús y su lista de la compra",
                       onclick:function(){
           const id = semanaActual();
-          // Por lo mismo que al borrar: sin tocar REPO, "vaciar" solo tapaba.
-          Object.keys(NO_COMPRA).forEach(function(c){ if(c.indexOf(id + "|") === 0) delete NO_COMPRA[c]; });
-          PERFILES.forEach(function(pf){ delete REP[pf.id].REPO[id]; });
-          fijarHuecos("adultos", id, {}); fijarHuecos("nino", id, {}); pintarTodo();
+          if(!window.confirm("¿Vaciar " + etiquetaSemana(desdeIso(id)) + "? " +
+                             "Se van sus dos menús, su compra y sus filas de la base de datos."))
+            return;
+          vaciarSemana(id);
+          pintarTodo();
+          aviso("Semana vaciada");
         }}),
         el("button", {class:"btn", text:"Imprimir",
                       title:"La semana entera en una hoja apaisada",
@@ -1995,7 +1986,7 @@
       el("p", {class:"bal-pie"}, [
         document.createTextNode("Los objetivos son los mismos para todas las semanas. "),
         el("button", {class:"btn btn-sm", text:"Ajustarlos en Configuración",
-                      onclick:function(){ verTab("historico"); }})
+                      onclick:function(){ verTab("ajustes"); }})
       ])
     ]);
     plegable.open = !!(estado.equilibrioAbierto || {})[pf.id];
@@ -3619,7 +3610,7 @@
         const cb = el("input", {type:"checkbox", id:"ing-" + ing.replace(/[^a-z0-9]+/gi, "-")});
         cb.checked = enCasa(ing, id);
         cb.addEventListener("change", function(){
-          marcar(id, ing, cb.checked); pintarCompra(); pintarHistorico();
+          marcar(id, ing, cb.checked); pintarCompra();
         });
         const usos = mapa[ing];
         sec.appendChild(el("label", {class:"item" + (enCasa(ing, id) ? " have" : "")}, [
@@ -3641,7 +3632,7 @@
   $("btn-reset-despensa").addEventListener("click", function(){
     const id = semanaActual(), mapa = ingredientesDeSemana(id);
     Object.keys(mapa).forEach(function(ing){ marcar(id, ing, false); });
-    pintarCompra(); pintarHistorico();
+    pintarCompra();
     aviso("Nada marcado como existencias en esta semana");
   });
   $("cp-prev").addEventListener("click", function(){ irASemana(iso(sumaDias(desdeIso(semanaActual()), -7))); });
@@ -3665,56 +3656,6 @@
   });
 
   /* ============ Histórico ============ */
-  function pintarHistorico(){
-    const cuerpo = $("tbody-hist"); cuerpo.textContent = "";
-    const ids = idsTodas(), actual = semanaActual(), hoyId = iso(lunesDe(new Date()));
-
-    if(!ids.length){
-      cuerpo.appendChild(el("tr", null, [
-        el("td", {colspan:"6", style:"padding:26px 14px;color:var(--ink-3)",
-                  text:"Todavía no hay ninguna semana planificada. Genera un reparto en la pestaña Semana."})
-      ]));
-    }
-    ids.forEach(function(id){
-      const lunes = desdeIso(id);
-      function celdaPerfil(pid){
-        const total = slotsDe().length, hechos = llenos(pid, id);
-        return el("td", null, [
-          el("div", {style:"font-variant-numeric:tabular-nums", text: hechos + " de " + total})
-        ]);
-      }
-      const primera = el("td", null, [el("div", {class:"wk", text:etiquetaSemana(lunes)})]);
-      if(id === hoyId) primera.appendChild(el("span", {class:"badge actual", text:"en curso"}));
-
-      const mapa = ingredientesDeSemana(id);
-      const total = Object.keys(mapa).length;
-      const faltan = Object.keys(mapa).filter(function(i){ return !enCasa(i, id); }).length;
-
-      cuerpo.appendChild(el("tr", {class:"hist-row"}, [
-        primera,
-        el("td", null, [el("div", {class:"rg", text:subtituloSemana(lunes)})]),
-        celdaPerfil("adultos"),
-        celdaPerfil("nino"),
-        el("td", null, [ total
-          ? el("div", {style:"font-variant-numeric:tabular-nums", text: total + " ingredientes"})
-          : el("span", {class:"chip chip-doble", text:"sin lista"}),
-          total ? el("div", {class:"hint", text: faltan + " por comprar"}) : null ]),
-        el("td", {class:"col-acc"}, [
-          el("button", {class:"btn btn-sm", text: id === actual ? "Abierta" : "Abrir",
-            disabled: id === actual ? "disabled" : null,
-            style: id === actual ? "opacity:.5" : null,
-            onclick:function(){ irASemana(id); verTab("semana"); }}),
-          el("button", {class:"btn btn-sm btn-ghost", style:"color:var(--pimenton);margin-left:6px",
-            text:"Borrar", "aria-label":"Borrar " + etiquetaSemana(lunes),
-            onclick:function(){ borrarSemana(id); }})
-        ])
-      ]));
-    });
-
-    $("n-historico").textContent = String(ids.length);
-    pintarGuardado();
-  }
-
   // Copiar la lista de la compra al portapapeles.
   function copiar(texto, ok){
     if(navigator.clipboard && navigator.clipboard.writeText){
@@ -3725,26 +3666,18 @@
     }
   }
 
-  // Borrar una semana del histórico. Ya no hay nada que "guardar después": al
-  // quedarse fuera de idsSemanas, sus filas salen de la base en la misma pasada.
+  // Vaciar una semana. Ya no hay nada que "guardar después": al quedarse sin
+  // platos sale de idsSemanas, y sus filas salen de la base en la misma pasada.
   //
-  // Hay que vaciar también REPO, la foto de la base con la que arrancó la página.
-  // Marcar la semana como borrada basta para que no se guarde, pero no para que
-  // no se lea: huecos() cae en REPO cuando estado no tiene nada, así que la
-  // semana seguía ahí para cualquiera que preguntara por ella. Volver a poner un
-  // plato en ella la sacaba de la lista de borradas y resucitaba de golpe los dos
-  // menús enteros, con todo lo viejo dentro.
-  function borrarSemana(id){
-    if(!window.confirm("¿Borrar " + etiquetaSemana(desdeIso(id)) + " del histórico? " +
-                       "Se van sus dos menús, su compra y sus filas de la base de datos."))
-      return;
-    vaciarSemana(id);
-    guardar(); pintarTodo();
-    aviso("Semana borrada del histórico");
-  }
-
+  // Hay que vaciar también REPO, la foto de la base con la que arrancó la
+  // página, porque huecos() cae en REPO cuando estado no tiene nada: sin eso la
+  // semana seguía ahí para cualquiera que preguntara por ella.
+  //
+  // Esto vivía por duplicado: el botón de la semana hacía una versión y la
+  // tabla de Configuración otra. La del botón se dejaba la lista de la compra,
+  // así que al vaciar una semana sus marcas de "ya lo tengo en casa" seguian en
+  // la base sin menú al que pertenecer.
   function vaciarSemana(id){
-    if(estado.semanasBorradas.indexOf(id) === -1) estado.semanasBorradas.push(id);
     PERFILES.forEach(function(pf){
       delete estado[pf.id].semanas[id];
       delete REP[pf.id].REPO[id];
@@ -3752,6 +3685,7 @@
     delete estado.compras[id];
     delete REPO_COMPRAS[id];
     Object.keys(NO_COMPRA).forEach(function(c){ if(c.indexOf(id + "|") === 0) delete NO_COMPRA[c]; });
+    guardar();
   }
 
   /* ============ Guardado ============ */
@@ -4005,6 +3939,7 @@
         parecidos:parecidos, pesoPalabras:pesoPalabras,
         palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
         semanaActual:semanaActual, irASemana:irASemana, verTab:verTab,
+        vaciarSemana:vaciarSemana, marcar:marcar, idsSemanas:idsSemanas,
         guardar:guardar, persistir:persistir, pintarTodo:pintarTodo,
         copiaEntera:copiaEntera, revisaCopia:revisaCopia, restaurarCopia:restaurarCopia,
         abrirEditor:abrirEditor, abrirSelector:abrirSelector, abrirPasos:abrirPasos,
@@ -4538,7 +4473,7 @@
     pintarPlatos();
     pintarIngredientes();
     pintarSemana();
-    pintarCompra(); pintarRecetas(); pintarHistorico();
+    pintarCompra(); pintarRecetas(); pintarGuardado();
   }
 
   /* ============ Puerta ============ */
@@ -4723,12 +4658,12 @@
     montarAltaRegla();
 
     // La primera vez la semana en curso se rellena sola, para no abrir en blanco.
-    // Con histórico ya guardado no se toca nada: inventar una semana marcaría
-    // ficheros como "sin guardar" sin que nadie haya pedido nada.
+    // Si en la base ya hay semanas no se toca nada: inventar una marcaría filas
+    // como "sin guardar" sin que nadie haya pedido nada.
     const id = semanaActual();
-    const hayHistorico = PERFILES.some(function(pf){ return Object.keys(REP[pf.id].REPO).length > 0; });
+    const hayDatos = PERFILES.some(function(pf){ return Object.keys(REP[pf.id].REPO).length > 0; });
     const h0 = huecos("adultos", id);
-    if(!hayHistorico && !Object.keys(h0).some(function(k){ return !!h0[k]; })) generar(id);
+    if(!hayDatos && !Object.keys(h0).some(function(k){ return !!h0[k]; })) generar(id);
 
     pintarTodo();
     pintarCreditos();

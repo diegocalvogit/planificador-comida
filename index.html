@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Menú Semanal</title>
-<meta name="description" content="Planificador de las comidas de casa: repertorio de platos, reparto semanal equilibrado con las diferencias del niño, lista de la compra e histórico de semanas.">
+<meta name="description" content="Planificador de las comidas de casa: repertorio de platos, reparto semanal equilibrado con las diferencias del niño, lista de la compra y recetas.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍲</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -72,7 +72,7 @@
     <div id="rec-lista"></div>
   </section>
 
-  <section id="panel-historico" role="tabpanel" aria-labelledby="tab-historico" hidden>
+  <section id="panel-ajustes" role="tabpanel" aria-labelledby="tab-ajustes" hidden>
     <div class="cfg-bloque">
       <h3>Cuenta</h3>
       <div class="cfg-fila" id="cfg-cuenta"></div>
@@ -116,18 +116,6 @@
         que esta es la única que vas a tener. Se descarga un fichero con todo —platos, ingredientes, semanas
         y compras— que vale para volver atrás si algo se estropea.</p>
       <div class="cfg-fila" id="cfg-copia"></div>
-    </div>
-
-    <h3 class="cfg-titulo">Semanas guardadas</h3>
-    <div class="table-wrap">
-      <table class="estrecha">
-        <thead><tr>
-          <th scope="col">Semana</th><th scope="col">Fechas</th>
-          <th scope="col">Mesa</th><th scope="col">Niño</th>
-          <th scope="col">Compra</th><th scope="col" class="col-acc"></th>
-        </tr></thead>
-        <tbody id="tbody-hist"></tbody>
-      </table>
     </div>
 
   </section>
