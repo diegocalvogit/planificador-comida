@@ -113,49 +113,28 @@ insert into public.ingredientes (ingrediente, seccion) values
   ('pan para tostas', 'Panadería')
 on conflict (ingrediente) do update set seccion = excluded.seccion;
 
-insert into public.tipos (clave, tipo, orden) values
-  ('verdura', 'Verdura', 0),
-  ('tuberculo', 'Tubérculo', 1),
-  ('fruta', 'Fruta', 2),
-  ('legumbre', 'Legumbre', 3),
-  ('arroz', 'Arroz', 4),
-  ('pasta', 'Pasta', 5),
-  ('cereal', 'Pan y cereales', 6),
-  ('blanco', 'Pescado blanco', 7),
-  ('azul', 'Pescado azul', 8),
-  ('marisco', 'Marisco', 9),
-  ('blanca', 'Carne blanca', 10),
-  ('roja', 'Carne roja', 11),
-  ('embutido', 'Embutido y fiambre', 12),
-  ('huevo', 'Huevo', 13),
-  ('lacteo', 'Lácteo', 14),
-  ('queso', 'Queso', 15),
-  ('frutoseco', 'Fruto seco', 16),
-  ('grasa', 'Grasa saludable', 17),
-  ('salsa', 'Salsa y aliño', 18),
-  ('congelado', 'Preparado o congelado', 19),
-  ('fuera', 'Fuera de casa', 21)
-on conflict (clave) do update set tipo = excluded.tipo, orden = excluded.orden;
-
-insert into public.equilibrio (objetivo, tipos, minimo, maximo, orden) values
-  ('Verduras', array['Verdura'], 8, 16, 0),
-  ('Fruta', array['Fruta'], 7, 14, 1),
-  ('Lácteos', array['Lácteo', 'Queso'], 7, 14, 2),
-  ('Pan y cereales', array['Pan y cereales'], 7, 14, 3),
-  ('Patatas y tubérculos', array['Tubérculo'], 2, 5, 4),
-  ('Legumbres', array['Legumbre'], 2, 4, 5),
-  ('Arroz', array['Arroz'], 2, 4, 6),
-  ('Pasta', array['Pasta'], 2, 4, 7),
-  ('Pescado y marisco', array['Pescado blanco', 'Pescado azul', 'Marisco'], 3, 4, 8),
-  ('Pescado azul', array['Pescado azul'], 1, 2, 9),
-  ('Carne blanca', array['Carne blanca'], 2, 4, 10),
-  ('Carne roja', array['Carne roja'], 0, 1, 11),
-  ('Embutido y fiambre', array['Embutido y fiambre'], 0, 3, 12),
-  ('Huevo', array['Huevo'], 2, 4, 13),
-  ('Fruto seco', array['Fruto seco'], 0, 4, 14),
-  ('Preparado o congelado', array['Preparado o congelado'], 0, 2, 15),
-  ('Fuera de casa', array['Fuera de casa'], 0, 2, 16)
-on conflict (objetivo) do update set tipos = excluded.tipos, minimo = excluded.minimo, maximo = excluded.maximo, orden = excluded.orden;
+insert into public.tipos (clave, tipo, orden, minimo, maximo) values
+  ('verdura',   'Verdura',               0,  8, 16),
+  ('tuberculo', 'Tubérculo',             1,  2,  5),
+  ('fruta',     'Fruta',                 2,  7, 21),
+  ('legumbre',  'Legumbre',              3,  2,  4),
+  ('arroz',     'Arroz',                 4,  2,  4),
+  ('pasta',     'Pasta',                 5,  2,  4),
+  ('cereal',    'Pan y cereales',        6,  7, 14),
+  ('blanco',    'Pescado blanco',        7,  2,  3),
+  ('azul',      'Pescado azul',          8,  1,  2),
+  ('marisco',   'Marisco',               9,  0,  1),
+  ('blanca',    'Carne blanca',         10,  2,  4),
+  ('roja',      'Carne roja',           11,  0,  1),
+  ('embutido',  'Embutido y fiambre',   12,  0,  3),
+  ('huevo',     'Huevo',                13,  2,  4),
+  ('lacteo',    'Lácteo',                14,  6, 12),
+  ('queso',     'Queso',                15,  1,  2),
+  ('frutoseco', 'Fruto seco',           16,  0,  4),
+  ('congelado', 'Preparado o congelado',17,  0,  3),
+  ('fuera',     'Fuera de casa',        18,  0,  2)
+on conflict (clave) do update set tipo = excluded.tipo, orden = excluded.orden,
+                                  minimo = excluded.minimo, maximo = excluded.maximo;
 
 insert into public.platos (nombre, adultos, nino, descripcion, tipo, momento, tiempo, repeticion, plato_unico, ingredientes) values
   ('Ensaladilla rusa casera', true, false, 'Con patata, zanahoria, atún, huevo cocido y una mayonesa ligera.', array['Tubérculo', 'Verdura', 'Pescado azul', 'Huevo'], array['comida'], 'alto', 'media', false, array['patata', 'zanahoria', 'guisantes', 'atún en conserva', 'huevos', 'mayonesa']),
@@ -171,7 +150,7 @@ insert into public.platos (nombre, adultos, nino, descripcion, tipo, momento, ti
   ('Tostas de tacos de salmón', true, false, 'Tostadas con tacos de salmón fresco o ahumado.', array['Pescado azul', 'Pan y cereales', 'Queso'], array['cena'], 'bajo', 'media', false, array['pan para tostas', 'salmón ahumado', 'queso crema', 'limón', 'eneldo']),
   ('Gambas al ajillo tradicionales', true, false, 'Gambas salteadas con ajo y guindilla.', array['Marisco', 'Pan y cereales'], array['cena'], 'bajo', 'baja', false, array['gambas', 'ajo', 'guindilla', 'aceite de oliva', 'perejil', 'pan']),
   ('Fajitas de pollo y pimientos', true, false, 'Tiras de pechuga salteadas con pimiento rojo, verde y cebolla.', array['Carne blanca', 'Verdura', 'Pan y cereales'], array['comida', 'cena'], 'medio', 'alta', true, array['tortillas de trigo', 'pechuga de pollo', 'pimiento rojo', 'pimiento verde', 'cebolla', 'especias para fajitas']),
-  ('Fajitas marineras', true, false, 'Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.', array['Pescado azul', 'Verdura', 'Grasa saludable', 'Queso'], array['cena'], 'bajo', 'media', true, array['tortillas de trigo', 'salmón ahumado', 'aguacate', 'queso fresco', 'limón']),
+  ('Fajitas marineras', true, false, 'Con salmón ahumado, aguacate y un toque de queso fresco o mozzarella.', array['Pescado azul', 'Verdura', 'Queso'], array['cena'], 'bajo', 'media', true, array['tortillas de trigo', 'salmón ahumado', 'aguacate', 'queso fresco', 'limón']),
   ('Tomate con mozzarella y aceite de oliva', true, false, 'La clásica ensalada Caprese, rápida, fresca y ligera.', array['Verdura', 'Queso'], array['cena'], 'bajo', 'siempre', false, array['tomate', 'mozzarella', 'aceite de oliva', 'albahaca']),
   ('Fajitas de pavo, queso, lechuga y tomate', true, false, 'Fajitas frías o templadas, ideales sin encender fuego.', array['Carne blanca', 'Verdura', 'Queso', 'Pan y cereales'], array['cena'], 'bajo', 'alta', true, array['tortillas de trigo', 'pechuga de pavo en lonchas', 'queso en lonchas', 'lechuga', 'tomate']),
   ('Pechugas de pollo a la plancha', true, true, 'Acompañadas de ensalada variada.', array['Carne blanca', 'Verdura'], array['cena'], 'bajo', 'siempre', true, array['pechuga de pollo', 'lechuga', 'tomate', 'zanahoria', 'aceite de oliva']),
@@ -206,8 +185,8 @@ insert into public.platos (nombre, adultos, nino, descripcion, tipo, momento, ti
   ('Melón con Jamón', true, true, 'Sin descripción.', array['Carne roja'], array['comida', 'cena'], 'bajo', 'baja', false, array['jamón serrano']),
   ('Patatas fritas', true, true, 'Guarnición de patatas fritas', array['Tubérculo'], array['comida', 'cena'], 'medio', 'media', false, array['patata']),
   ('Ensalada preparada', true, true, 'Sin descripción.', array['Verdura', 'Carne blanca'], array['comida', 'cena'], 'bajo', 'media', false, array[]::text[]),
-  ('Tostada de pan integral con tomate y aceite', true, true, 'El desayuno de siempre, con pan integral.', array['Pan y cereales', 'Verdura', 'Grasa saludable'], array['desayuno'], 'bajo', 'siempre', false, array['pan integral', 'tomate', 'aceite de oliva']),
-  ('Tostada con aceite y jamón serrano', true, false, 'Pan integral con un hilo de aceite y jamón.', array['Pan y cereales', 'Embutido y fiambre', 'Grasa saludable'], array['desayuno'], 'bajo', 'alta', false, array['pan integral', 'aceite de oliva', 'jamón serrano']),
+  ('Tostada de pan integral con tomate y aceite', true, true, 'El desayuno de siempre, con pan integral.', array['Pan y cereales', 'Verdura'], array['desayuno'], 'bajo', 'siempre', false, array['pan integral', 'tomate', 'aceite de oliva']),
+  ('Tostada con aceite y jamón serrano', true, false, 'Pan integral con un hilo de aceite y jamón.', array['Pan y cereales', 'Embutido y fiambre'], array['desayuno'], 'bajo', 'alta', false, array['pan integral', 'aceite de oliva', 'jamón serrano']),
   ('Café con leche', true, false, 'Café solo o cortado, según el día.', array['Lácteo'], array['desayuno'], 'bajo', 'siempre', false, array['leche', 'café']),
   ('Vaso de leche con cacao', false, true, 'Leche templada con una cucharada de cacao.', array['Lácteo'], array['desayuno', 'merienda'], 'bajo', 'siempre', false, array['leche', 'cacao soluble']),
   ('Yogur natural con fruta', true, true, 'Yogur sin azucarar con fruta troceada.', array['Lácteo', 'Fruta'], array['desayuno', 'almuerzo', 'merienda'], 'bajo', 'alta', true, array['yogur natural', 'plátano']),

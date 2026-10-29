@@ -992,107 +992,135 @@ window.DATOS_PRUEBA = {
   {
    "clave": "verdura",
    "tipo": "Verdura",
-   "orden": 0
+   "orden": 0,
+   "minimo": 8,
+   "maximo": 16
   },
   {
    "clave": "tuberculo",
    "tipo": "Tubérculo",
-   "orden": 1
+   "orden": 1,
+   "minimo": 2,
+   "maximo": 5
   },
   {
    "clave": "fruta",
    "tipo": "Fruta",
-   "orden": 2
+   "orden": 2,
+   "minimo": 7,
+   "maximo": 21
   },
   {
    "clave": "legumbre",
    "tipo": "Legumbre",
-   "orden": 3
+   "orden": 3,
+   "minimo": 2,
+   "maximo": 4
   },
   {
    "clave": "arroz",
    "tipo": "Arroz",
-   "orden": 4
+   "orden": 4,
+   "minimo": 2,
+   "maximo": 4
   },
   {
    "clave": "pasta",
    "tipo": "Pasta",
-   "orden": 5
+   "orden": 5,
+   "minimo": 2,
+   "maximo": 4
   },
   {
    "clave": "cereal",
    "tipo": "Pan y cereales",
-   "orden": 6
+   "orden": 6,
+   "minimo": 7,
+   "maximo": 14
   },
   {
    "clave": "blanco",
    "tipo": "Pescado blanco",
-   "orden": 7
+   "orden": 7,
+   "minimo": 2,
+   "maximo": 3
   },
   {
    "clave": "azul",
    "tipo": "Pescado azul",
-   "orden": 8
+   "orden": 8,
+   "minimo": 1,
+   "maximo": 2
   },
   {
    "clave": "marisco",
    "tipo": "Marisco",
-   "orden": 9
+   "orden": 9,
+   "minimo": 0,
+   "maximo": 1
   },
   {
    "clave": "blanca",
    "tipo": "Carne blanca",
-   "orden": 10
+   "orden": 10,
+   "minimo": 2,
+   "maximo": 4
   },
   {
    "clave": "roja",
    "tipo": "Carne roja",
-   "orden": 11
+   "orden": 11,
+   "minimo": 0,
+   "maximo": 1
   },
   {
    "clave": "embutido",
    "tipo": "Embutido y fiambre",
-   "orden": 12
+   "orden": 12,
+   "minimo": 0,
+   "maximo": 3
   },
   {
    "clave": "huevo",
    "tipo": "Huevo",
-   "orden": 13
+   "orden": 13,
+   "minimo": 2,
+   "maximo": 4
   },
   {
    "clave": "lacteo",
    "tipo": "Lácteo",
-   "orden": 14
+   "orden": 14,
+   "minimo": 6,
+   "maximo": 12
   },
   {
    "clave": "queso",
    "tipo": "Queso",
-   "orden": 15
+   "orden": 15,
+   "minimo": 1,
+   "maximo": 2
   },
   {
    "clave": "frutoseco",
    "tipo": "Fruto seco",
-   "orden": 16
-  },
-  {
-   "clave": "grasa",
-   "tipo": "Grasa saludable",
-   "orden": 17
-  },
-  {
-   "clave": "salsa",
-   "tipo": "Salsa y aliño",
-   "orden": 18
+   "orden": 16,
+   "minimo": 0,
+   "maximo": 4
   },
   {
    "clave": "congelado",
    "tipo": "Preparado o congelado",
-   "orden": 19
+   "orden": 17,
+   "minimo": 0,
+   "maximo": 3
   },
   {
    "clave": "fuera",
    "tipo": "Fuera de casa",
-   "orden": 21
+   "orden": 18,
+   "minimo": 0,
+   "maximo": 2
   }
  ],
  "ingredientes": [
@@ -1489,164 +1517,6 @@ window.DATOS_PRUEBA = {
    "seccion": "Panadería"
   }
  ],
- "equilibrio": [
-  {
-   "objetivo": "Verduras",
-   "tipos": [
-    "Verdura"
-   ],
-   "minimo": 8,
-   "maximo": 16,
-   "orden": 0
-  },
-  {
-   "objetivo": "Fruta",
-   "tipos": [
-    "Fruta"
-   ],
-   "minimo": 7,
-   "maximo": 14,
-   "orden": 1
-  },
-  {
-   "objetivo": "Lácteos",
-   "tipos": [
-    "Lácteo",
-    "Queso"
-   ],
-   "minimo": 7,
-   "maximo": 14,
-   "orden": 2
-  },
-  {
-   "objetivo": "Pan y cereales",
-   "tipos": [
-    "Pan y cereales"
-   ],
-   "minimo": 7,
-   "maximo": 14,
-   "orden": 3
-  },
-  {
-   "objetivo": "Patatas y tubérculos",
-   "tipos": [
-    "Tubérculo"
-   ],
-   "minimo": 2,
-   "maximo": 5,
-   "orden": 4
-  },
-  {
-   "objetivo": "Legumbres",
-   "tipos": [
-    "Legumbre"
-   ],
-   "minimo": 2,
-   "maximo": 4,
-   "orden": 5
-  },
-  {
-   "objetivo": "Arroz",
-   "tipos": [
-    "Arroz"
-   ],
-   "minimo": 2,
-   "maximo": 4,
-   "orden": 6
-  },
-  {
-   "objetivo": "Pasta",
-   "tipos": [
-    "Pasta"
-   ],
-   "minimo": 2,
-   "maximo": 4,
-   "orden": 7
-  },
-  {
-   "objetivo": "Pescado y marisco",
-   "tipos": [
-    "Pescado blanco",
-    "Pescado azul",
-    "Marisco"
-   ],
-   "minimo": 3,
-   "maximo": 4,
-   "orden": 8
-  },
-  {
-   "objetivo": "Pescado azul",
-   "tipos": [
-    "Pescado azul"
-   ],
-   "minimo": 1,
-   "maximo": 2,
-   "orden": 9
-  },
-  {
-   "objetivo": "Carne blanca",
-   "tipos": [
-    "Carne blanca"
-   ],
-   "minimo": 2,
-   "maximo": 4,
-   "orden": 10
-  },
-  {
-   "objetivo": "Carne roja",
-   "tipos": [
-    "Carne roja"
-   ],
-   "minimo": 0,
-   "maximo": 1,
-   "orden": 11
-  },
-  {
-   "objetivo": "Embutido y fiambre",
-   "tipos": [
-    "Embutido y fiambre"
-   ],
-   "minimo": 0,
-   "maximo": 3,
-   "orden": 12
-  },
-  {
-   "objetivo": "Huevo",
-   "tipos": [
-    "Huevo"
-   ],
-   "minimo": 2,
-   "maximo": 4,
-   "orden": 13
-  },
-  {
-   "objetivo": "Fruto seco",
-   "tipos": [
-    "Fruto seco"
-   ],
-   "minimo": 0,
-   "maximo": 4,
-   "orden": 14
-  },
-  {
-   "objetivo": "Preparado o congelado",
-   "tipos": [
-    "Preparado o congelado"
-   ],
-   "minimo": 0,
-   "maximo": 2,
-   "orden": 15
-  },
-  {
-   "objetivo": "Fuera de casa",
-   "tipos": [
-    "Fuera de casa"
-   ],
-   "minimo": 0,
-   "maximo": 2,
-   "orden": 16
-  }
- ],
  "platos": [
   {
    "nombre": "Ensaladilla rusa casera",
@@ -1983,7 +1853,6 @@ window.DATOS_PRUEBA = {
    "tipo": [
     "Pescado azul",
     "Verdura",
-    "Grasa saludable",
     "Queso"
    ],
    "momento": [
@@ -2762,8 +2631,7 @@ window.DATOS_PRUEBA = {
    "descripcion": "El desayuno de siempre, con pan integral.",
    "tipo": [
     "Pan y cereales",
-    "Verdura",
-    "Grasa saludable"
+    "Verdura"
    ],
    "momento": [
     "desayuno"
@@ -2784,8 +2652,7 @@ window.DATOS_PRUEBA = {
    "descripcion": "Pan integral con un hilo de aceite y jamón.",
    "tipo": [
     "Pan y cereales",
-    "Embutido y fiambre",
-    "Grasa saludable"
+    "Embutido y fiambre"
    ],
    "momento": [
     "desayuno"
@@ -4947,5 +4814,6 @@ window.DATOS_PRUEBA = {
    "ingrediente": "salsa de soja",
    "en_casa": true
   }
- ]
+ ],
+ "plantilla": []
 };

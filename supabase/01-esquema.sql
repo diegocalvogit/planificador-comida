@@ -40,19 +40,32 @@ create table if not exists public.ingredientes (
                     on update cascade
 );
 
+-- Los tipos de alimento son la única clasificación que hay: describen el plato
+-- y miden la semana. Hubo una tabla aparte, equilibrio, con objetivos que
+-- agrupaban varios tipos, y se solapaban —«Pescado azul» era un objetivo suelto
+-- y además estaba dentro de «Pescado y marisco»—, así que nunca estaba claro
+-- cuál mandaba. El objetivo semanal vive ahora en el propio tipo.
 create table if not exists public.tipos (
-  clave text primary key,
-  tipo  text not null unique,
-  orden int  not null
+  clave  text primary key,
+  tipo   text not null unique,
+  orden  int  not null,
+  minimo int  not null default 0,
+  maximo int  not null default 0,
+  constraint tipos_rango check (maximo >= minimo)
 );
 
-create table if not exists public.equilibrio (
-  objetivo text primary key,
-  tipos    text[] not null,
-  minimo   int    not null default 0,
-  maximo   int    not null default 0,
-  orden    int    not null,
-  check (maximo >= minimo)
+-- Qué tipo de alimento toca en cada comida de la semana. Una fila por día y
+-- momento; sin fila, ese momento da igual. Una sola plantilla para los dos
+-- menús: el martes tocan legumbres para todos, y lo que cambia es el plato.
+--
+-- Un solo tipo por comida y no uno por plato a propósito: lo que se fija es el
+-- eje de la comida, y el acompañamiento sale de lo que pida el equilibrio.
+create table if not exists public.plantilla (
+  dia     text not null check (dia in ('lunes','martes','miércoles','jueves','viernes','sábado','domingo')),
+  momento text not null check (momento in ('desayuno','almuerzo','comida','merienda','cena')),
+  tipo    text not null references public.tipos(tipo)
+                          on update cascade on delete cascade,
+  primary key (dia, momento)
 );
 
 create table if not exists public.platos (
@@ -141,7 +154,7 @@ create index if not exists compras_por_semana on public.compras (semana_id);
 do $$
 declare t text;
 begin
-  foreach t in array array['secciones','ingredientes','tipos','equilibrio',
+  foreach t in array array['secciones','ingredientes','tipos','plantilla',
                            'reglas','recetas','platos','semanas','compras','despensa']
   loop
     execute format('alter table public.%I enable row level security', t);

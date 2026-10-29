@@ -373,7 +373,7 @@
       tabla("secciones",    ["orden"]),
       tabla("ingredientes", ["ingrediente"]),
       tabla("tipos",        ["orden"]),
-      tabla("equilibrio",   ["orden"]),
+      tabla("plantilla",    ["dia", "momento"]),
       tabla("reglas",       ["menu", "dia", "momento", "orden"]),
       tabla("recetas",      ["plato"]),
       tabla("platos",       ["nombre"]),
@@ -381,7 +381,7 @@
       tabla("compras",      ["semana_id", "ingrediente"]),
       tabla("despensa",     ["ingrediente"])
     ]);
-    const [secciones, ingredientes, tipos, equilibrio, reglas, recetas,
+    const [secciones, ingredientes, tipos, plantilla, reglas, recetas,
            platos, semanas, compras, despensa] = r;
 
     // El orden de las secciones es el del súper y manda en la lista de la compra:
@@ -392,13 +392,15 @@
       return (pos[a.seccion] - pos[b.seccion]) || a.ingrediente.localeCompare(b.ingrediente, "es");
     });
 
-    datos.tipos = tipos.map(function(x){ return {clave:x.clave, tipo:x.tipo}; });
+    datos.tipos = tipos.map(function(x){
+      return {clave:x.clave, tipo:x.tipo,
+              minimo:String(x.minimo), maximo:String(x.maximo)};
+    });
     datos.ingredientes = ingredientes.map(function(x){
       return {ingrediente:x.ingrediente, seccion:x.seccion};
     });
-    datos.equilibrio = equilibrio.map(function(x){
-      return {objetivo:x.objetivo, tipos:tubo(x.tipos),
-              minimo:String(x.minimo), maximo:String(x.maximo)};
+    datos.plantilla = plantilla.map(function(x){
+      return {dia:x.dia, momento:x.momento, tipo:x.tipo};
     });
     datos.reglas = reglas.map(function(x){
       return {menu:x.menu, dia:x.dia, momento:x.momento,
@@ -487,7 +489,8 @@
 
   let SECCION = {}, SECCIONES = [], REPO_COMPRAS = {}, TIPOS = [], CLAVE_TIPO = {};
   let PLATOS = [];      // el repertorio entero, con su marca de menú
-  let OBJETIVOS = [];   // el equilibrio, que es de la casa y no de cada menú
+  let OBJETIVOS = [];   // el objetivo semanal de cada tipo, que es de la casa
+  let PLANTILLA = {};   // "dia|momento" -> tipo de referencia de esa comida
   const REP = { adultos:{REPO:{}}, nino:{REPO:{}} };
 
   function construir(){
@@ -499,9 +502,24 @@
                i:lista(x.ingredientes) };
     }).filter(function(x){ return x.n; });
 
-    // Cada objetivo mide uno o varios tipos: "Pescado y marisco" los suma.
-    OBJETIVOS = (datos.equilibrio || []).filter(function(x){ return x.objetivo; }).map(function(x){
-      return { n:x.objetivo, tipos:lista(x.tipos), min:Number(x.minimo) || 0, max:Number(x.maximo) || 0 };
+    // Catálogo cerrado de tipos de alimento. Es la única clasificación que hay:
+    // describe el plato, mide el equilibrio de la semana y es lo que se pide en
+    // la plantilla. Hubo una lista aparte de objetivos que agrupaban tipos y se
+    // solapaba con esta —"Pescado azul" era un objetivo suelto y además estaba
+    // dentro de "Pescado y marisco"—, así que el objetivo se mudó aquí.
+    TIPOS = (datos.tipos || []).map(function(x){ return x.tipo; }).filter(Boolean);
+    CLAVE_TIPO = {};
+    (datos.tipos || []).forEach(function(x){ if(x.tipo) CLAVE_TIPO[x.tipo] = x.clave || ""; });
+
+    OBJETIVOS = (datos.tipos || []).filter(function(x){ return x.tipo; }).map(function(x){
+      // tipos[] se queda, con uno dentro: el resto del cálculo lo espera así.
+      return { n:x.tipo, tipos:[x.tipo],
+               min:Number(x.minimo) || 0, max:Number(x.maximo) || 0 };
+    });
+
+    PLANTILLA = {};
+    (datos.plantilla || []).forEach(function(x){
+      if(x.dia && x.momento && x.tipo) PLANTILLA[x.dia + "|" + x.momento] = x.tipo;
     });
 
     RECETAS = {};
@@ -522,12 +540,6 @@
         if(x.plato) r.REPO[x.semana_id][x.dia + "|" + x.momento + "|" + (x.orden || "1")] = x.plato;
       });
     });
-
-    // Catálogo cerrado de tipos de alimento. Es la única clasificación que hay:
-    // describe el plato y es la que mide el equilibrio de la semana.
-    TIPOS = (datos.tipos || []).map(function(x){ return x.tipo; }).filter(Boolean);
-    CLAVE_TIPO = {};
-    (datos.tipos || []).forEach(function(x){ if(x.tipo) CLAVE_TIPO[x.tipo] = x.clave || ""; });
 
     // Compras ya registradas: qué había en casa cada semana.
     REPO_COMPRAS = {};
@@ -2085,14 +2097,14 @@
     const pie = $("obj-foot");
     if(pie){
       pie.textContent = "";
-      pie.appendChild(el("button", {class:"btn btn-sm", text:"Volver a los valores del documento",
+      pie.appendChild(el("button", {class:"btn btn-sm", text:"Volver a los valores de partida",
         onclick:function(){
           estado.objetivos = {}; guardar(); pintarObjetivos(); pintarSemana();
           aviso("Objetivos restablecidos");
         }}));
       pie.appendChild(el("span", {class:"hint",
         text: objetivosTocados() ? "Hay objetivos cambiados a mano."
-                                 : "Ahora mismo son los del documento, sin tocar."}));
+                                 : "Ahora mismo son los de partida, sin tocar."}));
     }
     objetivos().forEach(function(o){
       const id = o.n.replace(/[^a-z0-9]+/gi, "-");
@@ -2110,7 +2122,8 @@
       }
       min.addEventListener("change", cambiaObj);
       max.addEventListener("change", cambiaObj);
-      cont.appendChild(el("div", {class:"obj-row", title:"Cuenta: " + o.tipos.join(", ")}, [
+      cont.appendChild(el("div", {class:"obj-row",
+                                  title:"Veces que puede salir «" + o.n + "» en la semana"}, [
         el("span", {class:"swatch", style:"background:" + colorDe(claveDe(o.tipos[0]))}),
         el("span", {class:"name", text:o.n}),
         min, el("span", {class:"sep", text:"–"}), max
@@ -3711,12 +3724,19 @@
     });
   }
   function filasTipos(){
-    return TIPOS.map(function(t, i){ return {clave:claveDe(t), tipo:t, orden:i}; });
-  }
-  function filasEquilibrio(){
-    return objetivos().map(function(o, i){
-      return {objetivo:o.n, tipos:o.tipos.slice(), minimo:o.min, maximo:o.max, orden:i};
+    const meta = {};
+    objetivos().forEach(function(o){ meta[o.n] = o; });
+    return TIPOS.map(function(t, i){
+      const o = meta[t] || {min:0, max:0};
+      return {clave:claveDe(t), tipo:t, orden:i, minimo:o.min, maximo:o.max};
     });
+  }
+  function filasPlantilla(){
+    return Object.keys(PLANTILLA).filter(function(k){ return !!PLANTILLA[k]; })
+      .map(function(k){
+        const t = k.split("|");
+        return {dia:t[0], momento:t[1], tipo:PLANTILLA[k]};
+      });
   }
   function filasRecetas(){
     // Una receta de un plato que ya no existe no se guarda: la clave ajena la
@@ -3801,8 +3821,8 @@
   const TABLAS = [
     {n:"secciones",    pk:["seccion"],      filas:filasSecciones},
     {n:"tipos",        pk:["clave"],        filas:filasTipos},
+    {n:"plantilla",    pk:["dia","momento"], filas:filasPlantilla},
     {n:"ingredientes", pk:["ingrediente"],  filas:filasIngredientes},
-    {n:"equilibrio",   pk:["objetivo"],     filas:filasEquilibrio},
     {n:"platos",       pk:["nombre"],       filas:filasPlatos},
     {n:"reglas",       pk:["menu","dia","momento","orden"], filas:filasReglas},
     {n:"recetas",      pk:["plato"],        filas:filasRecetas},
@@ -3922,7 +3942,7 @@
       window.__app = {
         estado:estado, BASE:function(){ return BASE; }, TABLAS:TABLAS,
         repertorio:repertorio, platos:platos, plato:plato, ingredientes:ingredientes,
-        objetivos:objetivos, huecos:huecos, fijarHuecos:fijarHuecos, clavesDe:clavesDe,
+        objetivos:objetivos, huecos:huecos, TIPOS:function(){ return TIPOS; }, fijarHuecos:fijarHuecos, clavesDe:clavesDe,
         slotsDe:slotsDe, ordenesDe:ordenesDe, generar:generar, completarNino:completarNino,
         adultoDesdeNino:adultoDesdeNino, cuentaEquilibrio:cuentaEquilibrio,
         fueraDeRango:fueraDeRango, ingredientesDeSemana:ingredientesDeSemana,

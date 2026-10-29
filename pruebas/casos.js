@@ -12,7 +12,13 @@ window.CASOS = [
   correr: function(app, banco, t){
     t.igual(app.repertorio().length, 66, "platos");
     t.igual(app.ingredientes().length, 98, "ingredientes");
-    t.igual(app.objetivos().length, 17, "objetivos");
+    t.igual(app.objetivos().length, 19, "objetivos");
+    // Un objetivo por tipo y ni uno más: hubo una lista aparte que agrupaba
+    // varios —"Pescado y marisco"— y se solapaba con los tipos sueltos.
+    const tipos = app.objetivos().map(function(o){ return o.n; });
+    t.igual(tipos.slice().sort(), app.TIPOS().slice().sort(), "uno por tipo");
+    t.igual(app.objetivos().filter(function(o){ return o.tipos.length !== 1; }), [],
+            "y cada uno mide solo el suyo");
   }
 },
 {

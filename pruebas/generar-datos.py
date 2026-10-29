@@ -17,9 +17,8 @@ RAIZ = os.path.dirname(AQUI)
 
 COLUMNAS = {
     "secciones":    ["seccion", "orden"],
-    "tipos":        ["clave", "tipo", "orden"],
+    "tipos":        ["clave", "tipo", "orden", "minimo", "maximo"],
     "ingredientes": ["ingrediente", "seccion"],
-    "equilibrio":   ["objetivo", "tipos", "minimo", "maximo", "orden"],
     "platos":       ["nombre", "adultos", "nino", "descripcion", "tipo", "momento",
                      "tiempo", "repeticion", "plato_unico", "ingredientes"],
     "semanas":      ["semana_id", "menu", "dia", "momento", "orden", "plato"],
@@ -27,6 +26,8 @@ COLUMNAS = {
 }
 # Columnas con valor por defecto que la semilla no escribe pero la aplicación lee.
 DEFECTOS = {"semanas": {"es_para_comprar": True}}
+# Tablas que la semilla no escribe pero la aplicación consulta al arrancar.
+VACIAS = ["plantilla"]
 
 
 def trozos(linea):
@@ -159,6 +160,9 @@ for tabla, cols in COLUMNAS.items():
             fila[col] = valor(p)
         filas.append(fila)
     datos[tabla] = filas
+
+for t in VACIAS:
+    datos.setdefault(t, [])
 
 # Un .js y no un .json: así la página de pruebas lo carga con <script> y
 # funciona hasta abriéndola desde el disco, sin servidor y sin fetch.
