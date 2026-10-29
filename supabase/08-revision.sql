@@ -33,7 +33,9 @@ select 'platos con un ingrediente repetido',
          where cardinality(ingredientes) <> (select count(distinct e) from unnest(ingredientes) e))
 
 union all
-select 'platos sin ningún ingrediente',
+-- Un plato sin ingredientes no aparece jamás en la lista de la compra. Para
+-- «Restaurante» eso es lo correcto, así que la cuenta buena aquí es 1.
+select 'platos sin ningún ingrediente («Restaurante» lo es a propósito)',
        (select count(*)::text from public.platos where cardinality(ingredientes) = 0)
 
 union all
