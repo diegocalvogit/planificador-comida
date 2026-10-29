@@ -2430,9 +2430,30 @@
     verTodos.addEventListener("change", function(){ pinta(); });
     const filtroMom = el("label", {class:"picker-filtro", for:"picker-todos"}, [
       verTodos,
-      el("span", {text:"Ver también los platos de otros momentos"}),
+      el("span", {text:"Ver también los platos de otros momentos del día"}),
       cuantosFuera
     ]);
+
+    // El tipo que la plantilla pide para esta comida. Deja de pedirse en cuanto
+    // uno de los platos de la comida ya lo cumple: la restricción era de la
+    // comida entera, no de cada hueco, así que puestas las lentejas el martes,
+    // el segundo y el tercero quedan libres. Se mira por menú, porque el niño
+    // y el adulto cumplen cada uno por su lado.
+    const tipoPedido = tipoDePlantilla(dia, momento);
+    const yaCumplido = !!tipoPedido && yaEnLaComida.some(function(n){
+      return cumpleTipo(platoEnSemana(pid, n), tipoPedido);
+    });
+    const pideTipo = !!tipoPedido && !yaCumplido;
+
+    const verGrupos = el("input", {type:"checkbox", id:"picker-grupos"});
+    const cuantosGrupo = el("span", {class:"om"});
+    verGrupos.addEventListener("change", function(){ pinta(); });
+    const filtroGrupo = el("label", {class:"picker-filtro", for:"picker-grupos"}, [
+      verGrupos,
+      el("span", {text:"Ver también los platos de otro grupo de alimentos"}),
+      cuantosGrupo
+    ]);
+    filtroGrupo.hidden = !pideTipo;
 
     function pinta(){
       const q = sinTildes(buscar.value.trim()), usados = {};
@@ -2446,13 +2467,23 @@
       const buscados = repertorio()
         .filter(function(p){ return yaEnLaComida.indexOf(p.n) === -1; })
         .filter(function(p){ return !q || sinTildes(p.n + " " + p.i.join(" ")).indexOf(q) !== -1; });
-      const fuera = buscados.filter(function(p){ return !propio(p); });
-      const coinciden = verTodos.checked ? buscados : buscados.filter(propio);
+
+      // Los dos filtros se cuentan por separado, cada uno sobre lo que el otro
+      // deja pasar: así el número de cada casilla dice cuántos platos ganas al
+      // marcarla, que es lo único que se quiere saber al mirarla.
+      const delMomento = verTodos.checked ? buscados : buscados.filter(propio);
+      const delGrupo = function(p){ return !pideTipo || verGrupos.checked || cumpleTipo(p, tipoPedido); };
+
+      const fuera = (pideTipo && !verGrupos.checked ? buscados.filter(delGrupo) : buscados)
+        .filter(function(p){ return !propio(p); });
+      const otroGrupo = delMomento.filter(function(p){ return !cumpleTipo(p, tipoPedido); });
+      const coinciden = delMomento.filter(delGrupo);
       const aqui = coinciden.filter(function(p){ return p.menus && p.menus[pid]; });
       const otros = coinciden.filter(function(p){ return !(p.menus && p.menus[pid]); });
 
       cuantosFuera.textContent = fuera.length ? "(" + fuera.length + ")" : "";
       filtroMom.hidden = !fuera.length && !verTodos.checked;
+      cuantosGrupo.textContent = otroGrupo.length ? "(" + otroGrupo.length + ")" : "";
 
       function opcion(p, ajeno){
         const repetido = usados[p.n] && h[clave] !== p.n;
@@ -2502,7 +2533,10 @@
         }).forEach(function(p){ lst.appendChild(opcion(p, true)); });
       }
       if(!coinciden.length){
-        const nada = fuera.length
+        const nada = (pideTipo && !verGrupos.checked && otroGrupo.length)
+          ? "Ningún plato de «" + tipoPedido + "» coincide, pero sí " + otroGrupo.length +
+            " de otros grupos. Márcalos arriba para verlos."
+          : fuera.length
           ? "Ningún plato de " + MOMENTO_LBL[momento].toLowerCase() + " coincide, pero sí " +
             fuera.length + " de otros momentos. Márcalos arriba para verlos."
           : "Ningún plato del repertorio coincide.";
@@ -2535,6 +2569,12 @@
         el("h3", {text:mayus(dia) + " · " + MOMENTO_LBL[momento] + " · " + ORDEN_LBL[orden] + " plato" +
                        (pid === "nino" ? " · niño" : "")}),
         buscar,
+        pideTipo ? el("p", {class:"picker-toca"}, [
+          document.createTextNode("Hoy toca "),
+          el("strong", {text:tipoPedido}),
+          document.createTextNode(", según la plantilla.")
+        ]) : null,
+        filtroGrupo,
         filtroMom
       ]),
       lst,
@@ -3951,7 +3991,7 @@
         REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
         aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
         PLANTILLA:function(){ return PLANTILLA; }, fijarPlantilla:fijarPlantilla,
-        tipoDePlantilla:tipoDePlantilla, cumpleTipo:cumpleTipo,
+        tipoDePlantilla:tipoDePlantilla, cumpleTipo:cumpleTipo, platoEnSemana:platoEnSemana,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
         hayReceta:hayReceta, cantidadesDe:cantidadesDe, pasosEnApartados:pasosEnApartados,
         renombrarPlato:renombrarPlato, podarCantidades:podarCantidades,

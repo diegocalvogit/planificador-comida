@@ -334,6 +334,47 @@ window.CASOS = [
   }
 },
 
+/* ───────── La plantilla de la semana ───────── */
+{
+  // La restricción es de la comida entera y no de cada hueco: puestas las
+  // lentejas el martes, el segundo y el tercero quedan libres. Y se mira por
+  // menú, porque el niño y el adulto cumplen cada uno por su lado.
+  nombre: "El tipo de la plantilla se pide hasta que la comida lo cumple",
+  correr: function(app, banco, t, w){
+    const d = w.document, id = app.semanaActual();
+    const hn = app.huecos("nino", id), ha = app.huecos("adultos", id);
+    app.clavesDe().forEach(function(k){ delete hn[k]; delete ha[k]; });
+    app.fijarHuecos("nino", id, hn);
+    app.fijarHuecos("adultos", id, ha);
+    app.fijarPlantilla("lunes", "comida", "Legumbre");
+    app.verTab("semana"); app.pintarTodo();
+
+    const grupo = function(){ return d.querySelectorAll(".picker-filtro")[0]; };
+    const opciones = function(){ return d.querySelectorAll(".picker-list .opt"); };
+    const cierra = function(){ d.querySelectorAll(".overlay").forEach(function(o){ o.remove(); }); };
+
+    app.abrirSelector("nino", "lunes", "comida", "1");
+    t.cierto(!grupo().hidden, "al primero le pide el tipo");
+    const soloDelTipo = Array.prototype.every.call(opciones(), function(b){
+      return app.cumpleTipo(app.platoEnSemana("nino", b.querySelector(".on").textContent), "Legumbre");
+    });
+    t.cierto(soloDelTipo, "y solo ofrece platos de ese tipo");
+    t.cierto(opciones().length > 0, "que haberlos haylos");
+    opciones()[0].click();
+
+    // Cumplida la comida, el segundo hueco va libre.
+    app.abrirSelector("nino", "lunes", "comida", "2");
+    t.cierto(grupo().hidden, "al segundo ya no se lo pide");
+    t.cierto(!d.querySelector(".picker-toca"), "ni lo anuncia");
+    cierra();
+
+    // Pero el adulto no ha comido legumbres todavía.
+    app.abrirSelector("adultos", "lunes", "comida", "1");
+    t.cierto(!grupo().hidden, "el adulto cumple por su cuenta");
+    cierra();
+  }
+},
+
 /* ───────── Cargador de la guardería ───────── */
 {
   // Cazaría: la validación dejando pasar un fichero que luego rompe la carga.
