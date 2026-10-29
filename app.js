@@ -640,17 +640,15 @@
     if(si) delete NO_COMPRA[c]; else NO_COMPRA[c] = true;
     guardar();
   }
-  // Mientras el niño come lo mismo que en la mesa no tiene línea propia en la
-  // semana, y por tanto tampoco casilla propia: manda la de la mesa. Si no, al
-  // desmarcar un plato seguiría en la compra por una casilla que no se ve.
+  // Cuando el adulto come exactamente el mismo plato que el niño, su línea no
+  // se pinta en la semana: es la del niño la que se ve y la que manda. Si no
+  // fuera así, lo que el niño come en la guardería volvería a la lista de la
+  // compra por el lado del adulto, marcado por una línea que no existe.
   function marcaEfectiva(id, pid, k){
-    if(pid !== "nino") return paraComprar(id, pid, k);
-    const hn = huecos("nino", id), ha = huecos("adultos", id);
-    const slot = k.split("|").slice(0, 2).join("|");
-    const propio = ordenesDe().some(function(o){
-      return (hn[slot + "|" + o] || "") !== (ha[slot + "|" + o] || "");
-    });
-    return paraComprar(id, propio ? "nino" : "adultos", k);
+    if(pid !== "adultos") return paraComprar(id, pid, k);
+    const suyo = huecos("adultos", id)[k];
+    if(suyo && suyo === huecos("nino", id)[k]) return paraComprar(id, "nino", k);
+    return paraComprar(id, pid, k);
   }
 
   // Un hueco del niño con algo fuera de la compra: casi siempre, la guardería.
@@ -1940,11 +1938,11 @@
                   " platos nuevos · " + resumenEquilibrio("nino", id));
           }}),
         el("button", {class:"btn", text:"Generar menú adulto a partir de niño",
-          title:"La mesa, con los platos del niño o los más parecidos que comáis vosotros",
+          title:"El adulto, con los platos del niño o los más parecidos que comáis vosotros",
           onclick:function(){
             const id = semanaActual();
             adultoDesdeNino(id); pintarTodo();
-            aviso("Mesa generada a partir del niño: coméis lo mismo en " +
+            aviso("Menú adulto generado a partir del niño: coméis lo mismo en " +
                   huecosIguales(id) + " de " + slotsDe().length + " comidas · " +
                   resumenEquilibrio("adultos", id));
           }}),
@@ -2192,40 +2190,11 @@
     if(ley) ley.textContent = "";
   }
 
-  // La casilla de "esto hay que comprarlo". Nace marcada y casi nunca se toca:
-  // solo para lo que come en la guardería y para lo que ya está en la nevera.
-  // Va en cada plato porque dentro de una comida puede haber de los dos.
-  function checkCompra(id, pid, clave, nombre){
-    const cb = el("input", {type:"checkbox", class:"compra-check",
-      id:"c-" + pid + "-" + sinTildes(clave).replace(/[^a-z0-9]+/g, "-")});
-    cb.checked = paraComprar(id, pid, clave);
-    cb.title = nombre ? "Comprar lo de «" + nombre + "». Quítalo si no hay que traerlo: " +
-                        "la guardería, o lo que ya tengas en la nevera."
-                      : "Comprar los ingredientes de este plato";
-    cb.setAttribute("aria-label", "Comprar los ingredientes de " + (nombre || "este plato"));
-    cb.addEventListener("click", function(e){ e.stopPropagation(); });
-    cb.addEventListener("change", function(){
-      marcarCompra(id, pid, clave, cb.checked);
-      // El mismo plato en la misma comida y en el otro menú es el mismo plato
-      // encima de la mesa: comprarlo por uno y no por el otro no significa nada.
-      const otro = otroPerfil(pid);
-      if(huecos(otro, id)[clave] && huecos(otro, id)[clave] === huecos(pid, id)[clave]){
-        marcarCompra(id, otro, clave, cb.checked);
-      }
-      pintarTodo();
-    });
-    return cb;
-  }
-
-  // Lo del niño va junto, debajo de los platos de ese momento. Mientras coma lo
-  // mismo que en la mesa solo hay un botón; en cuanto le pones un plato suyo, el
-  // momento pasa a ser suyo y el botón reaparece para el siguiente, hasta llenar
-  // los huecos que ese momento admite — uno en el almuerzo, dos en los demás.
   // Una comida entera: su rótulo y sus platos.
   //
   // El niño va primero porque es de quien parte la semana: su menú se completa
-  // con el cargador de la guardería y el equilibrio, y el de la mesa sale de él.
-  // Donde los dos comen exactamente lo mismo, la línea de la mesa no se pinta:
+  // con el cargador de la guardería y el equilibrio, y el del adulto sale de él.
+  // Donde los dos comen lo mismo, la línea del adulto no se pinta:
   // repetirla no añade nada y dobla el alto de la columna.
   //
   // El color lo pone el momento del día y no el tipo de alimento. Con cinco
@@ -2259,12 +2228,11 @@
     const p = platoEnSemana(x.pid, x.nombre);
     const roto = !p;
     const ajeno = !!(p && !(p.menus && p.menus[x.pid]));
-    const quien = x.pid === "nino" ? "el niño" : "la mesa";
+    const quien = x.pid === "nino" ? "el niño" : "el adulto";
 
     const fila = el("div", {class:"plato" + (x.pid === "adultos" ? " de-mesa" : "") +
                                    (roto ? " roto" : "") + (ajeno ? " ajeno" : "") +
                                    (paraComprar(id, x.pid, clave) ? "" : " sin-compra")});
-    fila.appendChild(checkCompra(id, x.pid, clave, p ? p.n : x.nombre));
     fila.appendChild(el("button", {
       type:"button", class:"plato-nombre",
       // El rótulo que se quitó de la pantalla sigue aquí para quien no la ve:
@@ -2272,7 +2240,9 @@
       "aria-label": (p ? p.n : x.nombre) + ", " + ORDEN_LBL[x.orden] + " plato de " + quien +
                     " " + deMomento(momento) + " del " + dia + ". Pulsa para cambiarlo.",
       title: roto ? "Este plato ya no está en el repertorio"
-                  : (ajeno ? p.n + " — fuera del menú de " + quien : tipoTexto(p)),
+                  : (ajeno ? p.n + " — fuera del menú de " + quien
+                     : tipoTexto(p) + (paraComprar(id, x.pid, clave)
+                                       ? "" : " — no cuenta para la compra")),
       text: p ? p.n : x.nombre,
       onclick:function(){ abrirSelector(x.pid, dia, momento, x.orden); }
     }));
@@ -2303,15 +2273,15 @@
         onclick:function(){ abrirSelector("nino", dia, momento, oN); }}));
     }
     if(oA){
-      fila.appendChild(el("button", {type:"button", class:"mas", text:"+ mesa",
-        "aria-label":"Añadir un plato a la mesa " + deMomento(momento) + " del " + dia,
+      fila.appendChild(el("button", {type:"button", class:"mas", text:"+ adulto",
+        "aria-label":"Añadir un plato al adulto " + deMomento(momento) + " del " + dia,
         onclick:function(){ abrirSelector("adultos", dia, momento, oA); }}));
     }
     return fila;
   }
 
-  // Quitar un plato de la mesa. Lo del niño no se toca: desde que su menú va
-  // primero, la mesa ya no arrastra nada.
+  // Quitar un plato del adulto. Lo del niño no se toca: desde que su menú
+  // va primero, el del adulto ya no arrastra nada.
   function quitaAdulto(id, slot, orden){
     const ha = huecos("adultos", id), copia = {}, ords = ordenesDe();
     Object.keys(ha).forEach(function(k){ copia[k] = ha[k]; });
@@ -2440,6 +2410,20 @@
       });
     };
 
+    // La marca de "esto no hay que comprarlo": la guardería, lo que se come
+    // fuera, o lo que ya está en la nevera. Estaba en cada fila de la semana,
+    // treinta y cinco casillas en pantalla para marcar cuatro cosas al mes, y
+    // ocupaban más que los platos. Aquí se decide al poner el plato, que es
+    // cuando uno sabe si lo va a comprar. Nace como esté el hueco ahora: al
+    // cambiar un plato de la guardería por otro, lo normal es que siga igual.
+    const noCompra = el("input", {type:"checkbox", id:"picker-sin-compra"});
+    noCompra.checked = !marcaEfectiva(id, pid, clave);
+    const sinCompra = el("label", {class:"picker-compra", for:"picker-sin-compra",
+      title:"Lo de la guardería, lo que se come fuera y lo que ya tengas en la nevera"}, [
+      noCompra,
+      el("span", {text:"No contar para la compra"})
+    ]);
+
     const buscar = el("input", {type:"search", id:"picker-buscar",
                                 placeholder:"Buscar, o «Nombre del plato; ingrediente, ingrediente»"});
     const lst = el("div", {class:"picker-list"});
@@ -2492,6 +2476,12 @@
             if(ajeno) marcarMenu(p, pid, true);
             limpia();
             h[clave] = p.n; fijarHuecos(pid, id, h); arrastra(p.n);
+            marcarCompra(id, pid, clave, !noCompra.checked);
+            // El mismo plato en la misma comida y en el otro menú es el mismo
+            // plato encima de la mesa: comprarlo por uno y no por el otro no
+            // significa nada.
+            const otro = otroPerfil(pid);
+            if(huecos(otro, id)[clave] === p.n) marcarCompra(id, otro, clave, !noCompra.checked);
             cerrarSelector(); pintarTodo();
           }
         }, [
@@ -2557,11 +2547,14 @@
       lst,
       pieAlta,
       el("footer", null, [
-        el("button", {class:"btn btn-ghost", text:"Dejar el hueco vacío", onclick:function(){
-          delete h[clave]; fijarHuecos(pid, id, h); arrastra("");
-          cerrarSelector(); pintarTodo();
-        }}),
-        el("button", {class:"btn", text:"Cancelar", onclick:cerrarSelector})
+        sinCompra,
+        el("div", {class:"pie-botones"}, [
+          el("button", {class:"btn btn-ghost", text:"Dejar el hueco vacío", onclick:function(){
+            delete h[clave]; fijarHuecos(pid, id, h); arrastra("");
+            cerrarSelector(); pintarTodo();
+          }}),
+          el("button", {class:"btn", text:"Cancelar", onclick:cerrarSelector})
+        ])
       ])
     ]);
 
@@ -4010,7 +4003,8 @@
         slotsDe:slotsDe, ordenesDe:ordenesDe, generar:generar, completarNino:completarNino,
         adultoDesdeNino:adultoDesdeNino, cuentaEquilibrio:cuentaEquilibrio,
         fueraDeRango:fueraDeRango, ingredientesDeSemana:ingredientesDeSemana,
-        paraComprar:paraComprar, marcarCompra:marcarCompra, huecosIguales:huecosIguales,
+        paraComprar:paraComprar, marcarCompra:marcarCompra, marcaEfectiva:marcaEfectiva,
+        huecosIguales:huecosIguales,
         REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
         aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
@@ -4018,7 +4012,8 @@
         renombrarPlato:renombrarPlato, podarCantidades:podarCantidades,
         escalarCantidad:escalarCantidad,
         platosConReceta:platosConReceta, necesitaReceta:necesitaReceta,
-        revisaGuarde:revisaGuarde, parecidos:parecidos, pesoPalabras:pesoPalabras,
+        revisaGuarde:revisaGuarde, aplicarGuarde:aplicarGuarde,
+        parecidos:parecidos, pesoPalabras:pesoPalabras,
         palabrasDe:palabrasDe, seccionProbable:seccionProbable, espejo:espejo,
         semanaActual:semanaActual, irASemana:irASemana, verTab:verTab,
         guardar:guardar, persistir:persistir, pintarTodo:pintarTodo,
@@ -4149,7 +4144,7 @@
         el("span", {class:"cuando", text:r.dia + " · " + (MOMENTO_LBL[r.momento] || r.momento) +
                                          " · " + ORDEN_LBL[r.orden]}),
         el("span", {class:"que", text:r.plato}),
-        el("span", {class:"quien", text:r.menu === "casa" ? "mesa" : "niño"}),
+        el("span", {class:"quien", text:r.menu === "casa" ? "adulto" : "niño"}),
         p ? null : el("span", {class:"aviso-roto", text:"ese plato ya no existe"}),
         el("button", {type:"button", class:"quita", text:"×",
           "aria-label":"Quitar la regla de " + r.plato + " el " + r.dia,
@@ -4175,7 +4170,7 @@
       return e;
     };
     const eMenu = sel(PERFILES.map(function(pf){
-      return {id:pf.casa ? "casa" : "nino", lbl:pf.casa ? "La mesa" : "El niño"};
+      return {id:pf.casa ? "casa" : "nino", lbl:pf.casa ? "El adulto" : "El niño"};
     }), "casa");
     const eDia = sel(DIAS.map(function(d){ return {id:d, lbl:d}; }), "domingo");
     const eMom = sel(MOMENTOS.map(function(m){ return {id:m.id, lbl:m.lbl}; }), "comida");
@@ -4227,7 +4222,7 @@
           const puestos = aplicarReglas(semanaActual());
           pintarTodo();
           aviso("«" + r.plato + "» los " + r.dia + (r.dia === "sábado" || r.dia === "domingo" ? "s" : "") +
-                " para " + (r.menu === "casa" ? "la mesa" : "el niño") +
+                " para " + (r.menu === "casa" ? "el adulto" : "el niño") +
                 (puestos ? " · puesto ya en la semana abierta" : ""));
         }})
       ])

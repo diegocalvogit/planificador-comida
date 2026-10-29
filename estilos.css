@@ -29,7 +29,7 @@
   --m-desayuno:#FEF3C7; --m-desayuno-ink:#92610A;
   --m-almuerzo:#FFEDD5; --m-almuerzo-ink:#9A4A16;
   --m-comida:#FEE2E2;   --m-comida-ink:#A62B2B;
-  --m-merienda:#FEFAE0; --m-merienda-ink:#857018;
+  --m-merienda:#DCFCE7; --m-merienda-ink:#2F6B41;
   --m-cena:#F3E8FF;     --m-cena-ink:#6B3FA0;
   --shadow:0 1px 2px rgba(19,30,45,.06), 0 8px 24px -16px rgba(19,30,45,.30);
   --radius:10px;
@@ -341,7 +341,7 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 
 /* Una fila por plato. Sin el 1o/2o/3o y sin la etiqueta NINO, que entre los
    dos se comian un tercio del ancho de la columna. */
-.plato{display:flex;align-items:center;gap:6px;padding:2px 8px 2px 6px;min-height:25px}
+.plato{display:flex;align-items:center;gap:6px;padding:2px 8px 2px 10px;min-height:22px}
 .plato-nombre{flex:1 1 auto;min-width:0;text-align:left;border:0;background:transparent;
   color:var(--ink);font:inherit;font-size:13px;line-height:1.3;padding:2px 0;cursor:pointer}
 .plato-nombre:hover{text-decoration:underline;text-underline-offset:2px}
@@ -360,7 +360,9 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 .plato-quita:hover{color:var(--pimenton)}
 
 /* Una sola linea de "mas" por comida, en vez de una por hueco libre. */
-.plato-add{display:flex;gap:8px;padding:1px 10px 5px 28px}
+/* Blanca y no del color de la comida: es la linea que marca donde acaba una y
+   empieza la siguiente, ahora que no hay casillas ni ordinales que las separen. */
+.plato-add{display:flex;gap:12px;padding:3px 10px;background:var(--surface)}
 .plato-add .mas{border:0;background:transparent;color:var(--ink-3);cursor:pointer;
   font:inherit;font-size:11.5px;padding:1px 0}
 .plato-add .mas:hover{color:var(--tinta);text-decoration:underline}
@@ -371,10 +373,6 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 .day.hoy .dnum{color:var(--accent-ink);font-weight:500}
 
 /* Marcada es lo normal, así que se ve poco; lo que canta es quitarla. */
-.compra-check{flex:none;width:13px;height:13px;margin:13px 0 0 10px;cursor:pointer;
-  accent-color:var(--accent);opacity:.5}
-.compra-check:hover, .compra-check:not(:checked){opacity:1}
-.compra-check:not(:checked){accent-color:var(--ink-3)}
 .sin-compra .plato-nombre, .sin-compra .slot-dish{text-decoration:line-through;
   text-decoration-color:var(--ink-3);text-decoration-thickness:1px}
 .sin-compra{opacity:.72}
@@ -655,7 +653,11 @@ th.orden-col[aria-sort="ascending"], th.orden-col[aria-sort="descending"]{color:
 .opt.ajeno .sw{opacity:.55}
 .opt-sep{padding:9px 16px 5px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.09em;
   text-transform:uppercase;color:var(--ink-3);border-top:1px solid var(--line);margin-top:4px;background:var(--surface-2)}
-.picker > footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:space-between}
+.picker > footer{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:10px;
+  justify-content:space-between;align-items:center;flex-wrap:wrap}
+.picker > footer .pie-botones{display:flex;gap:8px;margin-left:auto}
+.picker-compra{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.picker-compra input{margin:0;flex:none;accent-color:var(--ink-3)}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));
   background:var(--ink);color:var(--ground);padding:9px 16px;border-radius:20px;font-size:13.5px;font-weight:600;
@@ -700,7 +702,7 @@ footer.credits code{font-family:"IBM Plex Mono",monospace;font-size:12px}
   .plato{ padding:0.8mm 2mm; min-height:0; gap:1.5mm }
   .plato-nombre{ font-size:8.5pt; line-height:1.2; font-weight:600; padding:0 }
   .plato.de-mesa .plato-nombre{ font-weight:500 }
-  .plato-quita, .plato-add, .compra-check{ display:none !important }
+  .plato-quita, .plato-add{ display:none !important }
   .sin-compra{ opacity:1 }
   .sin-compra .plato-nombre{ text-decoration:none }
   /* Un pie discreto con la semana, que si no la hoja no dice de cuándo es. */

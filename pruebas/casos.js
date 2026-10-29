@@ -327,6 +327,44 @@ window.CASOS = [
   }
 },
 {
+  // Cazó: lo que carga el menú de la guardería salía tachado en la semana del
+  // niño pero volvía a la lista de la compra por el lado del adulto, que come
+  // ese mismo plato y no tiene línea propia cuando coincide.
+  nombre: "Lo que carga la guardería no se compra, ni por el niño ni por el adulto",
+  correr: function(app, banco, t, w){
+    const id = "2030-03-04", k = "lunes|comida|1";
+    app.aplicarGuarde(
+      {formato:"menu-guarderia", version:1, mes:"2030-03",
+       ingredientes_nuevos:[], platos_nuevos:[],
+       dias:[{fecha:"2030-03-04", comida:["Tortilla"]}]},
+      {sust:{}, secciones:{}, adultos:false, soloEsto:true});
+
+    t.igual(app.huecos("nino", id)[k], "Tortilla", "el plato entra donde toca");
+    t.cierto(!app.paraComprar(id, "nino", k), "y entra fuera de la compra");
+
+    // El adulto comiendo lo mismo: su línea no se pinta, así que tampoco manda.
+    const ha = app.huecos("adultos", id);
+    ha[k] = "Tortilla";
+    app.fijarHuecos("adultos", id, ha);
+    t.cierto(!app.marcaEfectiva(id, "adultos", k), "el adulto sigue la marca del niño");
+
+    const tortilla = app.plato("nino", "Tortilla");
+    const mapa = app.ingredientesDeSemana(id);
+    tortilla.i.forEach(function(ing){
+      t.cierto((mapa[ing] || []).indexOf("Tortilla") === -1,
+               "la compra no trae la tortilla por «" + ing + "»");
+    });
+
+    // Y en pantalla, tachado.
+    app.irASemana(id); app.verTab("semana"); app.pintarTodo();
+    const filas = w.document.querySelectorAll(".plato.sin-compra .plato-nombre");
+    t.cierto(Array.prototype.some.call(filas, function(b){ return b.textContent === "Tortilla"; }),
+             "sale tachada en la semana");
+    t.igual(w.document.querySelectorAll(".compra-check").length, 0,
+            "y ya no hay casillas de compra en la semana");
+  }
+},
+{
   nombre: "Los parecidos encuentran el plato que ya tienes",
   correr: function(app, banco, t){
     const rep = app.repertorio();
