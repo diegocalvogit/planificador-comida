@@ -3950,6 +3950,8 @@
         huecosIguales:huecosIguales,
         REGLAS:function(){ return REGLAS; }, ponerReglas:function(l){ REGLAS = l; },
         aplicarReglas:aplicarReglas, huecosDeReglas:huecosDeReglas,
+        PLANTILLA:function(){ return PLANTILLA; }, fijarPlantilla:fijarPlantilla,
+        tipoDePlantilla:tipoDePlantilla, cumpleTipo:cumpleTipo,
         RECETAS:function(){ return RECETAS; }, pasosDe:pasosDe, fijarReceta:fijarReceta, recetaDe:recetaDe,
         hayReceta:hayReceta, cantidadesDe:cantidadesDe, pasosEnApartados:pasosEnApartados,
         renombrarPlato:renombrarPlato, podarCantidades:podarCantidades,
@@ -4067,6 +4069,86 @@
   }
 
   /* ============ Reglas del día a día, en Configuración ============ */
+  /* ============ La plantilla de la semana ============ */
+  // Qué tipo de alimento manda en cada comida. Una rejilla de siete días por
+  // cinco momentos, con un desplegable por celda y nada más: es la tabla que
+  // uno mira para decidir la semana, y cuanto menos adorno tenga, mejor.
+  //
+  // Un tipo por comida y no uno por plato: lo que se fija es el eje de la
+  // comida —el martes, legumbres— y el acompañamiento sale de lo que pida el
+  // equilibrio. Y una sola plantilla para los dos menús: si el martes tocan
+  // legumbres, tocan para todos, y lo que cambia es el plato de cada uno.
+  function tipoDePlantilla(dia, momento){ return PLANTILLA[dia + "|" + momento] || ""; }
+  function fijarPlantilla(dia, momento, tipo){
+    const k = dia + "|" + momento;
+    if(tipo) PLANTILLA[k] = tipo; else delete PLANTILLA[k];
+    guardar();
+  }
+  // Si un plato lleva ese tipo entre los suyos, sirve para esa comida. Los
+  // platos llevan varios —unas lentejas con chorizo son Legumbre y Embutido— y
+  // basta con que uno coincida.
+  function cumpleTipo(p, tipo){
+    if(!tipo) return true;
+    return tiposDe(p).indexOf(tipo) !== -1;
+  }
+
+  function montarPlantilla(){
+    const tabla = $("tabla-plantilla");
+    if(!tabla) return;
+    tabla.textContent = "";
+
+    const cab = el("tr", null, [el("th", {scope:"col", text:""})]);
+    DIAS.forEach(function(d){
+      cab.appendChild(el("th", {scope:"col", class:"pl-dia", text:mayus(d).slice(0, 3)}));
+    });
+    tabla.appendChild(el("thead", null, [cab]));
+
+    const cuerpo = el("tbody");
+    MOMENTOS.forEach(function(mo){
+      const fila = el("tr", null, [el("th", {scope:"row", class:"pl-momento", text:mo.lbl})]);
+      DIAS.forEach(function(dia){
+        const sel = el("select", {class:"pl-sel",
+          "aria-label":"Tipo de alimento para " + mo.lbl.toLowerCase() + " del " + dia});
+        sel.appendChild(el("option", {value:"", text:"—"}));
+        TIPOS.forEach(function(t){
+          sel.appendChild(el("option", {value:t, text:t}));
+        });
+        sel.value = tipoDePlantilla(dia, mo.id);
+        const celda = el("td", {class:"pl-celda"}, [sel]);
+        const pinta = function(){
+          const t = sel.value;
+          celda.style.background = t
+            ? "color-mix(in srgb, " + colorDe(claveDe(t)) + " 55%, var(--surface))"
+            : "";
+        };
+        pinta();
+        sel.addEventListener("change", function(){
+          fijarPlantilla(dia, mo.id, sel.value);
+          pinta(); montarPlantilla(); pintarSemana();
+        });
+        fila.appendChild(celda);
+      });
+      cuerpo.appendChild(fila);
+    });
+    tabla.appendChild(cuerpo);
+
+    const pie = $("plantilla-foot");
+    if(pie){
+      pie.textContent = "";
+      const puestas = Object.keys(PLANTILLA).filter(function(k){ return !!PLANTILLA[k]; }).length;
+      pie.appendChild(el("button", {class:"btn btn-sm", text:"Vaciar la plantilla",
+        disabled: puestas ? null : "disabled",
+        onclick:function(){
+          if(!window.confirm("¿Quitar los " + puestas + " tipos de la plantilla?")) return;
+          PLANTILLA = {}; guardar(); montarPlantilla(); pintarSemana();
+          aviso("Plantilla vacía");
+        }}));
+      pie.appendChild(el("span", {class:"hint",
+        text: puestas ? puestas + " de 35 comidas con tipo fijado"
+                      : "Sin nada fijado: el reparto va solo por los objetivos de abajo."}));
+    }
+  }
+
   function montarReglas(){
     const lista = $("reglas-lista");
     if(!lista) return;
@@ -4674,6 +4756,7 @@
     montarCopias();
     montarDonde();
     montarRecetas();
+    montarPlantilla();
     montarReglas();
     montarAltaRegla();
 
